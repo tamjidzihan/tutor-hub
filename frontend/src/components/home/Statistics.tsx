@@ -60,28 +60,30 @@ export const Statistics: React.FC = () => {
   ];
 
   return (
-    <section className="py-12 bg-white border-b border-slate-200/80">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    <section className="border-b border-slate-200/80 bg-white py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {statItems.map((item, idx) => (
             <div
               key={idx}
-              className="p-6 rounded-2xl bg-white border border-slate-200/90 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300"
+              className="group rounded-[1.6rem] border border-slate-200/90 bg-white p-6 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover"
             >
-              <div className="flex items-center justify-between mb-4">
-                <div className={`w-12 h-12 rounded-xl ${item.bgColor} border ${item.borderColor} flex items-center justify-center`}>
+              <div className="mb-5 flex items-center justify-between">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${item.bgColor} border ${item.borderColor}`}>
                   {item.icon}
                 </div>
-                <span className="text-xs font-bold text-slate-400">Live API</span>
+                <span className="rounded-full border border-slate-200 bg-slate-50 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">
+                  Live API
+                </span>
               </div>
-              
-              <h3 className="text-3xl font-black text-slate-900 tracking-tight font-heading mb-1">
+
+              <h3 className="mb-2 font-heading text-3xl font-black tracking-[-0.04em] text-slate-900">
                 {item.value}
               </h3>
-              <p className="text-sm font-bold text-slate-800 mb-0.5">
+              <p className="mb-1 text-sm font-bold text-slate-800">
                 {item.label}
               </p>
-              <p className="text-xs text-slate-500 font-medium">
+              <p className="text-xs font-medium text-slate-500">
                 {item.subtitle}
               </p>
             </div>

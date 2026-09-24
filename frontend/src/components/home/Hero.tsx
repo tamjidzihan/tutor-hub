@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Search, 
-  MapPin, 
-  BookOpen, 
-  ShieldCheck, 
-  Sparkles, 
-  ArrowRight, 
-  GraduationCap, 
+import {
+  Search,
+  MapPin,
+  BookOpen,
+  ShieldCheck,
+  Sparkles,
+  ArrowRight,
+  GraduationCap,
   CheckCircle,
   Users,
   Star
@@ -44,43 +44,39 @@ export const Hero: React.FC = () => {
   };
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-brand-50/70 via-white to-slate-50 pt-8 pb-16 lg:pt-16 lg:pb-24 border-b border-slate-200/60">
-      
-      {/* Background Decorative Blobs */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full overflow-hidden pointer-events-none -z-10">
-        <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-brand-200/40 blur-3xl" />
-        <div className="absolute top-1/2 -right-24 w-96 h-96 rounded-full bg-sky-200/30 blur-3xl" />
+    <section className="relative overflow-hidden border-b border-slate-200/70 bg-[radial-gradient(circle_at_top_left,_rgba(134,194,64,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(18,181,224,0.14),transparent_28%),linear-gradient(135deg,#f4fbe8_0%,#ffffff_40%,#f8fafc_100%)] pt-8 pb-16 lg:pt-16 lg:pb-24">
+
+      <div className="pointer-events-none absolute left-1/2 top-0 h-full w-full max-w-7xl -translate-x-1/2 overflow-hidden -z-10">
+        <div className="absolute -left-24 top-10 h-96 w-96 rounded-full bg-brand-200/60 blur-3xl" />
+        <div className="absolute -right-24 top-1/2 h-96 w-96 rounded-full bg-sky-200/40 blur-3xl" />
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
+
           {/* Left Column: Heading & Search Form */}
           <div className="lg:col-span-7 space-y-6 text-left">
-            
+
             {/* Trust Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-100/80 border border-brand-300/80 text-brand-900 text-xs font-bold tracking-wide">
-              <Sparkles className="w-3.5 h-3.5 text-brand-600" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-brand-200 bg-brand-100/90 px-3.5 py-1.5 text-xs font-bold tracking-[0.12em] text-brand-900 uppercase">
+              <Sparkles className="h-3.5 w-3.5 text-brand-600" />
               <span>Country's #1 Tutor Matching & Learning Platform</span>
             </div>
 
-            {/* Main Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.15] font-heading">
-              Find the <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-emerald-600">Perfect Tutor</span> for Your Child's Success.
+            <h1 className="font-heading text-4xl font-black leading-[1.05] tracking-[-0.05em] text-slate-900 sm:text-5xl lg:text-6xl">
+              Find the <span className="bg-gradient-to-r from-brand-600 to-emerald-600 bg-clip-text text-transparent">Perfect Tutor</span> for Your Child's Success.
             </h1>
 
-            {/* Supporting Subtitle */}
-            <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
+            <p className="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
               Connect with 48,000+ verified private tutors from <strong>BUET, Dhaka Medical, DU, IBA, NSU</strong> & top institutions. Tailored for Bangla Medium, English Version, and Edexcel/Cambridge curriculums.
             </p>
 
-            {/* Search Card */}
-            <form 
+            <form
               onSubmit={handleSearch}
-              className="bg-white p-3 sm:p-4 rounded-2xl shadow-xl border border-slate-200/90 space-y-3 max-w-2xl"
+              className="max-w-2xl space-y-3 rounded-[1.75rem] border border-slate-200/90 bg-white/80 p-3 shadow-[0_18px_40px_-20px_rgba(15,23,42,0.3)] backdrop-blur-sm sm:p-4"
             >
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                
+
                 {/* City Picker */}
                 <div>
                   <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">
@@ -146,22 +142,26 @@ export const Hero: React.FC = () => {
               </div>
 
               {/* Submit Row */}
-              <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
+              <div className="flex flex-col items-center gap-3 pt-2 sm:flex-row">
                 <button
                   type="submit"
-                  className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-base transition-all shadow-md hover:shadow-lg active:scale-98"
+                  className="w-full flex-1 rounded-xl bg-brand-500 px-6 py-3 text-base font-bold text-white shadow-lg shadow-brand-500/20 transition-all hover:bg-brand-600 active:scale-98 sm:w-auto"
                 >
-                  <Search className="w-5 h-5" />
-                  Search Qualified Tutors
+                  <span className="inline-flex items-center justify-center gap-2">
+                    <Search className="h-5 w-5" />
+                    Search Qualified Tutors
+                  </span>
                 </button>
 
                 <button
                   type="button"
                   onClick={() => navigate('/appoint-a-tutor')}
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl bg-navy-900 hover:bg-navy-800 text-white font-bold text-sm transition-all"
+                  className="w-full rounded-xl bg-navy-900 px-5 py-3 text-sm font-bold text-white transition-all hover:bg-navy-800 sm:w-auto"
                 >
-                  Post Tuition Free
-                  <ArrowRight className="w-4 h-4 text-brand-400" />
+                  <span className="inline-flex items-center justify-center gap-1.5">
+                    Post Tuition Free
+                    <ArrowRight className="h-4 w-4 text-brand-400" />
+                  </span>
                 </button>
               </div>
             </form>
@@ -187,7 +187,7 @@ export const Hero: React.FC = () => {
           {/* Right Column: Dynamic Visual Showcase */}
           <div className="lg:col-span-5 relative">
             <div className="relative mx-auto max-w-md lg:max-w-none">
-              
+
               {/* Main Illustration / Image Frame */}
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
                 <img
@@ -196,7 +196,7 @@ export const Hero: React.FC = () => {
                   className="w-full h-80 sm:h-96 object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-navy-950/20 to-transparent" />
-                
+
                 <div className="absolute bottom-4 left-4 right-4 text-white">
                   <span className="inline-block px-2.5 py-1 bg-brand-500 text-white text-xs font-bold rounded-md mb-1.5">
                     Live Platform

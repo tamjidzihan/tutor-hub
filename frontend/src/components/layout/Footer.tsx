@@ -1,24 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  GraduationCap, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  Clock, 
-  ShieldCheck 
+import {
+  GraduationCap,
+  Phone,
+  Mail,
+  MapPin,
+  Clock,
+  ShieldCheck
 } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-navy-950 text-slate-300 pt-16 pb-12 border-t border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+    <footer className="border-t border-slate-800 bg-[#07131f] pt-16 pb-12 text-slate-300">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
         {/* Top Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 pb-12 border-b border-slate-800/80">
-          
+
           {/* Column 1: Brand Info */}
           <div className="lg:col-span-2 space-y-4">
             <Link to="/" className="flex items-center gap-3">
@@ -34,7 +34,7 @@ export const Footer: React.FC = () => {
                 </span>
               </div>
             </Link>
-            
+
             <p className="text-slate-400 text-sm leading-relaxed pr-6">
               TutorHub (Tuition Terminal) is Bangladesh's premier full-stack tutor matching and learning platform. Connecting parents, students, and institutions with verified, qualified tutors from BUET, Medical Colleges, DU, IBA, and leading universities.
             </p>

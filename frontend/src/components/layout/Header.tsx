@@ -39,10 +39,10 @@ export const Header: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/85 backdrop-blur-xl shadow-[0_1px_0_rgba(15,23,42,0.05)]">
       {/* Top Banner Bar */}
-      <div className="bg-navy-950 text-slate-300 text-xs py-2 px-4 border-b border-navy-900 hidden md:block">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <div className="hidden md:block border-b border-slate-800/80 bg-[#08131f] text-slate-300 text-xs">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
           <div className="flex items-center space-x-6">
             <span className="inline-flex items-center gap-1.5 text-slate-300">
               <Phone className="w-3.5 h-3.5 text-brand-400" />
@@ -55,23 +55,21 @@ export const Header: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <span className="inline-flex items-center gap-1 text-brand-400 font-medium bg-brand-950/60 px-2 py-0.5 rounded border border-brand-900">
+            <span className="inline-flex items-center gap-1 rounded border border-brand-700/60 bg-brand-950/80 px-2 py-0.5 font-medium text-brand-300">
               <ShieldCheck className="w-3 h-3" />
               100% Verified Tutors & Security Guaranteed
             </span>
 
-            {/* Fast Role Demo Switcher for Evaluation */}
             {isAuthenticated && (
-              <div className="flex items-center space-x-1.5 pl-2 border-l border-slate-700">
+              <div className="flex items-center space-x-1.5 border-l border-slate-700 pl-2">
                 <span className="text-[11px] text-slate-400">Demo Role:</span>
                 {(['TUTOR', 'PARENT', 'STUDENT', 'ADMIN'] as UserRole[]).map((r) => (
                   <button
                     key={r}
                     onClick={() => switchRole(r)}
-                    className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase transition-colors ${user?.role === r
-                        ? 'bg-brand-500 text-white shadow-xs'
-                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                      }`}
+                    className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase transition-colors ${user?.role === r
+                      ? 'bg-brand-500 text-white shadow-xs'
+                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700'} `}
                   >
                     {r === 'PARENT' ? 'Parent' : r === 'TUTOR' ? 'Tutor' : r === 'STUDENT' ? 'Student' : 'Admin'}
                   </button>
@@ -83,35 +81,34 @@ export const Header: React.FC = () => {
       </div>
 
       {/* Main Navbar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-20 items-center justify-between">
 
           {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform duration-200">
-              <GraduationCap className="w-6 h-6 text-white" />
+          <Link to="/" className="group flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 shadow-lg shadow-brand-500/20 transition-transform duration-200 group-hover:scale-105">
+              <GraduationCap className="h-6 w-6 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="text-2xl font-black tracking-tight text-slate-900 font-heading">
+              <span className="font-heading text-2xl font-black tracking-tight text-slate-900">
                 Tutor<span className="text-brand-500">Hub</span>
               </span>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 -mt-1">
+              <span className="-mt-1 text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
                 Tuition Terminal BD
               </span>
             </div>
           </Link>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2">
+          <nav className="hidden items-center space-x-1 lg:flex xl:space-x-2">
             {navLinks.map((link) => (
               <NavLink
                 key={link.name}
                 to={link.path}
                 className={({ isActive }) =>
-                  `px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors duration-150 ${isActive
-                    ? 'text-brand-600 bg-brand-50/80 font-bold'
-                    : 'text-slate-700 hover:text-brand-600 hover:bg-slate-50'
-                  }`
+                  `rounded-xl px-3.5 py-2 text-sm font-semibold transition-all duration-200 ${isActive
+                    ? 'bg-brand-50 text-brand-700 shadow-sm'
+                    : 'text-slate-700 hover:bg-slate-100 hover:text-brand-600'} `
                 }
               >
                 {link.name}
@@ -123,7 +120,7 @@ export const Header: React.FC = () => {
           <div className="hidden lg:flex items-center space-x-3">
             <Link
               to="/appoint-a-tutor"
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg border-2 border-brand-500 text-brand-700 font-bold text-sm bg-white hover:bg-brand-50 transition-all active:scale-95 shadow-2xs"
+              className="inline-flex items-center gap-1.5 rounded-xl border-2 border-brand-500 bg-white px-4 py-2.5 text-sm font-bold text-brand-700 shadow-sm transition-all hover:bg-brand-50 active:scale-95"
             >
               <PlusCircle className="w-4 h-4 text-brand-600" />
               Request a Tutor
@@ -213,7 +210,7 @@ export const Header: React.FC = () => {
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 rounded-lg text-sm font-bold text-white bg-brand-500 hover:bg-brand-600 transition-all shadow-sm active:scale-95"
+                  className="rounded-xl bg-brand-500 px-4 py-2 text-sm font-bold text-white shadow-sm shadow-brand-500/20 transition-all hover:bg-brand-600 active:scale-95"
                 >
                   Sign Up
                 </Link>

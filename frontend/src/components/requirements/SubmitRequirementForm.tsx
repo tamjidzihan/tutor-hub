@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ClipboardList, 
-  Send, 
-  CheckCircle2, 
-  DollarSign, 
+import {
+  ClipboardList,
+  Send,
+  CheckCircle2,
+  DollarSign,
   ShieldCheck
 } from 'lucide-react';
 import { Button } from '../common/Button';
@@ -13,6 +13,26 @@ import { Select } from '../common/Select';
 import { locationsApi } from '../../api/locations';
 import type { LocationCity } from '../../api/locations';
 import { requirementsApi } from '../../api/requirements';
+
+type RequirementFormData = {
+  parent_name: string;
+  phone: string;
+  email: string;
+  student_name: string;
+  student_gender: 'Male' | 'Female' | '';
+  class_level: string;
+  curriculum: string;
+  subjects: string[];
+  city: string;
+  area: string;
+  address: string;
+  tuition_type: string;
+  preferred_tutor_gender: 'Male' | 'Female' | 'Any' | '';
+  days_per_week: number | string;
+  preferred_time: string;
+  budget: number | string;
+  additional_requirements: string;
+};
 
 export const SubmitRequirementForm: React.FC = () => {
   const navigate = useNavigate();
@@ -33,24 +53,24 @@ export const SubmitRequirementForm: React.FC = () => {
     fetchCities();
   }, []);
 
-  const [formData, setFormData] = useState({
-    parent_name: 'Mrs. Sultana Kamal',
-    phone: '01711223344',
-    email: 'guardian@example.com',
-    student_name: 'Tasnia Kamal',
-    student_gender: 'Female' as 'Male' | 'Female',
-    class_level: 'Class 10 (SSC)',
-    curriculum: 'English Version',
-    subjects: ['Physics', 'Chemistry', 'Higher Math'],
-    city: 'Dhaka',
-    area: 'Dhanmondi',
-    address: 'Road 8/A, Dhanmondi, Dhaka',
-    tuition_type: 'Home Tutoring',
-    preferred_tutor_gender: 'Female' as 'Male' | 'Female' | 'Any',
-    days_per_week: 4,
-    preferred_time: '5:30 PM',
-    budget: 9500,
-    additional_requirements: 'Require a dedicated female mentor from BUET or DMC. Focus on CQ & MCQ problem solving before the SSC board exams.'
+  const [formData, setFormData] = useState<RequirementFormData>({
+    parent_name: '',
+    phone: '',
+    email: '',
+    student_name: '',
+    student_gender: '',
+    class_level: '',
+    curriculum: '',
+    subjects: [],
+    city: '',
+    area: '',
+    address: '',
+    tuition_type: '',
+    preferred_tutor_gender: '',
+    days_per_week: '',
+    preferred_time: '',
+    budget: '',
+    additional_requirements: ''
   });
 
   const updateField = (key: string, value: any) => {
@@ -64,7 +84,24 @@ export const SubmitRequirementForm: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const result = await requirementsApi.submitRequirement(formData);
+      const payload = {
+        ...formData,
+        student_gender: formData.student_gender || undefined,
+        preferred_tutor_gender: formData.preferred_tutor_gender || undefined,
+        class_level: formData.class_level || undefined,
+        curriculum: formData.curriculum || undefined,
+        city: formData.city || undefined,
+        area: formData.area || undefined,
+        address: formData.address || undefined,
+        tuition_type: formData.tuition_type || undefined,
+        preferred_time: formData.preferred_time || undefined,
+        additional_requirements: formData.additional_requirements || undefined,
+        days_per_week: formData.days_per_week === '' ? undefined : Number(formData.days_per_week),
+        budget: formData.budget === '' ? undefined : Number(formData.budget),
+        subjects: formData.subjects || []
+      };
+
+      const result = await requirementsApi.submitRequirement(payload);
       setGeneratedReqId(result.requirement_id);
       setIsSubmitted(true);
     } finally {
@@ -107,7 +144,7 @@ export const SubmitRequirementForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-slate-200/90 shadow-card p-6 sm:p-10 max-w-3xl mx-auto my-8 space-y-8">
-      
+
       {/* Form Header */}
       <div className="border-b border-slate-100 pb-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-100 text-brand-800 text-xs font-bold mb-2">
@@ -168,11 +205,10 @@ export const SubmitRequirementForm: React.FC = () => {
                   key={g}
                   type="button"
                   onClick={() => updateField('student_gender', g)}
-                  className={`py-2 rounded-lg text-xs font-bold border transition-all ${
-                    formData.student_gender === g
+                  className={`py-2 rounded-lg text-xs font-bold border transition-all ${formData.student_gender === g
                       ? 'bg-brand-500 text-white border-brand-500'
                       : 'bg-slate-50 text-slate-700 border-slate-200'
-                  }`}
+                    }`}
                 >
                   {g}
                 </button>
@@ -194,6 +230,7 @@ export const SubmitRequirementForm: React.FC = () => {
             label="Class / Grade Level"
             value={formData.class_level}
             onChange={(e) => updateField('class_level', e.target.value)}
+            placeholder="Select class level"
             options={[
               'Class 1 to 5',
               'Class 6 to 8',
@@ -210,6 +247,7 @@ export const SubmitRequirementForm: React.FC = () => {
             label="Medium / Curriculum"
             value={formData.curriculum}
             onChange={(e) => updateField('curriculum', e.target.value)}
+            placeholder="Select curriculum"
             options={[
               'Bangla Medium',
               'English Version',
@@ -239,11 +277,10 @@ export const SubmitRequirementForm: React.FC = () => {
                       updateField('subjects', [...formData.subjects, sub]);
                     }
                   }}
-                  className={`p-2 rounded-lg text-xs font-bold border text-center transition-all ${
-                    isSelected
+                  className={`p-2 rounded-lg text-xs font-bold border text-center transition-all ${isSelected
                       ? 'bg-brand-500 text-white border-brand-500 shadow-xs'
                       : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                  }`}
+                    }`}
                 >
                   {isSelected ? '✓ ' : '+ '}{sub}
                 </button>
@@ -265,12 +302,14 @@ export const SubmitRequirementForm: React.FC = () => {
             label="City"
             value={formData.city}
             onChange={(e) => updateField('city', e.target.value)}
+            placeholder="Select city"
             options={cities.map(c => c.name)}
           />
           <Select
             label="Area"
             value={formData.area}
             onChange={(e) => updateField('area', e.target.value)}
+            placeholder="Select area"
             options={areas}
           />
         </div>
@@ -293,11 +332,10 @@ export const SubmitRequirementForm: React.FC = () => {
                   key={g}
                   type="button"
                   onClick={() => updateField('preferred_tutor_gender', g)}
-                  className={`py-2 rounded-lg text-xs font-bold border transition-all ${
-                    formData.preferred_tutor_gender === g
+                  className={`py-2 rounded-lg text-xs font-bold border transition-all ${formData.preferred_tutor_gender === g
                       ? 'bg-brand-500 text-white border-brand-500'
                       : 'bg-slate-50 text-slate-700 border-slate-200'
-                  }`}
+                    }`}
                 >
                   {g}
                 </button>
@@ -310,15 +348,17 @@ export const SubmitRequirementForm: React.FC = () => {
             type="number"
             min={1}
             max={7}
+            placeholder="e.g. 3"
             value={formData.days_per_week}
-            onChange={(e) => updateField('days_per_week', Number(e.target.value))}
+            onChange={(e) => updateField('days_per_week', e.target.value)}
           />
 
           <Input
             label="Monthly Budget (৳ BDT)"
             type="number"
+            placeholder="e.g. 8000"
             value={formData.budget}
-            onChange={(e) => updateField('budget', Number(e.target.value))}
+            onChange={(e) => updateField('budget', e.target.value)}
             leftIcon={<DollarSign className="w-4 h-4" />}
             required
           />
