@@ -184,12 +184,12 @@ export const Hero: React.FC = () => {
 
           {/* Right Column: Dynamic Visual Showcase */}
           <div className="relative lg:col-span-5">
-            <div className="relative mx-auto max-w-md lg:max-w-none">
-              <div className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-[#0a1e2d] p-3 shadow-[0_30px_80px_-28px_rgba(10,30,45,0.9)]">
+            <div className="relative mx-auto max-w-lg lg:max-w-none">
+              <div className="relative overflow-hidden rounded-4xl border border-slate-200/80 bg-[#0a1e2d] p-1 shadow-[0_30px_80px_-28px_rgba(10,30,45,0.9)]">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(134,194,64,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(18,181,224,0.18),transparent_32%),linear-gradient(135deg,#0a1e2d_0%,#0d2334_45%,#122f24_100%)]" />
-                <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:22px_22px]" />
+                <div className="absolute inset-0 opacity-30 bg-[linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] bg-size-[22px_22px]" />
 
-                <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/5 backdrop-blur-md">
+                <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-md">
                   <img
                     src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=900"
                     alt="Tutor mentoring students in a collaborative lesson"
