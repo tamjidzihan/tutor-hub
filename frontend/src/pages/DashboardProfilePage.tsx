@@ -8,14 +8,19 @@ import { Select } from '../components/common/Select';
 import { locationsApi } from '../api/locations';
 import type { LocationCity } from '../api/locations';
 import { tutorsApi } from '../api/tutors';
+import { authApi } from '../api/auth';
+import { getApiErrorMessage } from '../api/client';
+import { useToast } from '../context/ToastContext';
 import { CheckCircle2, Save, ShieldCheck } from 'lucide-react';
 
 export const DashboardProfilePage: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
+  const { showToast } = useToast();
   const [cities, setCities] = useState<LocationCity[]>([]);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tutorId, setTutorId] = useState('');
+  const [error, setError] = useState('');
 
   const [formData, setFormData] = useState({
     first_name: user?.first_name || '',
@@ -24,18 +29,15 @@ export const DashboardProfilePage: React.FC = () => {
     email: user?.email || '',
     university: '',
     department: '',
-    expected_salary: 8000,
-    city: 'Dhaka',
+    expected_salary: 0,
+    city: '',
     area: '',
     bio: ''
   });
 
-  if (!isAuthenticated || !user) {
-    return <Navigate to="/login" replace />;
-  }
-
   useEffect(() => {
     const loadProfile = async () => {
+      if (user?.role !== 'TUTOR') return;
       try {
         const [citiesData, tutorData] = await Promise.all([
           locationsApi.getCities(),
@@ -51,23 +53,37 @@ export const DashboardProfilePage: React.FC = () => {
             email: user?.email || '',
             university: tutorData.university || '',
             department: tutorData.department || '',
-            expected_salary: tutorData.expected_salary || 8000,
-            city: tutorData.city || 'Dhaka',
-            area: tutorData.area || 'Mirpur',
+            expected_salary: tutorData.expected_salary ?? 0,
+            city: tutorData.city || '',
+            area: tutorData.area || '',
             bio: tutorData.bio || ''
           });
         }
-      } catch (err) {
-        console.error('Failed to load profile data:', err);
+      } catch {
+        setSaved(false);
       }
     };
     loadProfile();
   }, [user]);
 
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.role !== 'TUTOR') {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
     try {
+      const updatedUser = await authApi.updateCurrentUser({
+        first_name: formData.first_name,
+        last_name: formData.last_name,
+        phone: formData.phone,
+      });
       await tutorsApi.updateMyProfile({
         university: formData.university,
         department: formData.department,
@@ -76,10 +92,12 @@ export const DashboardProfilePage: React.FC = () => {
         expected_salary: Number(formData.expected_salary),
         bio: formData.bio
       });
+      setFormData((current) => ({ ...current, first_name: updatedUser.first_name, last_name: updatedUser.last_name, phone: updatedUser.phone }));
+      showToast('Profile changes saved successfully.', 'success');
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
-      console.error('Failed to save profile:', err);
+      setError(getApiErrorMessage(err, 'Unable to save your profile. Please review the fields and try again.'));
     } finally {
       setLoading(false);
     }
@@ -103,20 +121,17 @@ export const DashboardProfilePage: React.FC = () => {
             <span>Profile information updated successfully in database!</span>
           </div>
         )}
+        {error && <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-700" role="alert">{error}</div>}
 
         <form onSubmit={handleSave} className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-card space-y-6">
-          
+
           <div className="flex items-center gap-4 pb-6 border-b border-slate-100">
-            <img
-              src={user?.profile_image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'}
-              alt={user?.first_name}
-              className="w-16 h-16 rounded-2xl object-cover ring-2 ring-brand-500"
-            />
+            {user.profile_image ? <img src={user.profile_image} alt={user.first_name} className="h-16 w-16 rounded-2xl object-cover ring-2 ring-brand-500" /> : <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-500 text-xl font-bold text-white">{user.first_name?.[0] || '?'}</div>}
             <div>
               <h4 className="text-sm font-bold text-slate-900">{formData.first_name} {formData.last_name}</h4>
               <span className="inline-flex items-center gap-1 text-[11px] font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-full border border-brand-200 mt-1">
                 <ShieldCheck className="w-3 h-3" />
-                Verified Tutor Profile ({tutorId || 'TT-T-019842'})
+                {tutorId ? `Tutor Profile (${tutorId})` : 'Tutor Profile'}
               </span>
             </div>
           </div>
@@ -126,12 +141,14 @@ export const DashboardProfilePage: React.FC = () => {
               label="First Name"
               value={formData.first_name}
               onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+              helperText="Shown on your public tutor profile."
               required
             />
             <Input
               label="Last Name"
               value={formData.last_name}
               onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+              helperText="Shown on your public tutor profile."
               required
             />
           </div>
@@ -148,6 +165,7 @@ export const DashboardProfilePage: React.FC = () => {
               label="Contact Mobile"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              helperText="Used for verified contact and account recovery."
               required
             />
           </div>
@@ -157,12 +175,14 @@ export const DashboardProfilePage: React.FC = () => {
               label="University / Institution"
               value={formData.university}
               onChange={(e) => setFormData({ ...formData, university: e.target.value })}
+              helperText="Add the institution where you study or graduated."
               required
             />
             <Input
               label="Department / Major"
               value={formData.department}
               onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+              helperText="For example: CSE, English, or Mathematics."
               required
             />
           </div>
@@ -172,18 +192,21 @@ export const DashboardProfilePage: React.FC = () => {
               label="City"
               value={formData.city}
               onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+              helperText="Choose the city where you accept tuition requests."
               options={cities.map(c => c.name)}
             />
             <Input
               label="Area"
               value={formData.area}
               onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+              helperText="Add nearby areas you can travel to."
             />
             <Input
               label="Expected Salary (৳ / mo)"
               type="number"
               value={formData.expected_salary}
               onChange={(e) => setFormData({ ...formData, expected_salary: Number(e.target.value) })}
+              helperText="Your expected monthly tutoring rate in BDT."
               required
             />
           </div>
@@ -198,6 +221,7 @@ export const DashboardProfilePage: React.FC = () => {
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
               className="w-full text-sm text-slate-800 bg-white border border-slate-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
             />
+            <p className="mt-1 text-xs text-slate-500">Describe your teaching approach, experience, and strengths for guardians.</p>
           </div>
 
           <div className="pt-4 border-t border-slate-100 flex justify-end">

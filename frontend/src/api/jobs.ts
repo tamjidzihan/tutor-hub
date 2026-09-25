@@ -14,18 +14,32 @@ export interface JobFilterParams {
   job_id?: string;
 }
 
+export interface JobListResponse {
+  count: number;
+  total_pages: number;
+  current_page: number;
+  results: TuitionJob[];
+}
+
 export const jobsApi = {
-  getJobs: async (params?: JobFilterParams): Promise<{ count: number; results: TuitionJob[] }> => {
-    const response = await apiClient.get('/jobs/', { params });
+  getJobs: async (params?: JobFilterParams, page = 1, pageSize = 6): Promise<JobListResponse> => {
+    const requestParams = { ...params, page, page_size: pageSize };
+    if (requestParams.gender === 'Any') delete requestParams.gender;
+    const response = await apiClient.get('/jobs/', { params: requestParams });
     if (response.data && typeof response.data === 'object') {
       if (Array.isArray(response.data.results)) {
-        return { count: response.data.count ?? response.data.results.length, results: response.data.results };
+        return {
+          count: response.data.count ?? response.data.results.length,
+          total_pages: response.data.total_pages ?? 1,
+          current_page: response.data.current_page ?? page,
+          results: response.data.results,
+        };
       }
       if (Array.isArray(response.data)) {
-        return { count: response.data.length, results: response.data };
+        return { count: response.data.length, total_pages: 1, current_page: 1, results: response.data };
       }
     }
-    return { count: 0, results: [] };
+    return { count: 0, total_pages: 0, current_page: page, results: [] };
   },
 
   getJobById: async (jobId: string): Promise<TuitionJob | null> => {

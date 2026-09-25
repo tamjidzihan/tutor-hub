@@ -13,9 +13,10 @@ export const FindTutor: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [tutors, setTutors] = useState<Tutor[]>([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(6);
+  const pageSize = 6;
 
   const [filters, setFilters] = useState<TutorFilterParams>({
     city: searchParams.get('city') || '',
@@ -31,9 +32,10 @@ export const FindTutor: React.FC = () => {
   const fetchTutors = async () => {
     setIsLoading(true);
     try {
-      const data = await tutorsApi.getTutors(filters);
+      const data = await tutorsApi.getTutors(filters, currentPage, pageSize);
       setTutors(data.results);
       setTotalCount(data.count);
+      setTotalPages(data.total_pages);
     } finally {
       setIsLoading(false);
     }
@@ -41,7 +43,7 @@ export const FindTutor: React.FC = () => {
 
   useEffect(() => {
     fetchTutors();
-  }, [filters]);
+  }, [filters, currentPage]);
 
   const handleFilterChange = (newFilters: TutorFilterParams) => {
     setFilters(newFilters);
@@ -62,8 +64,7 @@ export const FindTutor: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const totalPages = Math.ceil(tutors.length / pageSize);
-  const paginatedTutors = tutors.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const paginatedTutors = tutors;
 
   return (
     <div className="bg-slate-50 min-h-screen py-8 lg:py-12">
@@ -80,7 +81,7 @@ export const FindTutor: React.FC = () => {
               Find Qualified Tutors Near You
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm max-w-xl">
-              Browse 48,000+ verified mentors from BUET, DMC, Dhaka University, IBA, NSU and premier institutions across Bangladesh.
+              Browse tutor profiles returned from the TutorHub database and filter by your preferred subject, location, and gender.
             </p>
           </div>
 
@@ -131,7 +132,7 @@ export const FindTutor: React.FC = () => {
               </span>
               <div className="flex items-center gap-1 text-xs text-brand-700 font-semibold">
                 <ShieldCheck className="w-3.5 h-3.5 text-brand-600" />
-                <span>NID & Student ID Checked</span>
+                <span>Verified profiles</span>
               </div>
             </div>
 

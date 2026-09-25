@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  BookOpen, 
-  GraduationCap, 
-  Globe, 
-  Award, 
-  Languages, 
-  Code, 
-  Palette, 
-  Sparkles, 
+import {
+  BookOpen,
+  GraduationCap,
+  Globe,
+  Award,
+  Languages,
+  Code,
+  Palette,
+  Sparkles,
   ArrowRight,
   Users
 } from 'lucide-react';
@@ -49,7 +49,7 @@ export const ServiceCategories: React.FC = () => {
   return (
     <section className="py-16 bg-slate-50 border-b border-slate-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12">
           <div>
@@ -66,7 +66,7 @@ export const ServiceCategories: React.FC = () => {
           </div>
 
           <Link
-            to="/find-tutor"
+            to="/tuition-categories"
             className="mt-4 md:mt-0 inline-flex items-center gap-1.5 text-sm font-bold text-brand-600 hover:text-brand-700 transition-colors"
           >
             See All Categories & Tutors
@@ -82,7 +82,7 @@ export const ServiceCategories: React.FC = () => {
             {categories.map((category) => (
               <Link
                 key={category.id}
-                to={`/categories/${category.slug}`}
+                to={`/category-details/${category.slug}`}
                 className="bg-white rounded-2xl border border-slate-200/90 p-6 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden"
               >
                 {category.is_popular && (
@@ -110,7 +110,7 @@ export const ServiceCategories: React.FC = () => {
                 <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                   <span className="text-xs font-semibold text-slate-400 flex items-center gap-1">
                     <Users className="w-3.5 h-3.5 text-slate-400" />
-                    {category.tutor_count?.toLocaleString() || '1,000+'} Tutors
+                    {(category.tutor_count ?? 0).toLocaleString()} Tutors
                   </span>
 
                   <span className="text-xs font-bold text-brand-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">

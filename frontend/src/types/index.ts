@@ -10,7 +10,7 @@ export interface User {
   profile_image?: string;
   is_verified: boolean;
   is_active: boolean;
-  created_at: string;
+  date_joined: string;
 }
 
 export interface TutorEducation {

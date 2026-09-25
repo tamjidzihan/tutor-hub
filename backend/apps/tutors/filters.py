@@ -7,7 +7,7 @@ class TutorFilter(django_filters.FilterSet):
     area = django_filters.CharFilter(method='filter_area')
     subject = django_filters.CharFilter(method='filter_subject')
     class_level = django_filters.CharFilter(method='filter_class_level')
-    gender = django_filters.CharFilter(field_name='gender', lookup_expr='iexact')
+    gender = django_filters.CharFilter(method='filter_gender')
     university = django_filters.CharFilter(field_name='university', lookup_expr='icontains')
     salary_max = django_filters.NumberFilter(field_name='expected_salary', lookup_expr='lte')
     experience_min = django_filters.NumberFilter(field_name='experience_years', lookup_expr='gte')
@@ -25,6 +25,11 @@ class TutorFilter(django_filters.FilterSet):
             Q(area__icontains=value) |
             Q(preferred_locations__icontains=value)
         )
+
+    def filter_gender(self, queryset, name, value):
+        if not value or value.lower() == 'any':
+            return queryset
+        return queryset.filter(gender__iexact=value)
 
     def filter_subject(self, queryset, name, value):
         if not value:

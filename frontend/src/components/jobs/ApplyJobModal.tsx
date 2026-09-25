@@ -4,6 +4,8 @@ import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import type { TuitionJob } from '../../types';
 import { applicationsApi } from '../../api/applications';
+import { getApiErrorMessage } from '../../api/client';
+import { useToast } from '../../context/ToastContext';
 import { CheckCircle2, Send, DollarSign, AlertCircle, ShieldCheck } from 'lucide-react';
 
 interface ApplyJobModalProps {
@@ -19,6 +21,7 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
   onClose,
   onSuccess
 }) => {
+  const { showToast } = useToast();
   const [coverMessage, setCoverMessage] = useState(
     'I am an experienced tutor from BUET/DU and I am confident in helping the student achieve top grades in the selected subjects. Available for a free trial class.'
   );
@@ -36,14 +39,15 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
 
     try {
       await applicationsApi.applyForJob(job.id, coverMessage, Number(expectedSalary));
+      showToast('Application submitted successfully.', 'success');
       setIsSuccess(true);
       if (onSuccess) onSuccess();
       setTimeout(() => {
         setIsSuccess(false);
         onClose();
       }, 1800);
-    } catch (err: any) {
-      setError(err?.message || 'Failed to submit application. Please try again.');
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Unable to submit your application. Please review the form and try again.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -68,7 +72,7 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
-          
+
           {/* Job Overview Pill */}
           <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-200">
             <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Target Job</p>
@@ -98,6 +102,7 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
               onChange={(e) => setExpectedSalary(Number(e.target.value))}
               placeholder="e.g. 8000"
               leftIcon={<DollarSign className="w-4 h-4" />}
+              helperText="Enter the monthly amount you expect for this job."
               required
             />
           </div>
@@ -115,6 +120,7 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
               placeholder="Introduce your university background, previous tutoring achievements, and demo availability..."
               required
             />
+            <p className="mt-1 text-xs text-slate-500">Briefly explain your relevant experience and when you can start.</p>
           </div>
 
           {/* Security Note */}

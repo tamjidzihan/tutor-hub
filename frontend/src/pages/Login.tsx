@@ -4,13 +4,17 @@ import { useAuth } from '../context/AuthContext';
 import type { UserRole } from '../types';
 import { Button } from '../components/common/Button';
 import { Input } from '../components/common/Input';
-import { Lock, Mail, GraduationCap, ArrowRight, AlertCircle } from 'lucide-react';
+import { Lock, Mail, GraduationCap, ArrowRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { getApiErrorMessage } from '../api/client';
+import { useToast } from '../context/ToastContext';
 
 export const Login: React.FC = () => {
   const { login } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>('TUTOR');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
@@ -26,9 +30,10 @@ export const Login: React.FC = () => {
 
     try {
       await login(email, password, selectedRole);
+      showToast('Signed in successfully.', 'success');
       navigate('/dashboard');
-    } catch (err: any) {
-      setError(err?.message || 'Invalid credentials. Please try again.');
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Invalid credentials. Check your email and password.'));
     } finally {
       setIsLoading(false);
     }
@@ -37,7 +42,7 @@ export const Login: React.FC = () => {
   return (
     <div className="bg-slate-50 min-h-screen py-12 flex items-center justify-center px-4">
       <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-8 sm:p-10 max-w-md w-full space-y-6">
-        
+
         {/* Logo */}
         <div className="text-center space-y-2">
           <div className="w-12 h-12 rounded-2xl bg-brand-500 text-white flex items-center justify-center mx-auto shadow-md">
@@ -62,11 +67,10 @@ export const Login: React.FC = () => {
                 key={r}
                 type="button"
                 onClick={() => handleRoleQuickSelect(r)}
-                className={`py-1.5 rounded-lg text-xs font-bold transition-all ${
-                  selectedRole === r
-                    ? 'bg-brand-500 text-white shadow-xs'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
+                className={`py-1.5 rounded-lg text-xs font-bold transition-all ${selectedRole === r
+                  ? 'bg-brand-500 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+                  }`}
               >
                 {r === 'PARENT' ? 'Parent' : r === 'TUTOR' ? 'Tutor' : r === 'STUDENT' ? 'Student' : 'Admin'}
               </button>
@@ -89,16 +93,19 @@ export const Login: React.FC = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             leftIcon={<Mail className="w-4 h-4" />}
+            helperText="Use the email address linked to your TutorHub account."
             required
           />
 
           <div className="space-y-1">
             <Input
               label="Password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               leftIcon={<Lock className="w-4 h-4" />}
+              helperText="Your password is case-sensitive."
+              rightAction={<button type="button" onClick={() => setShowPassword((visible) => !visible)} className="rounded-md p-1 text-slate-400 hover:text-slate-700" aria-label={showPassword ? 'Hide password' : 'Show password'}>{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</button>}
               required
             />
             <div className="text-right">

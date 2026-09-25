@@ -504,7 +504,7 @@ class Command(BaseCommand):
                     total_tuitions_completed=random.randint(5, 120),
                     is_verified=True,
                     verification_status="VERIFIED",
-                    profile_photo_url=f'https://images.unsplash.com/photo-{random.choice(["1500648767791-00dcc994a43e", "1494790108377-be9c29b29330", "1506794778202-cad84cf45f1d", "1534528741775-53994a69daeb", "1507003211169-0a1dd7228f2d"])}?auto=format&fit=crop&q=80&w=500',
+                    profile_photo_url='',
                     profile_completion_score=random.randint(82, 100),
                     is_available=True,
                     is_featured=random.choice([True, False]),

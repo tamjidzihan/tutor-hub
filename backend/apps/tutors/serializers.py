@@ -15,6 +15,7 @@ class TutorExperienceSerializer(serializers.ModelSerializer):
 class TutorProfileListSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='user.full_name', read_only=True)
     profile_photo = serializers.SerializerMethodField()
+    rating = serializers.FloatField(read_only=True)
 
     class Meta:
         model = TutorProfile
@@ -30,7 +31,7 @@ class TutorProfileListSerializer(serializers.ModelSerializer):
             return obj.profile_photo_url
         if obj.user.profile_image:
             return obj.user.profile_image.url
-        return 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300'
+        return None
 
 class TutorProfileDetailSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
@@ -48,4 +49,4 @@ class TutorProfileDetailSerializer(serializers.ModelSerializer):
             return obj.profile_photo_url
         if obj.user.profile_image:
             return obj.user.profile_image.url
-        return 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300'
+        return None

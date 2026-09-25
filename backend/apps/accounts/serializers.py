@@ -20,6 +20,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ['email', 'password', 'first_name', 'last_name', 'phone', 'role']
 
+    def validate_role(self, value):
+        if value == User.Role.ADMIN:
+            raise serializers.ValidationError('Administrator accounts must be created by an administrator.')
+        return value
+
     def create(self, validated_data):
         password = validated_data.pop('password')
         user = User.objects.create_user(password=password, **validated_data)

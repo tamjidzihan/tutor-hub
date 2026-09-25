@@ -1,195 +1,73 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  CheckCircle2,
-  DollarSign,
-  Send,
-  Star,
-  ArrowRight
-} from 'lucide-react';
+import { ArrowRight, CheckCircle2, Send, Star } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { applicationsApi } from '../../api/applications';
+import { dashboardApi, type DashboardOverview } from '../../api/dashboard';
 import { jobsApi } from '../../api/jobs';
-import type { JobApplication, TuitionJob } from '../../types';
+import type { TuitionJob } from '../../types';
 
 export const TutorDashboard: React.FC = () => {
-  const { user } = useAuth();
-  const [applications, setApplications] = useState<JobApplication[]>([]);
-  const [recommendedJobs, setRecommendedJobs] = useState<TuitionJob[]>([]);
+    const { user } = useAuth();
+    const [overview, setOverview] = useState<DashboardOverview | null>(null);
+    const [recommendedJobs, setRecommendedJobs] = useState<TuitionJob[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-  useEffect(() => {
-    const loadDashboardData = async () => {
-      try {
-        const [apps, jobsRes] = await Promise.all([
-          applicationsApi.getMyApplications(),
-          jobsApi.getJobs({ city: 'Dhaka' })
-        ]);
-        setApplications(apps);
-        setRecommendedJobs(jobsRes.results.slice(0, 3));
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    loadDashboardData();
-  }, []);
+    useEffect(() => {
+        const loadDashboard = async () => {
+            try {
+                const [overviewData, jobs] = await Promise.all([dashboardApi.getOverview(), jobsApi.getJobs()]);
+                setOverview(overviewData);
+                setRecommendedJobs(jobs.results.slice(0, 3));
+            } catch {
+                setError('Unable to load your dashboard. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadDashboard();
+    }, []);
 
-  const profileCompletion = 95; // Section 32: Profile Completion Progress
+    if (loading) return <div className="rounded-2xl bg-white p-8 text-sm text-slate-500">Loading your dashboard...</div>;
+    if (error || !overview) return <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-sm text-red-700">{error}</div>;
 
-  return (
-    <div className="space-y-8">
+    const stats = overview.stats;
+    const applications = overview.recent_applications || [];
+    const profileCompletion = Number(stats.profile_completion || 0);
 
-      {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-navy-950 via-slate-900 to-navy-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
-        <div className="relative z-10 space-y-2">
-          <span className="px-2.5 py-1 bg-brand-500 text-white text-xs font-bold rounded-md">
-            Verified Tutor Account
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-black font-heading text-white">
-            Welcome back, {user?.first_name}!
-          </h2>
-          <p className="text-slate-300 text-xs sm:text-sm max-w-xl">
-            You have <strong>{applications.length} active applications</strong>. 12 new tuition jobs were posted in your preferred location (Mirpur, Dhaka) today.
-          </p>
-        </div>
-      </div>
-
-      {/* Profile Completion Bar (Section 32) */}
-      <div className="bg-white rounded-2xl p-6 border border-slate-200/90 shadow-card">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-base font-bold text-slate-900">Profile Completion</h3>
-              <span className="text-xs font-black text-brand-600 bg-brand-50 px-2 py-0.5 rounded">
-                {profileCompletion}% Complete
-              </span>
+    return (
+        <div className="space-y-8">
+            <div className="rounded-3xl bg-gradient-to-r from-navy-950 via-slate-900 to-navy-900 p-6 text-white shadow-xl sm:p-8">
+                <span className="rounded-md bg-brand-500 px-2.5 py-1 text-xs font-bold">Tutor Portal</span>
+                <h2 className="mt-2 font-heading text-2xl font-black text-white sm:text-3xl">Welcome back, {user?.first_name}!</h2>
+                <p className="mt-1 max-w-xl text-xs text-slate-300 sm:text-sm">Your dashboard reflects your current applications and tutor profile data.</p>
             </div>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Add your recent degree certificate to reach 100% and rank at the top of guardian search results.
-            </p>
-          </div>
-          <Link
-            to="/dashboard/profile"
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-brand-50 hover:bg-brand-100 text-brand-700 text-xs font-bold transition-colors"
-          >
-            Update Profile
-            <ArrowRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
 
-        <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
-          <div
-            className="bg-brand-500 h-full rounded-full transition-all duration-500"
-            style={{ width: `${profileCompletion}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Metrics Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-card">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Total Applied</span>
-            <Send className="w-4 h-4 text-brand-500" />
-          </div>
-          <h4 className="text-2xl font-black text-slate-900 font-heading">{applications.length}</h4>
-          <p className="text-xs text-slate-400 mt-1">Applications in review</p>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-card">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Shortlisted</span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-          </div>
-          <h4 className="text-2xl font-black text-emerald-600 font-heading">
-            {applications.filter(a => a.status === 'SHORTLISTED').length}
-          </h4>
-          <p className="text-xs text-slate-400 mt-1">Demo class requested</p>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-card">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Tutor Rating</span>
-            <Star className="w-4 h-4 text-amber-500" />
-          </div>
-          <h4 className="text-2xl font-black text-slate-900 font-heading">4.9 / 5.0</h4>
-          <p className="text-xs text-slate-400 mt-1">38 Verified Guardian Reviews</p>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-card">
-          <div className="flex items-center justify-between text-slate-500 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">Est. Monthly</span>
-            <DollarSign className="w-4 h-4 text-brand-600" />
-          </div>
-          <h4 className="text-2xl font-black text-slate-900 font-heading">৳28,000</h4>
-          <p className="text-xs text-slate-400 mt-1">Active tuitions revenue</p>
-        </div>
-      </div>
-
-      {/* Applications Table */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-card overflow-hidden">
-        <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="text-base font-bold text-slate-900">Recent Job Applications</h3>
-          <Link to="/job-board" className="text-xs font-bold text-brand-600 hover:text-brand-700">
-            Browse More Jobs →
-          </Link>
-        </div>
-
-        <div className="divide-y divide-slate-100">
-          {applications.map((app) => (
-            <div key={app.id} className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50/80 transition-colors">
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono font-bold text-slate-500">{app.job_reference}</span>
-                  <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${app.status === 'SHORTLISTED'
-                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                    : 'bg-amber-50 text-amber-700 border border-amber-200'
-                    }`}>
-                    {app.status}
-                  </span>
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-card">
+                <div className="mb-3 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                    <div><div className="flex items-center gap-2"><h3 className="text-base font-bold text-slate-900">Profile Completion</h3><span className="rounded bg-brand-50 px-2 py-0.5 text-xs font-black text-brand-600">{profileCompletion}%</span></div><p className="mt-0.5 text-xs text-slate-500">This percentage comes from your saved tutor profile.</p></div>
+                    <Link to="/dashboard/profile" className="inline-flex items-center gap-1.5 rounded-lg bg-brand-50 px-4 py-2 text-xs font-bold text-brand-700 hover:bg-brand-100">Update Profile <ArrowRight className="h-3.5 w-3.5" /></Link>
                 </div>
-                <h4 className="text-sm font-bold text-slate-900">{app.job_title}</h4>
-                <p className="text-xs text-slate-500">Applied on {app.applied_at} • Expected: ৳{app.expected_salary.toLocaleString()}</p>
-              </div>
-
-              <span className="text-xs font-semibold text-brand-600 bg-brand-50 px-3 py-1 rounded-lg">
-                Profile Shared with Guardian
-              </span>
+                <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100"><div className="h-full rounded-full bg-brand-500" style={{ width: `${profileCompletion}%` }} /></div>
             </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Recommended Jobs */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-base font-bold text-slate-900">Recommended Jobs For You</h3>
-          <Link to="/job-board" className="text-xs font-bold text-brand-600 hover:text-brand-700">
-            View All ({recommendedJobs.length}+)
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {recommendedJobs.map((job) => (
-            <div key={job.id} className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
-              <div>
-                <span className="text-[10px] font-bold text-brand-600 uppercase tracking-wider">{job.curriculum}</span>
-                <h4 className="text-xs font-bold text-slate-900 mt-1 line-clamp-2">{job.title}</h4>
-                <p className="text-[11px] text-slate-500 mt-2">📍 {job.area}, {job.city}</p>
-              </div>
-              <div className="mt-4 pt-3 border-t border-slate-200/60 flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-900">৳{job.salary.toLocaleString()}</span>
-                <Link
-                  to={`/job-board/${job.job_id}`}
-                  className="px-2.5 py-1 bg-brand-500 text-white text-[11px] font-bold rounded-md"
-                >
-                  View Job
-                </Link>
-              </div>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                <Metric label="Total Applied" value={stats.total_applications} icon={<Send className="h-4 w-4 text-brand-500" />} />
+                <Metric label="Pending" value={stats.pending_applications} icon={<Send className="h-4 w-4 text-amber-500" />} />
+                <Metric label="Shortlisted" value={stats.shortlisted_applications} icon={<CheckCircle2 className="h-4 w-4 text-emerald-500" />} />
+                <Metric label="Tutor Rating" value={stats.rating == null ? 'Not rated' : `${stats.rating} / 5`} icon={<Star className="h-4 w-4 text-amber-500" />} />
             </div>
-          ))}
-        </div>
-      </div>
 
-    </div>
-  );
+            <section className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-card">
+                <div className="flex items-center justify-between border-b border-slate-100 p-5"><h3 className="text-base font-bold text-slate-900">Recent Job Applications</h3><Link to="/job-board" className="text-xs font-bold text-brand-600">Browse Jobs</Link></div>
+                <div className="divide-y divide-slate-100">
+                    {applications.length === 0 ? <p className="p-8 text-center text-sm text-slate-500">No applications yet. Browse available jobs to get started.</p> : applications.map((app) => <div key={app.id} className="flex flex-col justify-between gap-4 p-5 sm:flex-row sm:items-center"><div><div className="flex items-center gap-2"><span className="font-mono text-xs font-bold text-slate-500">{app.job_id}</span><span className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-bold text-amber-700">{app.status}</span></div><h4 className="text-sm font-bold text-slate-900">{app.job_title}</h4><p className="text-xs text-slate-500">Applied on {app.applied_at}</p></div><Link to={`/job-board/${app.job_id}`} className="text-xs font-bold text-brand-600">View Job</Link></div>)}
+                </div>
+            </section>
+
+            <section className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-card"><div className="mb-4 flex items-center justify-between"><h3 className="text-base font-bold text-slate-900">Available Tuition Jobs</h3><Link to="/job-board" className="text-xs font-bold text-brand-600">View All</Link></div><div className="grid grid-cols-1 gap-4 md:grid-cols-3">{recommendedJobs.length === 0 ? <p className="text-sm text-slate-500">No available tuition jobs right now.</p> : recommendedJobs.map((job) => <div key={job.id} className="rounded-xl border border-slate-200 bg-slate-50/50 p-4"><span className="text-[10px] font-bold uppercase tracking-wider text-brand-600">{job.curriculum}</span><h4 className="mt-1 line-clamp-2 text-xs font-bold text-slate-900">{job.title}</h4><p className="mt-2 text-[11px] text-slate-500">{job.area}, {job.city}</p><div className="mt-4 flex items-center justify-between border-t border-slate-200/60 pt-3"><span className="text-xs font-bold text-slate-900">৳{job.salary.toLocaleString()}</span><Link to={`/job-board/${job.job_id}`} className="rounded-md bg-brand-500 px-2.5 py-1 text-[11px] font-bold text-white">View Job</Link></div></div>)}</div></section>
+        </div>
+    );
 };
+
+const Metric: React.FC<{ label: string; value: string | number | null; icon: React.ReactNode }> = ({ label, value, icon }) => <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card"><div className="mb-2 flex items-center justify-between text-slate-500"><span className="text-xs font-bold uppercase tracking-wider">{label}</span>{icon}</div><h4 className="font-heading text-2xl font-black text-slate-900">{typeof value === 'number' ? value.toLocaleString() : value}</h4></div>;

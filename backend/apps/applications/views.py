@@ -23,7 +23,10 @@ class JobApplicationsForJobView(generics.ListAPIView):
 
     def get_queryset(self):
         job_id = self.kwargs.get('job_id')
-        return JobApplication.objects.filter(job__job_id=job_id).select_related('job', 'tutor_user')
+        queryset = JobApplication.objects.filter(job__job_id=job_id).select_related('job', 'tutor_user')
+        if self.request.user.is_staff or self.request.user.role == 'ADMIN':
+            return queryset
+        return queryset.filter(job__parent=self.request.user)
 
 class ApplicationDetailView(generics.RetrieveDestroyAPIView):
     serializer_class = JobApplicationSerializer

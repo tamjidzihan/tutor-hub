@@ -1,135 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import { contentApi, type PlatformStats } from '../../api/content';
-import { tutorsApi } from '../../api/tutors';
-import type { Tutor } from '../../types';
+import React, { useEffect, useState } from 'react';
+import { dashboardApi, type DashboardOverview } from '../../api/dashboard';
 
 export const AdminDashboard: React.FC = () => {
-  const [stats, setStats] = useState<PlatformStats>({
-    registeredTutors: 145000,
-    liveTuitionJobs: 340,
-    happyParents: 85000,
-    verifiedTeachers: 68000,
-    satisfactionRate: 98.4,
-    avgResponseHours: 2.4,
-  });
-  const [tutors, setTutors] = useState<Tutor[]>([]);
-  const [loading, setLoading] = useState(true);
+    const [overview, setOverview] = useState<DashboardOverview | null>(null);
+    const [error, setError] = useState('');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const [statsData, tutorsRes] = await Promise.all([
-          contentApi.getStats(),
-          tutorsApi.getTutors(),
-        ]);
-        setStats(statsData);
-        setTutors(tutorsRes.results.slice(0, 6));
-      } catch (err) {
-        console.error('Failed to load admin dashboard data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+    useEffect(() => {
+        dashboardApi.getOverview().then(setOverview).catch(() => setError('Unable to load administrative data. Please try again.'));
+    }, []);
 
-  return (
-    <div className="space-y-8">
-      {/* Admin Banner */}
-      <div className="bg-gradient-to-r from-navy-950 via-slate-900 to-navy-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl">
-        <span className="px-2.5 py-1 bg-red-600 text-white text-xs font-bold rounded-md">
-          Super Admin Management Console
-        </span>
-        <h2 className="text-2xl sm:text-3xl font-black font-heading mt-2 text-white">
-          Platform Governance & Verification
-        </h2>
-        <p className="text-slate-300 text-xs sm:text-sm mt-1">
-          Monitor system metrics, review pending tutor credentials, moderate tuition job postings, and handle affiliate payouts.
-        </p>
-      </div>
+    if (error) return <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-sm text-red-700">{error}</div>;
+    if (!overview) return <div className="rounded-2xl bg-white p-8 text-sm text-slate-500">Loading administrative data...</div>;
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-card">
-          <span className="text-xs font-bold text-slate-500 uppercase">Total Tutors</span>
-          <h4 className="text-2xl font-black text-slate-900 font-heading mt-1">
-            {stats.registeredTutors.toLocaleString()}
-          </h4>
-          <span className="text-xs text-brand-600 font-semibold">+142 this week</span>
+    const stats = overview.stats;
+    const cards = [
+        ['Total Users', stats.total_users], ['Tutors', stats.total_tutors], ['Parents', stats.total_parents], ['Students', stats.total_students],
+        ['Tuition Jobs', stats.total_jobs], ['Active Jobs', stats.active_jobs], ['Applications', stats.total_applications], ['Requirements', stats.total_requirements],
+    ];
+
+    return (
+        <div className="space-y-8">
+            <div className="rounded-3xl bg-gradient-to-r from-navy-950 via-slate-900 to-navy-900 p-6 text-white shadow-xl sm:p-8"><span className="rounded-md bg-red-600 px-2.5 py-1 text-xs font-bold">Admin Portal</span><h2 className="mt-2 font-heading text-2xl font-black text-white sm:text-3xl">Platform Overview</h2><p className="mt-1 text-xs text-slate-300 sm:text-sm">All figures below are calculated from current database records.</p></div>
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">{cards.map(([label, value]) => <div key={String(label)} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-card"><span className="text-xs font-bold uppercase text-slate-500">{label}</span><h4 className="mt-1 font-heading text-2xl font-black text-slate-900">{Number(value).toLocaleString()}</h4></div>)}</div>
+            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card"><div className="border-b border-slate-100 p-5"><h3 className="text-base font-bold text-slate-900">Recent Tutor Profiles</h3></div><div className="divide-y divide-slate-100">{!overview.recent_tutors?.length ? <p className="p-8 text-center text-sm text-slate-500">No tutor profiles found.</p> : overview.recent_tutors.map((tutor) => <div key={tutor.id} className="flex items-center justify-between gap-4 p-5"><div><h4 className="text-sm font-bold text-slate-900">{`${tutor.user__first_name} ${tutor.user__last_name}`.trim() || tutor.tutor_id}</h4><p className="text-xs text-slate-500">{tutor.tutor_id} · {tutor.verification_status}</p></div><span className="text-xs font-bold text-slate-500">{new Date(tutor.created_at).toLocaleDateString()}</span></div>)}</div></section>
         </div>
-
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-card">
-          <span className="text-xs font-bold text-slate-500 uppercase">Live Tuition Jobs</span>
-          <h4 className="text-2xl font-black text-slate-900 font-heading mt-1">
-            {stats.liveTuitionJobs.toLocaleString()}
-          </h4>
-          <span className="text-xs text-brand-600 font-semibold">{stats.satisfactionRate}% fill rate</span>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-card">
-          <span className="text-xs font-bold text-slate-500 uppercase">Happy Parents</span>
-          <h4 className="text-2xl font-black text-amber-600 font-heading mt-1">
-            {stats.happyParents.toLocaleString()}
-          </h4>
-          <span className="text-xs text-slate-400">Verified Parent Inquiries</span>
-        </div>
-
-        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-card">
-          <span className="text-xs font-bold text-slate-500 uppercase">Verified Teachers</span>
-          <h4 className="text-2xl font-black text-slate-900 font-heading mt-1">
-            {stats.verifiedTeachers.toLocaleString()}
-          </h4>
-          <span className="text-xs text-emerald-600 font-semibold">NID / University Checked</span>
-        </div>
-      </div>
-
-      {/* Tutor Approval Queue */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-card overflow-hidden">
-        <div className="p-5 border-b border-slate-100 flex items-center justify-between">
-          <h3 className="text-base font-bold text-slate-900">Recent Tutor Submissions</h3>
-          <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-1 rounded-md">
-            Requires Document Check
-          </span>
-        </div>
-
-        <div className="divide-y divide-slate-100">
-          {loading ? (
-            <div className="p-8 text-center text-slate-400 text-sm">Loading submissions...</div>
-          ) : tutors.length === 0 ? (
-            <div className="p-8 text-center text-slate-400 text-sm">No tutor submissions found.</div>
-          ) : (
-            tutors.map((tutor) => (
-              <div key={tutor.id} className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={tutor.profile_photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300'}
-                    alt={tutor.name}
-                    className="w-12 h-12 rounded-xl object-cover"
-                  />
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-sm font-bold text-slate-900">{tutor.name}</h4>
-                      <span className="text-xs font-mono font-bold text-slate-400">{tutor.tutor_id}</span>
-                    </div>
-                    <p className="text-xs text-slate-500">{tutor.university} • {tutor.department}</p>
-                    <p className="text-[11px] text-slate-400">Area: {tutor.area}, {tutor.city} • Expected: ৳{tutor.expected_salary?.toLocaleString()}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <button className="px-3 py-1.5 bg-emerald-500 text-white rounded-lg text-xs font-bold hover:bg-emerald-600 transition-colors">
-                    Approve & Verify
-                  </button>
-                  <button className="px-3 py-1.5 border border-slate-200 text-slate-700 rounded-lg text-xs font-bold hover:bg-slate-50">
-                    Request Resubmit
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
-  );
+    );
 };

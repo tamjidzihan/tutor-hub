@@ -7,7 +7,7 @@ from .services import calculate_tutor_matches
 
 class TutorRequirementListCreateView(generics.ListCreateAPIView):
     serializer_class = TutorRequirementSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -17,8 +17,7 @@ class TutorRequirementListCreateView(generics.ListCreateAPIView):
         return TutorRequirement.objects.none()
 
     def perform_create(self, serializer):
-        user = self.request.user if self.request.user.is_authenticated else None
-        instance = serializer.save(user=user)
+        instance = serializer.save(user=self.request.user)
         matches = calculate_tutor_matches(instance)
         instance.matched_tutors = matches
         if matches:
@@ -26,13 +25,17 @@ class TutorRequirementListCreateView(generics.ListCreateAPIView):
         instance.save(update_fields=['matched_tutors', 'status'])
 
 class TutorRequirementDetailView(generics.RetrieveUpdateAPIView):
-    queryset = TutorRequirement.objects.all()
     serializer_class = TutorRequirementSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'requirement_id'
 
+    def get_queryset(self):
+        if self.request.user.is_staff or self.request.user.role == 'ADMIN':
+            return TutorRequirement.objects.all()
+        return TutorRequirement.objects.filter(user=self.request.user)
+
 class SelectTutorView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, requirement_id):
         tutor_id = request.data.get('tutor_id')
@@ -40,7 +43,10 @@ class SelectTutorView(APIView):
             return Response({'error': 'tutor_id is required'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            req = TutorRequirement.objects.get(requirement_id=requirement_id)
+            req = TutorRequirement.objects.get(
+                requirement_id=requirement_id,
+                **({} if request.user.is_staff or request.user.role == 'ADMIN' else {'user': request.user})
+            )
             req.selected_tutor_id = tutor_id
             req.status = TutorRequirement.Status.TUTOR_SELECTED
             req.save(update_fields=['selected_tutor_id', 'status'])

@@ -13,6 +13,7 @@ import { Select } from '../common/Select';
 import { locationsApi } from '../../api/locations';
 import type { LocationCity } from '../../api/locations';
 import { requirementsApi } from '../../api/requirements';
+import { getApiErrorMessage } from '../../api/client';
 
 type RequirementFormData = {
   parent_name: string;
@@ -40,6 +41,7 @@ export const SubmitRequirementForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [generatedReqId, setGeneratedReqId] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -83,6 +85,7 @@ export const SubmitRequirementForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError('');
     try {
       const payload = {
         ...formData,
@@ -104,6 +107,8 @@ export const SubmitRequirementForm: React.FC = () => {
       const result = await requirementsApi.submitRequirement(payload);
       setGeneratedReqId(result.requirement_id);
       setIsSubmitted(true);
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Unable to submit this requirement. Please review the form and try again.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -144,6 +149,7 @@ export const SubmitRequirementForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-slate-200/90 shadow-card p-6 sm:p-10 max-w-3xl mx-auto my-8 space-y-8">
+      {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700" role="alert">{error}</div>}
 
       {/* Form Header */}
       <div className="border-b border-slate-100 pb-6">
@@ -171,12 +177,14 @@ export const SubmitRequirementForm: React.FC = () => {
             label="Guardian / Parent Name"
             value={formData.parent_name}
             onChange={(e) => updateField('parent_name', e.target.value)}
+            helperText="The guardian who will coordinate with the tutor."
             required
           />
           <Input
             label="Student Name"
             value={formData.student_name}
             onChange={(e) => updateField('student_name', e.target.value)}
+            helperText="Name of the student who needs tutoring."
             required
           />
         </div>
@@ -187,11 +195,13 @@ export const SubmitRequirementForm: React.FC = () => {
             value={formData.phone}
             onChange={(e) => updateField('phone', e.target.value)}
             placeholder="01XXXXXXXXX"
+            helperText="Use a phone number where tutors can reach the guardian."
             required
           />
           <Input
             label="Email Address"
             type="email"
+            helperText="Optional; used for requirement updates."
             value={formData.email}
             onChange={(e) => updateField('email', e.target.value)}
           />
@@ -206,8 +216,8 @@ export const SubmitRequirementForm: React.FC = () => {
                   type="button"
                   onClick={() => updateField('student_gender', g)}
                   className={`py-2 rounded-lg text-xs font-bold border transition-all ${formData.student_gender === g
-                      ? 'bg-brand-500 text-white border-brand-500'
-                      : 'bg-slate-50 text-slate-700 border-slate-200'
+                    ? 'bg-brand-500 text-white border-brand-500'
+                    : 'bg-slate-50 text-slate-700 border-slate-200'
                     }`}
                 >
                   {g}
@@ -231,6 +241,7 @@ export const SubmitRequirementForm: React.FC = () => {
             value={formData.class_level}
             onChange={(e) => updateField('class_level', e.target.value)}
             placeholder="Select class level"
+            helperText="Choose the student’s current level."
             options={[
               'Class 1 to 5',
               'Class 6 to 8',
@@ -248,6 +259,7 @@ export const SubmitRequirementForm: React.FC = () => {
             value={formData.curriculum}
             onChange={(e) => updateField('curriculum', e.target.value)}
             placeholder="Select curriculum"
+            helperText="Select the syllabus or academic medium."
             options={[
               'Bangla Medium',
               'English Version',
@@ -263,6 +275,7 @@ export const SubmitRequirementForm: React.FC = () => {
           <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
             Target Subjects (Select applicable)
           </label>
+          <p className="mb-2 text-xs text-slate-500">Choose every subject the tutor should teach.</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {['Physics', 'Higher Math', 'Chemistry', 'Biology', 'General Math', 'English', 'ICT', 'Accounting', 'Economics', 'General Science', 'All Subjects'].map((sub) => {
               const isSelected = formData.subjects.includes(sub);
@@ -278,8 +291,8 @@ export const SubmitRequirementForm: React.FC = () => {
                     }
                   }}
                   className={`p-2 rounded-lg text-xs font-bold border text-center transition-all ${isSelected
-                      ? 'bg-brand-500 text-white border-brand-500 shadow-xs'
-                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                    ? 'bg-brand-500 text-white border-brand-500 shadow-xs'
+                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                     }`}
                 >
                   {isSelected ? '✓ ' : '+ '}{sub}
@@ -303,6 +316,7 @@ export const SubmitRequirementForm: React.FC = () => {
             value={formData.city}
             onChange={(e) => updateField('city', e.target.value)}
             placeholder="Select city"
+            helperText="Where will the tuition take place?"
             options={cities.map(c => c.name)}
           />
           <Select
@@ -310,6 +324,7 @@ export const SubmitRequirementForm: React.FC = () => {
             value={formData.area}
             onChange={(e) => updateField('area', e.target.value)}
             placeholder="Select area"
+            helperText="Select an area within the chosen city."
             options={areas}
           />
         </div>
@@ -319,6 +334,7 @@ export const SubmitRequirementForm: React.FC = () => {
           value={formData.address}
           onChange={(e) => updateField('address', e.target.value)}
           placeholder="e.g. House 12, Road 4, Sector 10"
+          helperText="Add a landmark so tutors can understand the location."
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -333,8 +349,8 @@ export const SubmitRequirementForm: React.FC = () => {
                   type="button"
                   onClick={() => updateField('preferred_tutor_gender', g)}
                   className={`py-2 rounded-lg text-xs font-bold border transition-all ${formData.preferred_tutor_gender === g
-                      ? 'bg-brand-500 text-white border-brand-500'
-                      : 'bg-slate-50 text-slate-700 border-slate-200'
+                    ? 'bg-brand-500 text-white border-brand-500'
+                    : 'bg-slate-50 text-slate-700 border-slate-200'
                     }`}
                 >
                   {g}
@@ -351,6 +367,7 @@ export const SubmitRequirementForm: React.FC = () => {
             placeholder="e.g. 3"
             value={formData.days_per_week}
             onChange={(e) => updateField('days_per_week', e.target.value)}
+            helperText="How many days should lessons run each week?"
           />
 
           <Input
@@ -360,6 +377,7 @@ export const SubmitRequirementForm: React.FC = () => {
             value={formData.budget}
             onChange={(e) => updateField('budget', e.target.value)}
             leftIcon={<DollarSign className="w-4 h-4" />}
+            helperText="Set the maximum monthly budget in BDT."
             required
           />
         </div>
@@ -375,6 +393,7 @@ export const SubmitRequirementForm: React.FC = () => {
             className="w-full text-sm text-slate-800 bg-white border border-slate-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
             placeholder="e.g. Prefer BUET mentor with evening availability..."
           />
+          <p className="mt-1 text-xs text-slate-500">Mention schedule preferences, learning goals, or tutor requirements.</p>
         </div>
       </div>
 

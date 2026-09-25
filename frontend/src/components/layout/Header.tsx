@@ -15,12 +15,11 @@ import {
   ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import type { UserRole } from '../../types';
 
 export const Header: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
-  const { user, isAuthenticated, logout, switchRole } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -59,22 +58,6 @@ export const Header: React.FC = () => {
               100% Verified Tutors & Security Guaranteed
             </span>
 
-            {isAuthenticated && (
-              <div className="flex items-center space-x-1.5 border-l border-slate-700 pl-2">
-                <span className="text-[11px] text-slate-400">Demo Role:</span>
-                {(['TUTOR', 'PARENT', 'STUDENT', 'ADMIN'] as UserRole[]).map((r) => (
-                  <button
-                    key={r}
-                    onClick={() => switchRole(r)}
-                    className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase transition-colors ${user?.role === r
-                      ? 'bg-brand-500 text-white shadow-xs'
-                      : 'bg-slate-800 text-slate-300 hover:bg-slate-700'} `}
-                  >
-                    {r === 'PARENT' ? 'Parent' : r === 'TUTOR' ? 'Tutor' : r === 'STUDENT' ? 'Student' : 'Admin'}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -135,11 +118,7 @@ export const Header: React.FC = () => {
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   className="flex items-center gap-2.5 p-1.5 pr-3 rounded-full border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-colors"
                 >
-                  <img
-                    src={user.profile_image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100'}
-                    alt={user.first_name}
-                    className="w-8 h-8 rounded-full object-cover ring-2 ring-brand-500/30"
-                  />
+                  {user.profile_image ? <img src={user.profile_image} alt={user.first_name} className="h-8 w-8 rounded-full object-cover ring-2 ring-brand-500/30" /> : <div className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-500 text-xs font-bold text-white">{user.first_name?.[0] || '?'}</div>}
                   <div className="text-left hidden sm:block">
                     <p className="text-xs font-bold text-slate-900 leading-tight">
                       {user.first_name}
@@ -281,11 +260,7 @@ export const Header: React.FC = () => {
               <div className="space-y-2">
                 <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                   <div className="flex items-center space-x-3">
-                    <img
-                      src={user.profile_image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100'}
-                      alt={user.first_name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
+                    {user.profile_image ? <img src={user.profile_image} alt={user.first_name} className="h-10 w-10 rounded-full object-cover" /> : <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-500 font-bold text-white">{user.first_name?.[0] || '?'}</div>}
                     <div>
                       <p className="font-bold text-sm text-slate-900">{user.first_name} {user.last_name}</p>
                       <p className="text-xs text-brand-600 font-semibold">{user.role}</p>
@@ -298,22 +273,6 @@ export const Header: React.FC = () => {
                   >
                     Dashboard
                   </Link>
-                </div>
-
-                <div className="p-2 bg-slate-100 rounded-lg">
-                  <p className="text-[11px] font-bold text-slate-500 mb-1.5">Switch Demo Role:</p>
-                  <div className="grid grid-cols-4 gap-1">
-                    {(['TUTOR', 'PARENT', 'STUDENT', 'ADMIN'] as UserRole[]).map((r) => (
-                      <button
-                        key={r}
-                        onClick={() => switchRole(r)}
-                        className={`py-1 rounded text-[11px] font-bold ${user?.role === r ? 'bg-brand-500 text-white' : 'bg-white text-slate-700'
-                          }`}
-                      >
-                        {r}
-                      </button>
-                    ))}
-                  </div>
                 </div>
 
                 <button

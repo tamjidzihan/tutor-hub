@@ -76,11 +76,7 @@ export const CategoryDetails: React.FC = () => {
         {/* Hero Header Card */}
         <div className="relative rounded-3xl overflow-hidden bg-navy-950 text-white shadow-2xl">
           <div className="absolute inset-0">
-            <img
-              src={category.image || category.hero_image || 'https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&q=80&w=1200'}
-              alt={category.title || category.name}
-              className="w-full h-full object-cover opacity-25"
-            />
+            {category.image || category.hero_image ? <img src={category.image || category.hero_image} alt={category.title || category.name} className="h-full w-full object-cover opacity-25" /> : <div className="h-full w-full bg-navy-950" />}
             <div className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/90 to-transparent" />
           </div>
 
@@ -106,7 +102,7 @@ export const CategoryDetails: React.FC = () => {
 
               <span className="inline-flex items-center gap-1.5 text-xs text-brand-300 font-semibold bg-brand-950/70 px-3 py-2 rounded-lg border border-brand-800">
                 <Users className="w-4 h-4" />
-                {(category.tutors_count || category.tutor_count || 1000).toLocaleString()}+ Available Tutors
+                {(category.tutors_count ?? category.tutor_count ?? 0).toLocaleString()} Available Tutors
               </span>
             </div>
           </div>
@@ -121,11 +117,7 @@ export const CategoryDetails: React.FC = () => {
               What Students Will Learn
             </h3>
             <div className="space-y-3">
-              {(category.learning_topics || category.features || [
-                'In-depth syllabus coverage & regular assessments',
-                'One-on-one personalized concept clearing',
-                'Comprehensive exam preparation & problem solving'
-              ]).map((topic, i) => (
+              {(category.learning_topics || category.features || []).length === 0 ? <p className="text-sm text-slate-500">Course details will be added for this category soon.</p> : (category.learning_topics || category.features || []).map((topic, i) => (
                 <div key={i} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-700">
                   <CheckCircle className="w-4 h-4 text-brand-500 shrink-0 mt-0.5" />
                   <span>{topic}</span>
@@ -137,18 +129,14 @@ export const CategoryDetails: React.FC = () => {
           <div className="bg-white rounded-2xl p-7 border border-slate-200/90 shadow-card">
             <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
               <GraduationCap className="w-5 h-5 text-brand-600" />
-              Popular Subject Modules
+              Courses in this Category
             </h3>
             <div className="flex flex-wrap gap-2">
-              {(category.popular_subjects || category.subcategories?.map(s => s.name) || [
-                'General Math', 'Higher Math', 'Physics', 'Chemistry', 'English', 'Biology'
-              ]).map((sub, i) => (
-                <span
-                  key={i}
-                  className="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs border border-slate-200"
-                >
-                  {sub}
-                </span>
+              {!category.subcategories?.length ? <p className="text-sm text-slate-500">No courses are available in this category yet.</p> : category.subcategories.map((course) => (
+                <Link key={course.id} to={`/find-tutor?search=${encodeURIComponent(course.name)}`} className="group rounded-xl border border-slate-200 bg-slate-50 p-4 transition-colors hover:border-brand-300 hover:bg-brand-50">
+                  <span className="flex items-center justify-between gap-3 text-sm font-bold text-slate-800 group-hover:text-brand-700"><span>{course.name}</span><ArrowRight className="h-4 w-4 shrink-0" /></span>
+                  {course.description && <span className="mt-1 block text-xs leading-relaxed text-slate-500">{course.description}</span>}
+                </Link>
               ))}
             </div>
 
@@ -176,7 +164,7 @@ export const CategoryDetails: React.FC = () => {
               to="/find-tutor"
               className="text-xs font-bold text-brand-600 hover:text-brand-700"
             >
-              Browse All ({(category.tutors_count || category.tutor_count || 1000)}+) →
+              Browse All Tutors →
             </Link>
           </div>
 

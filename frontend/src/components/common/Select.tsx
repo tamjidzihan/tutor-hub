@@ -9,12 +9,13 @@ interface SelectOption {
 interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label?: string;
   error?: string;
+  helperText?: string;
   options: (string | SelectOption)[];
   placeholder?: string;
 }
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, options, placeholder, className = '', id, ...props }, ref) => {
+  ({ label, error, helperText, options, placeholder, className = '', id, ...props }, ref) => {
     const selectId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
 
     return (
@@ -28,9 +29,8 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           <select
             id={selectId}
             ref={ref}
-            className={`block w-full appearance-none rounded-lg border bg-white text-slate-900 text-sm pl-3.5 pr-10 py-2.5 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 disabled:bg-slate-50 disabled:text-slate-500 ${
-              error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-slate-300 hover:border-slate-400'
-            } ${className}`}
+            className={`block w-full appearance-none rounded-lg border bg-white text-slate-900 text-sm pl-3.5 pr-10 py-2.5 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 disabled:bg-slate-50 disabled:text-slate-500 ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-slate-300 hover:border-slate-400'
+              } ${className}`}
             {...props}
           >
             {placeholder && (
@@ -58,6 +58,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           </div>
         </div>
         {error && <p className="mt-1 text-xs text-red-600 font-medium">{error}</p>}
+        {!error && helperText && <p className="mt-1 text-xs text-slate-500">{helperText}</p>}
       </div>
     );
   }

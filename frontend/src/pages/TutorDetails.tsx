@@ -3,14 +3,14 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { tutorsApi } from '../api/tutors';
 import type { Tutor } from '../types';
 import { EmptyState, LoadingSkeleton } from '../components/common/FeedbackStates';
-import { 
-  GraduationCap, 
-  MapPin, 
-  Briefcase, 
-  Star, 
-  ShieldCheck, 
-  Calendar, 
-  CheckCircle2, 
+import {
+  GraduationCap,
+  MapPin,
+  Briefcase,
+  Star,
+  ShieldCheck,
+  Calendar,
+  CheckCircle2,
   ArrowLeft
 } from 'lucide-react';
 
@@ -55,10 +55,13 @@ export const TutorDetails: React.FC = () => {
     );
   }
 
+  const rating = Number(tutor.rating);
+  const expectedSalary = Number(tutor.expected_salary);
+
   return (
     <div className="bg-slate-50 min-h-screen py-8 lg:py-12">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        
+
         {/* Back Link */}
         <Link
           to="/find-tutor"
@@ -71,14 +74,10 @@ export const TutorDetails: React.FC = () => {
         {/* Profile Header Card */}
         <div className="bg-white rounded-3xl border border-slate-200/90 shadow-card p-6 sm:p-10 relative overflow-hidden">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-6 pb-6 border-b border-slate-100">
-            
+
             {/* Avatar with Badge */}
             <div className="relative shrink-0">
-              <img
-                src={tutor.profile_photo}
-                alt={tutor.name}
-                className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover ring-4 ring-brand-50 shadow-md"
-              />
+              {tutor.profile_photo ? <img src={tutor.profile_photo} alt={tutor.name} className="h-24 w-24 rounded-3xl object-cover ring-4 ring-brand-50 shadow-md sm:h-28 sm:w-28" /> : <div className="flex h-24 w-24 items-center justify-center rounded-3xl bg-brand-100 text-3xl font-bold text-brand-700 ring-4 ring-brand-50 shadow-md sm:h-28 sm:w-28">{tutor.name?.[0] || '?'}</div>}
               {tutor.is_verified && (
                 <div className="absolute -bottom-2 -right-2 bg-brand-500 text-white p-1.5 rounded-full shadow-lg" title="100% Verified Profile">
                   <ShieldCheck className="w-5 h-5" />
@@ -104,7 +103,7 @@ export const TutorDetails: React.FC = () => {
                       <Star key={i} className="w-3.5 h-3.5 fill-current" />
                     ))}
                   </div>
-                  <span className="text-xs font-bold text-slate-800">{tutor.rating.toFixed(1)}</span>
+                  <span className="text-xs font-bold text-slate-800">{Number.isFinite(rating) ? rating.toFixed(1) : 'Not rated'}</span>
                   <span className="text-[11px] text-slate-500">({tutor.total_reviews} reviews)</span>
                 </div>
               </div>
@@ -139,7 +138,7 @@ export const TutorDetails: React.FC = () => {
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
               <span className="text-slate-400 font-medium block">Expected Salary:</span>
               <strong className="text-slate-900 text-sm font-heading font-black mt-0.5 block">
-                ৳{tutor.expected_salary.toLocaleString()} <span className="text-xs font-normal text-slate-500">/ mo</span>
+                ৳{Number.isFinite(expectedSalary) ? expectedSalary.toLocaleString() : 'Not provided'} <span className="text-xs font-normal text-slate-500">/ mo</span>
               </strong>
             </div>
 
@@ -169,7 +168,7 @@ export const TutorDetails: React.FC = () => {
 
           {/* Body Sections */}
           <div className="py-6 space-y-8">
-            
+
             {/* Bio */}
             <div>
               <h3 className="text-base font-bold text-slate-900 mb-2">

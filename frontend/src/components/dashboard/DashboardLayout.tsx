@@ -1,23 +1,22 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  User, 
-  Briefcase, 
-  ClipboardList, 
-  Bell, 
-  LogOut, 
-  ShieldCheck, 
-  Menu, 
-  X, 
+import {
+  LayoutDashboard,
+  User,
+  Briefcase,
+  ClipboardList,
+  Bell,
+  LogOut,
+  ShieldCheck,
+  Menu,
+  X,
   GraduationCap,
   Sparkles
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import type { UserRole } from '../../types';
 
 export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, logout, switchRole } = useAuth();
+  const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -42,7 +41,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
-      
+
       {/* Mobile Top Bar */}
       <div className="md:hidden bg-navy-950 text-white p-4 flex items-center justify-between sticky top-0 z-30">
         <Link to="/" className="flex items-center gap-2">
@@ -61,9 +60,8 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
       {/* Sidebar Navigation */}
       <aside
-        className={`fixed md:sticky top-0 z-20 h-screen w-64 bg-navy-950 text-slate-300 flex flex-col justify-between transition-all duration-200 ${
-          sidebarOpen ? 'left-0' : '-left-64 md:left-0'
-        }`}
+        className={`fixed md:sticky top-0 z-20 h-screen w-64 bg-navy-950 text-slate-300 flex flex-col justify-between transition-all duration-200 ${sidebarOpen ? 'left-0' : '-left-64 md:left-0'
+          }`}
       >
         <div>
           {/* Logo */}
@@ -85,11 +83,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
           {/* User Preview */}
           <div className="p-4 mx-3 my-4 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-3">
-            <img
-              src={user?.profile_image || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100'}
-              alt={user?.first_name}
-              className="w-10 h-10 rounded-full object-cover ring-2 ring-brand-500"
-            />
+            {user?.profile_image ? <img src={user.profile_image} alt={user.first_name} className="h-10 w-10 rounded-full object-cover ring-2 ring-brand-500" /> : <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-500 font-bold text-white">{user?.first_name?.[0] || '?'}</div>}
             <div className="min-w-0 flex-1">
               <p className="text-xs font-bold text-white truncate">{user?.first_name} {user?.last_name}</p>
               <div className="flex items-center gap-1 mt-0.5">
@@ -108,10 +102,9 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
                 end={item.path === '/dashboard'}
                 onClick={() => setSidebarOpen(false)}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                    isActive
-                      ? 'bg-brand-500 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                  `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${isActive
+                    ? 'bg-brand-500 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-900'
                   }`
                 }
               >
@@ -124,23 +117,6 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
         {/* Bottom Actions & Role Switcher */}
         <div className="p-4 border-t border-slate-800 space-y-3">
-          <div className="bg-slate-900 p-2 rounded-xl border border-slate-800">
-            <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">Switch Role Demo:</p>
-            <div className="grid grid-cols-3 gap-1">
-              {(['TUTOR', 'PARENT', 'ADMIN'] as UserRole[]).map((r) => (
-                <button
-                  key={r}
-                  onClick={() => switchRole(r)}
-                  className={`py-1 rounded text-[10px] font-bold ${
-                    user?.role === r ? 'bg-brand-500 text-white' : 'bg-slate-800 text-slate-300'
-                  }`}
-                >
-                  {r === 'PARENT' ? 'Parent' : r === 'TUTOR' ? 'Tutor' : 'Admin'}
-                </button>
-              ))}
-            </div>
-          </div>
-
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-red-400 hover:bg-red-500/10 transition-colors"

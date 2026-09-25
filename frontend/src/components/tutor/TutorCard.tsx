@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Star, 
-  MapPin, 
-  Briefcase, 
-  ShieldCheck, 
+import {
+  Star,
+  MapPin,
+  Briefcase,
+  ShieldCheck,
   ArrowRight
 } from 'lucide-react';
 import type { Tutor } from '../../types';
@@ -14,9 +14,12 @@ interface TutorCardProps {
 }
 
 export const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
+  const rating = Number(tutor.rating);
+  const expectedSalary = Number(tutor.expected_salary);
+
   return (
     <div className="bg-white rounded-2xl border border-slate-200/90 shadow-card hover:shadow-card-hover transition-all duration-300 p-6 flex flex-col justify-between group relative overflow-hidden">
-      
+
       {/* Top Accent Line */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-400 to-brand-600 opacity-0 group-hover:opacity-100 transition-opacity" />
 
@@ -24,11 +27,7 @@ export const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
         {/* Tutor Header Info */}
         <div className="flex items-start gap-4 mb-4">
           <div className="relative shrink-0">
-            <img
-              src={tutor.profile_photo}
-              alt={tutor.name}
-              className="w-16 h-16 rounded-2xl object-cover ring-2 ring-slate-100 group-hover:ring-brand-400 transition-all"
-            />
+            {tutor.profile_photo ? <img src={tutor.profile_photo} alt={tutor.name} className="h-16 w-16 rounded-2xl object-cover ring-2 ring-slate-100 transition-all group-hover:ring-brand-400" /> : <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-100 text-xl font-bold text-brand-700 ring-2 ring-slate-100">{tutor.name?.[0] || '?'}</div>}
             {tutor.is_verified && (
               <div className="absolute -bottom-1 -right-1 bg-brand-500 text-white p-1 rounded-full shadow-md" title="Verified Tutor">
                 <ShieldCheck className="w-3.5 h-3.5" />
@@ -63,7 +62,7 @@ export const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
                   <Star key={i} className="w-3 h-3 fill-current" />
                 ))}
               </div>
-              <span className="text-xs font-bold text-slate-800">{tutor.rating.toFixed(1)}</span>
+              <span className="text-xs font-bold text-slate-800">{Number.isFinite(rating) ? rating.toFixed(1) : 'Not rated'}</span>
               <span className="text-[11px] text-slate-400">({tutor.total_reviews} reviews)</span>
             </div>
           </div>
@@ -111,7 +110,7 @@ export const TutorCard: React.FC<TutorCardProps> = ({ tutor }) => {
             Expected Salary
           </span>
           <span className="text-base font-black text-slate-900 font-heading">
-            ৳{tutor.expected_salary.toLocaleString()}
+            ৳{Number.isFinite(expectedSalary) ? expectedSalary.toLocaleString() : 'Not provided'}
             <span className="text-[11px] font-normal text-slate-500"> / mo</span>
           </span>
         </div>

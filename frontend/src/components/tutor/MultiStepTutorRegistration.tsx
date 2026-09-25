@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  CheckCircle2, 
-  ArrowRight, 
+import {
+  CheckCircle2,
+  ArrowRight,
   ArrowLeft,
   ShieldCheck,
   Upload,
@@ -13,6 +13,7 @@ import { Input } from '../common/Input';
 import { Select } from '../common/Select';
 import { locationsApi, type LocationCity } from '../../api/locations';
 import { tutorsApi } from '../../api/tutors';
+import { getApiErrorMessage } from '../../api/client';
 
 export const MultiStepTutorRegistration: React.FC = () => {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const [registeredTutorId, setRegisteredTutorId] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -78,15 +80,15 @@ export const MultiStepTutorRegistration: React.FC = () => {
   const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError('');
     try {
       const tutor = await tutorsApi.registerTutor(formData);
       if (tutor?.tutor_id) {
         setRegisteredTutorId(tutor.tutor_id);
       }
       setIsCompleted(true);
-    } catch (err: any) {
-      console.error('Registration failed:', err);
-      alert(err?.response?.data?.detail || err?.message || 'Registration failed. Please check your credentials.');
+    } catch (err) {
+      setError(getApiErrorMessage(err, 'Registration failed. Please review your details and try again.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -113,7 +115,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
           Congratulations! Your Tutor Profile is Live.
         </h2>
         <p className="text-slate-600 text-sm mt-3 leading-relaxed">
-          Your profile ID <strong>{registeredTutorId || 'TT-T-019842'}</strong> has been registered. You can now browse live tuition jobs, apply with one click, and manage schedules directly.
+          {registeredTutorId ? <>Your profile ID <strong>{registeredTutorId}</strong> has been registered.</> : 'Your tutor profile has been registered.'} You can now browse live tuition jobs and apply to suitable opportunities.
         </p>
         <div className="pt-8 flex flex-col sm:flex-row gap-3 justify-center">
           <Button
@@ -135,7 +137,8 @@ export const MultiStepTutorRegistration: React.FC = () => {
 
   return (
     <div className="bg-white rounded-3xl border border-slate-200/90 shadow-card p-6 sm:p-10 max-w-3xl mx-auto my-8">
-      
+      {error && <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700" role="alert">{error}</div>}
+
       {/* Progress Stepper Bar */}
       <div className="mb-10">
         <div className="flex items-center justify-between mb-4">
@@ -160,18 +163,16 @@ export const MultiStepTutorRegistration: React.FC = () => {
           {stepsList.map((s) => (
             <div
               key={s.num}
-              className={`flex flex-col items-center ${
-                currentStep >= s.num ? 'text-brand-600' : 'text-slate-400'
-              }`}
+              className={`flex flex-col items-center ${currentStep >= s.num ? 'text-brand-600' : 'text-slate-400'
+                }`}
             >
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-                  currentStep === s.num
-                    ? 'bg-brand-500 text-white ring-4 ring-brand-100'
-                    : currentStep > s.num
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${currentStep === s.num
+                  ? 'bg-brand-500 text-white ring-4 ring-brand-100'
+                  : currentStep > s.num
                     ? 'bg-brand-100 text-brand-700'
                     : 'bg-slate-100 text-slate-400'
-                }`}
+                  }`}
               >
                 {currentStep > s.num ? '✓' : s.num}
               </div>
@@ -183,7 +184,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
 
       {/* Dynamic Step Content */}
       <div className="min-h-[340px]">
-        
+
         {/* STEP 1: Account Info */}
         {currentStep === 1 && (
           <div className="space-y-4 animate-in fade-in duration-200">
@@ -195,12 +196,14 @@ export const MultiStepTutorRegistration: React.FC = () => {
                 label="First Name"
                 value={formData.first_name}
                 onChange={(e) => updateField('first_name', e.target.value)}
+                helperText="Your given name as it should appear on your profile."
                 required
               />
               <Input
                 label="Last Name"
                 value={formData.last_name}
                 onChange={(e) => updateField('last_name', e.target.value)}
+                helperText="Your family name."
                 required
               />
             </div>
@@ -210,6 +213,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
                 type="email"
                 value={formData.email}
                 onChange={(e) => updateField('email', e.target.value)}
+                helperText="Used for login and application updates."
                 required
               />
               <Input
@@ -217,6 +221,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
                 value={formData.phone}
                 onChange={(e) => updateField('phone', e.target.value)}
                 placeholder="01XXXXXXXXX"
+                helperText="Use a reachable phone number."
                 required
               />
             </div>
@@ -246,22 +251,20 @@ export const MultiStepTutorRegistration: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => updateField('gender', 'MALE')}
-                    className={`py-2.5 rounded-lg text-sm font-bold border transition-all ${
-                      formData.gender === 'MALE'
-                        ? 'bg-brand-500 text-white border-brand-500'
-                        : 'bg-slate-50 text-slate-700 border-slate-200'
-                    }`}
+                    className={`py-2.5 rounded-lg text-sm font-bold border transition-all ${formData.gender === 'MALE'
+                      ? 'bg-brand-500 text-white border-brand-500'
+                      : 'bg-slate-50 text-slate-700 border-slate-200'
+                      }`}
                   >
                     Male
                   </button>
                   <button
                     type="button"
                     onClick={() => updateField('gender', 'FEMALE')}
-                    className={`py-2.5 rounded-lg text-sm font-bold border transition-all ${
-                      formData.gender === 'FEMALE'
-                        ? 'bg-brand-500 text-white border-brand-500'
-                        : 'bg-slate-50 text-slate-700 border-slate-200'
-                    }`}
+                    className={`py-2.5 rounded-lg text-sm font-bold border transition-all ${formData.gender === 'FEMALE'
+                      ? 'bg-brand-500 text-white border-brand-500'
+                      : 'bg-slate-50 text-slate-700 border-slate-200'
+                      }`}
                   >
                     Female
                   </button>
@@ -288,6 +291,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
                 value={formData.area}
                 onChange={(e) => updateField('area', e.target.value)}
                 placeholder="e.g. Mirpur, Dhanmondi, Uttara"
+                helperText="Add the area where you currently live."
               />
             </div>
 
@@ -295,6 +299,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
               label="Present Full Address"
               value={formData.present_address}
               onChange={(e) => updateField('present_address', e.target.value)}
+              helperText="This helps us verify your location."
             />
           </div>
         )}
@@ -310,6 +315,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
               value={formData.university}
               onChange={(e) => updateField('university', e.target.value)}
               placeholder="e.g. BUET, Dhaka University, DMC, NSU"
+              helperText="Use your official institution name."
               required
             />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -318,6 +324,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
                 value={formData.department}
                 onChange={(e) => updateField('department', e.target.value)}
                 placeholder="e.g. EEE, CSE, English, BBA"
+                helperText="Your department, major, or subject area."
                 required
               />
               <Input
@@ -325,6 +332,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
                 value={formData.degree}
                 onChange={(e) => updateField('degree', e.target.value)}
                 placeholder="e.g. B.Sc. in EEE, MBBS, BBA"
+                helperText="For example: B.Sc. in CSE or BBA."
                 required
               />
             </div>
@@ -334,6 +342,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
               value={formData.graduation_year}
               onChange={(e) => updateField('graduation_year', Number(e.target.value))}
               placeholder="2024"
+              helperText="Enter the year you graduated or expect to graduate."
             />
           </div>
         )}
@@ -344,7 +353,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
             <h3 className="text-xl font-bold text-slate-900 border-b border-slate-100 pb-2">
               4. Subjects & Teaching Mediums
             </h3>
-            
+
             <div>
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
                 Preferred Teaching Subjects (Select All Applicable)
@@ -363,11 +372,10 @@ export const MultiStepTutorRegistration: React.FC = () => {
                           updateField('subjects', [...formData.subjects, sub]);
                         }
                       }}
-                      className={`p-2.5 rounded-lg text-xs font-bold border text-left transition-all ${
-                        isSelected
-                          ? 'bg-brand-500 text-white border-brand-500 shadow-xs'
-                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                      }`}
+                      className={`p-2.5 rounded-lg text-xs font-bold border text-left transition-all ${isSelected
+                        ? 'bg-brand-500 text-white border-brand-500 shadow-xs'
+                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        }`}
                     >
                       {isSelected ? '✓ ' : '+ '}{sub}
                     </button>
@@ -394,11 +402,10 @@ export const MultiStepTutorRegistration: React.FC = () => {
                           updateField('preferred_classes', [...formData.preferred_classes, cls]);
                         }
                       }}
-                      className={`p-2 rounded-lg text-xs font-bold border text-center transition-all ${
-                        isSelected
-                          ? 'bg-navy-900 text-white border-navy-900'
-                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                      }`}
+                      className={`p-2 rounded-lg text-xs font-bold border text-center transition-all ${isSelected
+                        ? 'bg-navy-900 text-white border-navy-900'
+                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        }`}
                     >
                       {cls}
                     </button>
@@ -432,11 +439,10 @@ export const MultiStepTutorRegistration: React.FC = () => {
                         updateField('preferred_locations', [...formData.preferred_locations, area]);
                       }
                     }}
-                    className={`p-2.5 rounded-lg text-xs font-bold border text-left transition-all ${
-                      isSelected
-                        ? 'bg-brand-500 text-white border-brand-500 shadow-xs'
-                        : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                    }`}
+                    className={`p-2.5 rounded-lg text-xs font-bold border text-left transition-all ${isSelected
+                      ? 'bg-brand-500 text-white border-brand-500 shadow-xs'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
                   >
                     📍 {area}
                   </button>
@@ -459,7 +465,9 @@ export const MultiStepTutorRegistration: React.FC = () => {
                 value={formData.experience_years}
                 onChange={(e) => updateField('experience_years', Number(e.target.value))}
                 min={0}
+                helperText="Use 0 if you are starting your tutoring career."
               />
+              <p className="mt-1 text-xs text-slate-500">A short introduction helps guardians understand your teaching style.</p>
               <Input
                 label="Expected Monthly Salary (৳ BDT)"
                 type="number"
@@ -513,6 +521,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
               value={formData.nid_number}
               onChange={(e) => updateField('nid_number', e.target.value)}
               placeholder="e.g. 1998XXXXXXXXXXXXX"
+              helperText="This is used for tutor verification and is kept private."
               required
             />
 

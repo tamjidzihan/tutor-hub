@@ -203,6 +203,19 @@ Key API routes mounted from the Django project include:
 - `/api/v1/content/`
 - `/api/v1/dashboard/`
 
+### Dashboard architecture
+
+`GET /api/v1/dashboard/` is an authenticated, role-scoped overview endpoint. It derives its response from `request.user` and returns different aggregate data for administrators, tutors, parents, and students. Dashboard pages must use these database-backed values and show loading, error, or empty states when records are unavailable.
+
+- Admins receive user, tutor, job, application, and requirement aggregates plus recent tutor profiles.
+- Tutors receive their own application counts, profile completion, rating data, and recent applications.
+- Parents and students receive only their own requirements and related application counts.
+- Requirements and job applications are ownership-scoped on the backend; client-supplied user IDs are not trusted.
+
+Dashboard authentication uses the existing JWT flow at `/api/v1/auth/login/`, `/api/v1/auth/register/`, and `/api/v1/auth/me/`. Public registration cannot create administrator accounts, and users cannot change their role through client-controlled login or role-switch requests.
+
+To exercise the dashboard locally, create users with roles `TUTOR`, `PARENT`, or `STUDENT`, create tutor profiles or requirements through the application/API, and create an administrator with Django's `createsuperuser` command. Then run `python manage.py check`, `python manage.py test`, and `npm run build` from their respective project directories.
+
 Swagger/OpenAPI docs are enabled through `drf-spectacular`:
 
 - `/api/schema/`

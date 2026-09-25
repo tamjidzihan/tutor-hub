@@ -15,9 +15,10 @@ export const JobBoard: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [jobs, setJobs] = useState<TuitionJob[]>([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize] = useState(6);
+  const pageSize = 6;
 
   // Filters State
   const [filters, setFilters] = useState<JobFilterParams>({
@@ -36,9 +37,10 @@ export const JobBoard: React.FC = () => {
   const fetchJobs = async () => {
     setIsLoading(true);
     try {
-      const data = await jobsApi.getJobs(filters);
+      const data = await jobsApi.getJobs(filters, currentPage, pageSize);
       setJobs(data.results);
       setTotalCount(data.count);
+      setTotalPages(data.total_pages);
     } finally {
       setIsLoading(false);
     }
@@ -46,7 +48,7 @@ export const JobBoard: React.FC = () => {
 
   useEffect(() => {
     fetchJobs();
-  }, [filters]);
+  }, [filters, currentPage]);
 
   const handleFilterChange = (newFilters: JobFilterParams) => {
     setFilters(newFilters);
@@ -68,8 +70,7 @@ export const JobBoard: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const totalPages = Math.ceil(jobs.length / pageSize);
-  const paginatedJobs = jobs.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const paginatedJobs = jobs;
 
   return (
     <div className="bg-slate-50 min-h-screen py-8 lg:py-12">

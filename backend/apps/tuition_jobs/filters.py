@@ -8,7 +8,7 @@ class TuitionJobFilter(django_filters.FilterSet):
     class_level = django_filters.CharFilter(field_name='class_level', lookup_expr='icontains')
     curriculum = django_filters.CharFilter(field_name='curriculum', lookup_expr='icontains')
     tuition_type = django_filters.CharFilter(field_name='tuition_type', lookup_expr='icontains')
-    gender = django_filters.CharFilter(field_name='preferred_tutor_gender', lookup_expr='icontains')
+    gender = django_filters.CharFilter(method='filter_gender')
     salary_min = django_filters.NumberFilter(field_name='salary', lookup_expr='gte')
     salary_max = django_filters.NumberFilter(field_name='salary', lookup_expr='lte')
     subject = django_filters.CharFilter(method='filter_subject')
@@ -23,6 +23,11 @@ class TuitionJobFilter(django_filters.FilterSet):
         if not value:
             return queryset
         return queryset.filter(subjects__icontains=value)
+
+    def filter_gender(self, queryset, name, value):
+        if not value or value.lower() == 'any':
+            return queryset
+        return queryset.filter(preferred_tutor_gender__icontains=value)
 
     def filter_search(self, queryset, name, value):
         if not value:

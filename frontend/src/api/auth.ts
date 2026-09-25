@@ -55,6 +55,12 @@ export const authApi = {
     return null;
   },
 
+  updateCurrentUser: async (data: Pick<User, 'first_name' | 'last_name' | 'phone'>): Promise<User> => {
+    const response = await apiClient.patch('/auth/me/', data);
+    localStorage.setItem('tutorhub_user', JSON.stringify(response.data));
+    return response.data;
+  },
+
   switchRole: async (newRole: UserRole): Promise<User> => {
     const response = await apiClient.post('/auth/switch-role/', { role: newRole });
     const updatedUser = response.data.user;

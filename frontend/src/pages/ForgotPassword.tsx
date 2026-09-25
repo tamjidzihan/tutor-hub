@@ -21,7 +21,7 @@ export const ForgotPassword: React.FC = () => {
   return (
     <div className="bg-slate-50 min-h-screen py-12 flex items-center justify-center px-4">
       <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-8 sm:p-10 max-w-md w-full space-y-6">
-        
+
         <div className="text-center space-y-2">
           <div className="w-12 h-12 rounded-2xl bg-brand-100 text-brand-600 flex items-center justify-center mx-auto shadow-sm">
             <KeyRound className="w-6 h-6" />
@@ -56,6 +56,7 @@ export const ForgotPassword: React.FC = () => {
             <Input
               label="Email Address"
               type="email"
+              helperText="Enter the email used to create your TutorHub account."
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               leftIcon={<Mail className="w-4 h-4" />}

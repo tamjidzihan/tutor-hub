@@ -53,8 +53,7 @@ class LoginView(APIView):
                 return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         if role and user.role != role:
-            user.role = role
-            user.save(update_fields=['role'])
+            return Response({'error': 'The requested role does not match this account.'}, status=status.HTTP_403_FORBIDDEN)
 
         tokens = get_tokens_for_user(user)
         return Response({
@@ -75,14 +74,4 @@ class SwitchRoleView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        new_role = request.data.get('role')
-        if new_role not in [r.value for r in User.Role]:
-            return Response({'error': 'Invalid role specified'}, status=status.HTTP_400_BAD_REQUEST)
-
-        user = request.user
-        user.role = new_role
-        user.save(update_fields=['role'])
-        return Response({
-            'user': UserSerializer(user).data,
-            'message': f'Role successfully switched to {new_role}'
-        })
+        return Response({'error': 'Role changes are managed by administrators.'}, status=status.HTTP_403_FORBIDDEN)

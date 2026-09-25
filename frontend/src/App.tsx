@@ -11,6 +11,7 @@ import { JobDetails } from './pages/JobDetails';
 import { FindTutor } from './pages/FindTutor';
 import { TutorDetails } from './pages/TutorDetails';
 import { CategoryDetails } from './pages/CategoryDetails';
+import { TuitionCategories } from './pages/TuitionCategories';
 import { BecomeATutor } from './pages/BecomeATutor';
 import { AppointATutor } from './pages/AppointATutor';
 import { AffiliateProgram } from './pages/AffiliateProgram';
@@ -70,6 +71,7 @@ export function App() {
             <Route path="/job-board" element={<JobBoard />} />
             <Route path="/job-board/:jobId" element={<JobDetails />} />
             <Route path="/find-tutor" element={<FindTutor />} />
+            <Route path="/tuition-categories" element={<TuitionCategories />} />
             <Route path="/hub/tutor-details/:tutorId" element={<TutorDetails />} />
             <Route path="/category-details/:id/:slug" element={<CategoryDetails />} />
             <Route path="/category-details/:slug" element={<CategoryDetails />} />
@@ -87,7 +89,7 @@ export function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            
+
             {/* Catch-all Fallback */}
             <Route path="*" element={<Home />} />
           </Route>
