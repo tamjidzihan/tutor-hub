@@ -44,7 +44,7 @@ export const Hero: React.FC = () => {
   };
 
   return (
-    <section className="relative overflow-hidden border-b border-slate-200/70 bg-[radial-gradient(circle_at_top_left,_rgba(134,194,64,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,_rgba(18,181,224,0.14),transparent_28%),linear-gradient(135deg,#f4fbe8_0%,#ffffff_40%,#f8fafc_100%)] pt-8 pb-16 lg:pt-16 lg:pb-24">
+    <section className="relative overflow-hidden border-b border-slate-200/70 bg-[radial-gradient(circle_at_top_left,rgba(134,194,64,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(18,181,224,0.14),transparent_28%),linear-gradient(135deg,#f4fbe8_0%,#ffffff_40%,#f8fafc_100%)] pt-8 pb-16 lg:pt-16 lg:pb-24">
 
       <div className="pointer-events-none absolute left-1/2 top-0 h-full w-full max-w-7xl -translate-x-1/2 overflow-hidden -z-10">
         <div className="absolute -left-24 top-10 h-96 w-96 rounded-full bg-brand-200/60 blur-3xl" />
@@ -63,8 +63,8 @@ export const Hero: React.FC = () => {
               <span>Country's #1 Tutor Matching & Learning Platform</span>
             </div>
 
-            <h1 className="font-heading text-4xl font-black leading-[1.05] tracking-[-0.05em] text-slate-900 sm:text-5xl lg:text-6xl">
-              Find the <span className="bg-gradient-to-r from-brand-600 to-emerald-600 bg-clip-text text-transparent">Perfect Tutor</span> for Your Child's Success.
+            <h1 className="font-heading text-4xl font-black leading-[1.05] tracking-tighter text-slate-900 sm:text-5xl lg:text-6xl">
+              Find the <span className="bg-linear-to-r from-brand-600 to-emerald-600 bg-clip-text text-transparent">Perfect Tutor</span> for Your Child's Success.
             </h1>
 
             <p className="max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
