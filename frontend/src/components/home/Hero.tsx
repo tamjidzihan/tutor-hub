@@ -7,10 +7,8 @@ import {
   ShieldCheck,
   Sparkles,
   ArrowRight,
-  GraduationCap,
   CheckCircle,
-  Users,
-  Star
+  Users
 } from 'lucide-react';
 import { locationsApi } from '../../api/locations';
 import type { LocationCity } from '../../api/locations';
@@ -185,61 +183,54 @@ export const Hero: React.FC = () => {
           </div>
 
           {/* Right Column: Dynamic Visual Showcase */}
-          <div className="lg:col-span-5 relative">
+          <div className="relative lg:col-span-5">
             <div className="relative mx-auto max-w-md lg:max-w-none">
+              <div className="relative overflow-hidden rounded-[2rem] border border-slate-200/80 bg-[#0a1e2d] p-3 shadow-[0_30px_80px_-28px_rgba(10,30,45,0.9)]">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(134,194,64,0.18),transparent_30%),radial-gradient(circle_at_bottom_right,rgba(18,181,224,0.18),transparent_32%),linear-gradient(135deg,#0a1e2d_0%,#0d2334_45%,#122f24_100%)]" />
+                <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:22px_22px]" />
 
-              {/* Main Illustration / Image Frame */}
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
-                <img
-                  src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=800"
-                  alt="Students learning with qualified tutor"
-                  className="w-full h-80 sm:h-96 object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-navy-950/80 via-navy-950/20 to-transparent" />
+                <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10 bg-white/5 backdrop-blur-md">
+                  <img
+                    src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&q=80&w=900"
+                    alt="Tutor mentoring students in a collaborative lesson"
+                    className="h-80 w-full object-cover sm:h-96"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#081821]/90 via-[#081821]/20 to-transparent" />
 
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <span className="inline-block px-2.5 py-1 bg-brand-500 text-white text-xs font-bold rounded-md mb-1.5">
-                    Live Platform
-                  </span>
-                  <p className="text-sm font-semibold text-white/90">
-                    Trusted by over 35,000+ guardians across Bangladesh.
-                  </p>
-                </div>
-              </div>
-
-              {/* Floating Verified Tutor Card */}
-              <div className="absolute -top-6 -left-6 bg-white p-3.5 rounded-2xl shadow-xl border border-slate-100 hidden sm:flex items-center gap-3 animate-float">
-                <div className="w-12 h-12 rounded-full bg-brand-100 flex items-center justify-center text-brand-600 shrink-0">
-                  <GraduationCap className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-1">
-                    <span className="text-xs font-bold text-slate-900">BUET / DU / DMC</span>
-                    <ShieldCheck className="w-3.5 h-3.5 text-brand-500" />
-                  </div>
-                  <p className="text-[11px] text-slate-500 font-medium">Top Mentors Available</p>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <div className="flex text-amber-400">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="w-3 h-3 fill-current" />
-                      ))}
+                  <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+                    <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-brand-400/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-brand-200 ring-1 ring-brand-300/20">
+                      <span className="h-2 w-2 rounded-full bg-brand-300" />
+                      Live platform
                     </div>
-                    <span className="text-[10px] font-bold text-slate-700">4.9 / 5.0</span>
+                    <p className="text-lg font-bold leading-snug">Trusted support for every learning milestone.</p>
                   </div>
                 </div>
               </div>
 
-              {/* Floating Job Match Pill */}
-              <div className="absolute -bottom-6 -right-4 bg-navy-900 text-white p-3.5 rounded-2xl shadow-xl border border-navy-800 hidden sm:flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-sm">
-                  ⚡ 2hr
+              <div className="absolute -left-5 top-6 hidden items-center gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl sm:flex">
+                <div className="flex -space-x-2">
+                  {["A", "D", "S"].map((initial, index) => (
+                    <div
+                      key={initial}
+                      className={`flex h-9 w-9 items-center justify-center rounded-full border-2 border-white text-[10px] font-black text-slate-700 ${index === 0 ? 'bg-brand-100' : index === 1 ? 'bg-sky-100' : 'bg-amber-100'}`}
+                    >
+                      {initial}
+                    </div>
+                  ))}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-white">Average Matching Time</p>
-                  <p className="text-[11px] text-slate-300">Fast tutor CV dispatch</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Top mentors</p>
+                  <p className="text-sm font-bold text-slate-900">BUET • DU • DMC</p>
                 </div>
               </div>
 
+              <div className="absolute -bottom-5 right-2 hidden items-center gap-3 rounded-2xl border border-slate-800 bg-[#071922] px-3.5 py-2.5 text-white shadow-2xl sm:flex">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-400/15 text-lg text-brand-300">⚡</div>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Match in</p>
+                  <p className="text-sm font-bold text-white">2 hours avg</p>
+                </div>
+              </div>
             </div>
           </div>
 

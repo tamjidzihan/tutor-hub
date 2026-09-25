@@ -85,11 +85,11 @@ export const Header: React.FC = () => {
 
           {/* Brand Logo */}
           <Link to="/" className="group flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#00261A] shadow-lg shadow-[#00261A]/20 transition-transform duration-200 group-hover:scale-105">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl  shadow-lg shadow-[#00261A]/20 transition-transform duration-200 group-hover:scale-105">
               <img
                 src="/favicon.svg"
                 alt="TutorHub logo"
-                className="h-7 w-7 object-contain"
+                className="h-11 w-11 object-contain"
               />
             </div>
             <div className="flex flex-col">
