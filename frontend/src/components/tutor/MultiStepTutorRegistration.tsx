@@ -136,24 +136,24 @@ export const MultiStepTutorRegistration: React.FC = () => {
   // If guest: 8 steps (Include step 1 Account Information)
   const stepsList = isAuthenticated
     ? [
-        { num: 1, key: 'personal', label: 'Personal' },
-        { num: 2, key: 'education', label: 'Education' },
-        { num: 3, key: 'subjects', label: 'Subjects' },
-        { num: 4, key: 'locations', label: 'Locations' },
-        { num: 5, key: 'salary', label: 'Salary' },
-        { num: 6, key: 'verification', label: 'Verification' },
-        { num: 7, key: 'review', label: 'Review' },
-      ]
+      { num: 1, key: 'personal', label: 'Personal' },
+      { num: 2, key: 'education', label: 'Education' },
+      { num: 3, key: 'subjects', label: 'Subjects' },
+      { num: 4, key: 'locations', label: 'Locations' },
+      { num: 5, key: 'salary', label: 'Salary' },
+      { num: 6, key: 'verification', label: 'Verification' },
+      { num: 7, key: 'review', label: 'Review' },
+    ]
     : [
-        { num: 1, key: 'account', label: 'Account' },
-        { num: 2, key: 'personal', label: 'Personal' },
-        { num: 3, key: 'education', label: 'Education' },
-        { num: 4, key: 'subjects', label: 'Subjects' },
-        { num: 5, key: 'locations', label: 'Locations' },
-        { num: 6, key: 'salary', label: 'Salary' },
-        { num: 7, key: 'verification', label: 'Verification' },
-        { num: 8, key: 'review', label: 'Review' },
-      ];
+      { num: 1, key: 'account', label: 'Account' },
+      { num: 2, key: 'personal', label: 'Personal' },
+      { num: 3, key: 'education', label: 'Education' },
+      { num: 4, key: 'subjects', label: 'Subjects' },
+      { num: 5, key: 'locations', label: 'Locations' },
+      { num: 6, key: 'salary', label: 'Salary' },
+      { num: 7, key: 'verification', label: 'Verification' },
+      { num: 8, key: 'review', label: 'Review' },
+    ];
 
   const totalSteps = stepsList.length;
   const currentStepInfo = stepsList[currentStep - 1] || stepsList[0];
@@ -316,8 +316,8 @@ export const MultiStepTutorRegistration: React.FC = () => {
   }
 
   return (
-    <div className="bg-white rounded-3xl border border-slate-200/90 shadow-card p-6 sm:p-10 max-w-3xl mx-auto my-8">
-      
+    <div className="bg-white rounded-3xl border border-slate-200/90 shadow-card p-6 sm:p-10 max-w-6xl mx-auto my-8">
+
       {/* Authenticated Account Badge */}
       {isAuthenticated && user && (
         <div className="mb-6 p-4 rounded-2xl bg-brand-50/70 border border-brand-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -378,18 +378,16 @@ export const MultiStepTutorRegistration: React.FC = () => {
           {stepsList.map((s) => (
             <div
               key={s.num}
-              className={`flex flex-col items-center ${
-                currentStep >= s.num ? 'text-brand-600' : 'text-slate-400'
-              }`}
+              className={`flex flex-col items-center ${currentStep >= s.num ? 'text-brand-600' : 'text-slate-400'
+                }`}
             >
               <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  currentStep === s.num
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${currentStep === s.num
                     ? 'bg-brand-500 text-white ring-4 ring-brand-100 shadow-xs'
                     : currentStep > s.num
-                    ? 'bg-brand-100 text-brand-700'
-                    : 'bg-slate-100 text-slate-400'
-                }`}
+                      ? 'bg-brand-100 text-brand-700'
+                      : 'bg-slate-100 text-slate-400'
+                  }`}
               >
                 {currentStep > s.num ? '✓' : s.num}
               </div>
@@ -413,7 +411,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
                 Create your login credentials for TutorHub to manage your applications and profile.
               </p>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
                 label="First Name"
@@ -432,7 +430,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
                 required
               />
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
                 label="Email Address"
@@ -486,22 +484,20 @@ export const MultiStepTutorRegistration: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => updateField('gender', 'MALE')}
-                    className={`py-2.5 rounded-xl text-sm font-bold border transition-all ${
-                      formData.gender === 'MALE'
+                    className={`py-2.5 rounded-xl text-sm font-bold border transition-all ${formData.gender === 'MALE'
                         ? 'bg-brand-500 text-white border-brand-500 shadow-xs'
                         : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                    }`}
+                      }`}
                   >
                     Male
                   </button>
                   <button
                     type="button"
                     onClick={() => updateField('gender', 'FEMALE')}
-                    className={`py-2.5 rounded-xl text-sm font-bold border transition-all ${
-                      formData.gender === 'FEMALE'
+                    className={`py-2.5 rounded-xl text-sm font-bold border transition-all ${formData.gender === 'FEMALE'
                         ? 'bg-brand-500 text-white border-brand-500 shadow-xs'
                         : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                    }`}
+                      }`}
                   >
                     Female
                   </button>
@@ -628,11 +624,10 @@ export const MultiStepTutorRegistration: React.FC = () => {
                           updateField('subjects', [...formData.subjects, sub]);
                         }
                       }}
-                      className={`p-2.5 rounded-xl text-xs font-bold border text-left transition-all ${
-                        isSelected
+                      className={`p-2.5 rounded-xl text-xs font-bold border text-left transition-all ${isSelected
                           ? 'bg-brand-500 text-white border-brand-500 shadow-xs'
                           : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                      }`}
+                        }`}
                     >
                       {isSelected ? '✓ ' : '+ '}{sub}
                     </button>
@@ -662,11 +657,10 @@ export const MultiStepTutorRegistration: React.FC = () => {
                           updateField('preferred_classes', [...formData.preferred_classes, cls]);
                         }
                       }}
-                      className={`p-2 rounded-xl text-xs font-bold border text-center transition-all ${
-                        isSelected
+                      className={`p-2 rounded-xl text-xs font-bold border text-center transition-all ${isSelected
                           ? 'bg-slate-900 text-white border-slate-900'
                           : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                      }`}
+                        }`}
                     >
                       {cls}
                     </button>
@@ -707,11 +701,10 @@ export const MultiStepTutorRegistration: React.FC = () => {
                         updateField('preferred_locations', [...formData.preferred_locations, area]);
                       }
                     }}
-                    className={`p-3 rounded-xl text-xs font-bold border text-left transition-all ${
-                      isSelected
+                    className={`p-3 rounded-xl text-xs font-bold border text-left transition-all ${isSelected
                         ? 'bg-brand-500 text-white border-brand-500 shadow-xs'
                         : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                    }`}
+                      }`}
                   >
                     📍 {area}
                   </button>

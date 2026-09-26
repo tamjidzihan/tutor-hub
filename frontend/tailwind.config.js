@@ -6,6 +6,16 @@ export default {
   ],
   theme: {
     extend: {
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(8px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
       colors: {
         brand: {
           50: '#f4fbe8',
@@ -42,6 +52,10 @@ export default {
       },
       backgroundImage: {
         'hero-pattern': 'radial-gradient(circle at top left, rgba(134, 194, 64, 0.2), transparent 32%), radial-gradient(circle at bottom right, rgba(18, 181, 224, 0.14), transparent 28%)',
+      },
+      animation: {
+        marquee: 'marquee 40s linear infinite',
+        fadeInUp: 'fadeInUp 0.4s ease-out both',
       },
     },
   },

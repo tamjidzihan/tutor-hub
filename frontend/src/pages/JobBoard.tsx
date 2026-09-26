@@ -77,7 +77,7 @@ export const JobBoard: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Top Header Banner */}
-        <div className="bg-gradient-to-r from-navy-950 via-slate-900 to-navy-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="bg-linear-to-r from-navy-950 via-slate-900 to-navy-900 text-white rounded-3xl p-6 sm:p-10 shadow-xl mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/20 text-brand-400 text-xs font-bold border border-brand-500/30">
               <Briefcase className="w-3.5 h-3.5" />

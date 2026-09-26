@@ -40,8 +40,8 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="bg-slate-50 min-h-screen py-12 flex items-center justify-center px-4">
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-8 sm:p-10 max-w-md w-full space-y-6">
+    <div className="bg-slate-50 py-12 flex items-center justify-center px-4">
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-8 sm:p-10 max-w-lg w-full space-y-6">
 
         {/* Logo */}
         <div className="text-center space-y-2">

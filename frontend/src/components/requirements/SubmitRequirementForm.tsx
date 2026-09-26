@@ -148,7 +148,7 @@ export const SubmitRequirementForm: React.FC = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-slate-200/90 shadow-card p-6 sm:p-10 max-w-3xl mx-auto my-8 space-y-8">
+    <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-slate-200/90 shadow-card p-6 sm:p-10 max-w-6xl mx-auto my-8 space-y-8">
       {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700" role="alert">{error}</div>}
 
       {/* Form Header */}

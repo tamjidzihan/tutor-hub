@@ -56,6 +56,16 @@
   }
 }
 
+  .testimonial-scroller {
+    scroll-padding-left: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .testimonial-scroller [style*="animation"] {
+      animation: none !important;
+    }
+  }
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
