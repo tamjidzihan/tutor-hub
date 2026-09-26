@@ -5,6 +5,7 @@ export interface User {
   email: string;
   first_name: string;
   last_name: string;
+  full_name?: string;
   phone: string;
   role: UserRole;
   profile_image?: string;

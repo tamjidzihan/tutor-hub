@@ -94,6 +94,36 @@ export const tutorsApi = {
     return response.data;
   },
 
+  saveTutorOnboarding: async (data: any): Promise<Tutor> => {
+    const payload = {
+      gender: data.gender || 'MALE',
+      university: data.university || '',
+      department: data.department || '',
+      degree_title: data.degree || data.degree_title || 'B.Sc Engineering',
+      passing_year: String(data.graduation_year || data.passing_year || '2024'),
+      city: data.city || 'Dhaka',
+      area: data.area || '',
+      expected_salary: Number(data.expected_salary || 5000),
+      experience_years: Number(data.experience_years || 0),
+      subjects: Array.isArray(data.subjects) ? data.subjects : [],
+      classes: Array.isArray(data.preferred_classes)
+        ? data.preferred_classes
+        : (Array.isArray(data.classes) ? data.classes : []),
+      curriculums: Array.isArray(data.curriculums) ? data.curriculums : [],
+      preferred_locations: Array.isArray(data.preferred_locations) ? data.preferred_locations : [],
+      tutoring_types: Array.isArray(data.preferred_tuition_type)
+        ? data.preferred_tuition_type
+        : (Array.isArray(data.tutoring_types) ? data.tutoring_types : ['Home Tutoring']),
+      bio: data.bio || '',
+      nid_or_birth_cert: data.nid_number || data.nid_or_birth_cert || '',
+      profile_photo_url: data.profile_photo || data.profile_photo_url || '',
+      is_available: true,
+    };
+
+    const response = await apiClient.patch('/tutors/me/', payload);
+    return response.data;
+  },
+
   registerTutor: async (registrationData: any): Promise<Tutor> => {
     // 1. Register account
     const userRes = await apiClient.post('/auth/register/', {
@@ -111,25 +141,7 @@ export const tutorsApi = {
       localStorage.setItem('tutorhub_user', JSON.stringify(userRes.data.user));
     }
 
-    // 2. Update profile with detailed onboarding info
-    const profileRes = await apiClient.patch('/tutors/me/', {
-      gender: registrationData.gender,
-      university: registrationData.university,
-      department: registrationData.department,
-      city: registrationData.city,
-      area: registrationData.area,
-      expected_salary: registrationData.expected_salary,
-      experience_years: registrationData.experience_years,
-      subjects: registrationData.subjects,
-      classes: registrationData.classes,
-      curriculums: registrationData.curriculums,
-      preferred_locations: registrationData.preferred_locations,
-      tutoring_types: registrationData.tutoring_types,
-      bio: registrationData.bio,
-      nid_or_birth_cert: registrationData.nid_number,
-      profile_photo_url: registrationData.profile_photo
-    });
-
-    return profileRes.data;
+    // 2. Save onboarding profile details
+    return tutorsApi.saveTutorOnboarding(registrationData);
   }
 };

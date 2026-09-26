@@ -28,6 +28,17 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         password = validated_data.pop('password')
         user = User.objects.create_user(password=password, **validated_data)
+        if user.role == User.Role.TUTOR:
+            from apps.tutors.models import TutorProfile
+            TutorProfile.objects.get_or_create(
+                user=user,
+                defaults={
+                    'university': '',
+                    'department': '',
+                    'city': 'Dhaka',
+                    'area': 'Mirpur'
+                }
+            )
         return user
 
 class LoginResponseSerializer(serializers.Serializer):

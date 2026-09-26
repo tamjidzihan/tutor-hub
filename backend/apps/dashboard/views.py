@@ -103,12 +103,35 @@ class DashboardOverviewView(APIView):
                 'selected_applications': applications.filter(status=JobApplication.Status.SELECTED).count(),
                 'available_jobs': TuitionJob.objects.filter(status=TuitionJob.Status.AVAILABLE).count(),
                 'profile_completion': profile.profile_completion_score if profile else 0,
-                'rating': float(profile.rating) if profile else None,
+                'rating': float(profile.rating) if (profile and profile.total_reviews > 0) else None,
                 'total_reviews': profile.total_reviews if profile else 0,
                 'completed_tuitions': profile.total_tuitions_completed if profile else 0,
+                'tutor_id': profile.tutor_id if profile else None,
+                'is_verified': profile.is_verified if profile else False,
+                'is_available': profile.is_available if profile else True,
             },
+            'profile': {
+                'tutor_id': profile.tutor_id,
+                'headline': profile.headline,
+                'university': profile.university,
+                'department': profile.department,
+                'degree_title': profile.degree_title,
+                'passing_year': profile.passing_year,
+                'cgpa': profile.cgpa,
+                'city': profile.city,
+                'area': profile.area,
+                'expected_salary': profile.expected_salary,
+                'experience_years': profile.experience_years,
+                'subjects': profile.subjects,
+                'classes': profile.classes,
+                'curriculums': profile.curriculums,
+                'preferred_locations': profile.preferred_locations,
+                'tutoring_types': profile.tutoring_types,
+                'is_verified': profile.is_verified,
+                'is_available': profile.is_available,
+            } if profile else None,
             'recent_applications': JobApplicationSerializer(
-                applications.select_related('job', 'tutor_user')[:5], many=True
+                applications.select_related('job', 'tutor_user')[:10], many=True
             ).data,
         }
 

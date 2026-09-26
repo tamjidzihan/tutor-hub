@@ -29,6 +29,7 @@ import { ForgotPassword } from './pages/ForgotPassword';
 import { DashboardPage } from './pages/DashboardPage';
 import { DashboardProfilePage } from './pages/DashboardProfilePage';
 import { DashboardApplicationsPage } from './pages/DashboardApplicationsPage';
+import { DashboardJobsPage } from './pages/DashboardJobsPage';
 
 // Scroll to top automatically on route change
 const ScrollToTop: React.FC = () => {
@@ -61,6 +62,7 @@ export function App() {
           {/* Dashboard Standalone Routes (Internal Layout) */}
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/dashboard/profile" element={<DashboardProfilePage />} />
+          <Route path="/dashboard/jobs" element={<DashboardJobsPage />} />
           <Route path="/dashboard/applications" element={<DashboardApplicationsPage />} />
           <Route path="/dashboard/requirements" element={<DashboardApplicationsPage />} />
           <Route path="/dashboard/notifications" element={<DashboardApplicationsPage />} />

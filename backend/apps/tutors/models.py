@@ -23,8 +23,8 @@ class TutorProfile(TimeStampedModel, UUIDModel):
     bio = models.TextField(blank=True)
     gender = models.CharField(max_length=10, choices=Gender.choices, default=Gender.MALE)
     
-    university = models.CharField(max_length=200)
-    department = models.CharField(max_length=200)
+    university = models.CharField(max_length=200, blank=True, default='')
+    department = models.CharField(max_length=200, blank=True, default='')
     degree_title = models.CharField(max_length=200, default='B.Sc Engineering')
     passing_year = models.CharField(max_length=20, default='2024')
     cgpa = models.CharField(max_length=50, default='3.85 / 4.00')

@@ -6,6 +6,7 @@ export interface JobFilterParams {
   area?: string;
   subject?: string;
   class_level?: string;
+  curriculum?: string;
   tuition_type?: string;
   gender?: string;
   salary_min?: number;
