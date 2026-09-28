@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { jobsApi } from '../api/jobs';
 import type { TuitionJob } from '../types';
 import { ApplyJobModal } from '../components/jobs/ApplyJobModal';
 import { EmptyState, LoadingSkeleton } from '../components/common/FeedbackStates';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { 
   ShieldCheck, 
   ArrowLeft,
@@ -13,9 +15,21 @@ import {
 export const JobDetails: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
   const [job, setJob] = useState<TuitionJob | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+
+  const handleApplyClick = () => {
+    if (!isAuthenticated) {
+      showToast('Please sign in to apply for this tuition job.', 'info');
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+    setIsApplyModalOpen(true);
+  };
 
   useEffect(() => {
     const loadJob = async () => {
@@ -180,7 +194,7 @@ export const JobDetails: React.FC = () => {
             </div>
 
             <button
-              onClick={() => setIsApplyModalOpen(true)}
+              onClick={handleApplyClick}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all active:scale-95"
             >
               <Send className="w-4 h-4" />

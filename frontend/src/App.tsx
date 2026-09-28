@@ -31,6 +31,8 @@ import { DashboardProfilePage } from './pages/DashboardProfilePage';
 import { DashboardApplicationsPage } from './pages/DashboardApplicationsPage';
 import { DashboardJobsPage } from './pages/DashboardJobsPage';
 
+import { ProtectedRoute } from './components/common/ProtectedRoute';
+
 // Scroll to top automatically on route change
 const ScrollToTop: React.FC = () => {
   const { pathname } = useLocation();
@@ -59,15 +61,17 @@ export function App() {
       <BrowserRouter>
         <ScrollToTop />
         <Routes>
-          {/* Dashboard Standalone Routes (Internal Layout) */}
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/dashboard/profile" element={<DashboardProfilePage />} />
-          <Route path="/dashboard/jobs" element={<DashboardJobsPage />} />
-          <Route path="/dashboard/applications" element={<DashboardApplicationsPage />} />
-          <Route path="/dashboard/requirements" element={<DashboardApplicationsPage />} />
-          <Route path="/dashboard/notifications" element={<DashboardApplicationsPage />} />
+          {/* Dashboard Standalone Routes (Guarded Behind Authentication) */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/dashboard/profile" element={<DashboardProfilePage />} />
+            <Route path="/dashboard/jobs" element={<DashboardJobsPage />} />
+            <Route path="/dashboard/applications" element={<DashboardApplicationsPage />} />
+            <Route path="/dashboard/requirements" element={<DashboardApplicationsPage />} />
+            <Route path="/dashboard/notifications" element={<DashboardApplicationsPage />} />
+          </Route>
 
-          {/* Public Pages with Header & Footer */}
+          {/* Public & Guarded Website Pages with Main Header & Footer */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/job-board" element={<JobBoard />} />
@@ -77,8 +81,26 @@ export function App() {
             <Route path="/hub/tutor-details/:tutorId" element={<TutorDetails />} />
             <Route path="/category-details/:id/:slug" element={<CategoryDetails />} />
             <Route path="/category-details/:slug" element={<CategoryDetails />} />
-            <Route path="/become-a-tutor" element={<BecomeATutor />} />
-            <Route path="/appoint-a-tutor" element={<AppointATutor />} />
+
+            {/* Authenticated Action Pages */}
+            <Route
+              path="/become-a-tutor"
+              element={
+                <ProtectedRoute>
+                  <BecomeATutor />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/appoint-a-tutor"
+              element={
+                <ProtectedRoute>
+                  <AppointATutor />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Informational & Auth Pages */}
             <Route path="/affiliate-program" element={<AffiliateProgram />} />
             <Route path="/our-team" element={<OurTeam />} />
             <Route path="/careers" element={<Careers />} />

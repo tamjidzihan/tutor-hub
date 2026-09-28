@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import type { UserRole } from '../types';
 import { Button } from '../components/common/Button';
@@ -12,6 +12,9 @@ export const Register: React.FC = () => {
   const { register } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: string })?.from;
+
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
@@ -60,10 +63,12 @@ export const Register: React.FC = () => {
     try {
       await register(formData);
       showToast('Your TutorHub account was created successfully.', 'success');
-      if (formData.role === 'TUTOR') {
-        navigate('/become-a-tutor');
+      if (from) {
+        navigate(from, { replace: true });
+      } else if (formData.role === 'TUTOR') {
+        navigate('/become-a-tutor', { replace: true });
       } else {
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       }
     } catch (err) {
       setError(getApiErrorMessage(err, 'Registration failed. Please check your details and try again.'));
@@ -196,7 +201,7 @@ export const Register: React.FC = () => {
         {/* Footer Link */}
         <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-600">
           <span>Already have an account? </span>
-          <Link to="/login" className="font-bold text-brand-600 hover:underline">
+          <Link to="/login" state={{ from }} className="font-bold text-brand-600 hover:underline">
             Sign In
           </Link>
         </div>

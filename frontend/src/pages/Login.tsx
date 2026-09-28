@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import type { UserRole } from '../types';
 import { Button } from '../components/common/Button';
 import { Input } from '../components/common/Input';
-import { Lock, Mail, GraduationCap, ArrowRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, GraduationCap, ArrowRight, AlertCircle, Eye, EyeOff, Info } from 'lucide-react';
 import { getApiErrorMessage } from '../api/client';
 import { useToast } from '../context/ToastContext';
 
@@ -12,6 +12,9 @@ export const Login: React.FC = () => {
   const { login } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as { from?: string })?.from;
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -31,7 +34,7 @@ export const Login: React.FC = () => {
     try {
       await login(email, password, selectedRole);
       showToast('Signed in successfully.', 'success');
-      navigate('/dashboard');
+      navigate(from || '/dashboard', { replace: true });
     } catch (err) {
       setError(getApiErrorMessage(err, 'Invalid credentials. Check your email and password.'));
     } finally {
@@ -42,6 +45,13 @@ export const Login: React.FC = () => {
   return (
     <div className="bg-slate-50 py-12 flex items-center justify-center px-4">
       <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-8 sm:p-10 max-w-lg w-full space-y-6">
+
+        {from && (
+          <div className="p-3.5 bg-brand-50 text-brand-800 text-xs font-semibold rounded-2xl border border-brand-200 flex items-center gap-2.5">
+            <Info className="w-4 h-4 shrink-0 text-brand-600" />
+            <span>Please sign in to your TutorHub account to continue.</span>
+          </div>
+        )}
 
         {/* Logo */}
         <div className="text-center space-y-2">
@@ -132,7 +142,7 @@ export const Login: React.FC = () => {
         {/* Footer Link */}
         <div className="pt-4 border-t border-slate-100 text-center text-xs text-slate-600">
           <span>Don't have an account yet? </span>
-          <Link to="/register" className="font-bold text-brand-600 hover:underline">
+          <Link to="/register" state={{ from }} className="font-bold text-brand-600 hover:underline">
             Sign Up Free
           </Link>
         </div>

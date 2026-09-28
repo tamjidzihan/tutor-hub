@@ -5,7 +5,8 @@ import {
   Send,
   CheckCircle2,
   DollarSign,
-  ShieldCheck
+  ShieldCheck,
+  UserCheck
 } from 'lucide-react';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
@@ -14,6 +15,7 @@ import { locationsApi } from '../../api/locations';
 import type { LocationCity } from '../../api/locations';
 import { requirementsApi } from '../../api/requirements';
 import { getApiErrorMessage } from '../../api/client';
+import { useAuth } from '../../context/AuthContext';
 
 type RequirementFormData = {
   parent_name: string;
@@ -37,6 +39,7 @@ type RequirementFormData = {
 
 export const SubmitRequirementForm: React.FC = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [cities, setCities] = useState<LocationCity[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -56,9 +59,9 @@ export const SubmitRequirementForm: React.FC = () => {
   }, []);
 
   const [formData, setFormData] = useState<RequirementFormData>({
-    parent_name: '',
-    phone: '',
-    email: '',
+    parent_name: user?.full_name || (user ? `${user.first_name} ${user.last_name}`.trim() : ''),
+    phone: user?.phone || '',
+    email: user?.email || '',
     student_name: '',
     student_gender: '',
     class_level: '',
@@ -74,6 +77,18 @@ export const SubmitRequirementForm: React.FC = () => {
     budget: '',
     additional_requirements: ''
   });
+
+  // Pre-fill if user loads after mount
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        parent_name: prev.parent_name || user.full_name || `${user.first_name} ${user.last_name}`.trim() || user.email,
+        phone: prev.phone || user.phone || '',
+        email: prev.email || user.email || '',
+      }));
+    }
+  }, [user]);
 
   const updateField = (key: string, value: any) => {
     setFormData(prev => ({ ...prev, [key]: value }));
@@ -150,6 +165,34 @@ export const SubmitRequirementForm: React.FC = () => {
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-3xl border border-slate-200/90 shadow-card p-6 sm:p-10 max-w-6xl mx-auto my-8 space-y-8">
       {error && <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-medium text-red-700" role="alert">{error}</div>}
+
+      {/* Authenticated Account Info Badge */}
+      {user && (
+        <div className="p-4 rounded-2xl bg-brand-50/70 border border-brand-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-brand-500 text-white flex items-center justify-center font-black text-base shadow-xs">
+              <UserCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-brand-800 uppercase tracking-wider">
+                  Signed In Guardian
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-brand-200 text-brand-900 font-bold">
+                  {user.role}
+                </span>
+              </div>
+              <p className="text-sm font-bold text-slate-900">
+                {user.full_name || `${user.first_name} ${user.last_name}`.trim() || user.email}
+                <span className="font-normal text-slate-500 text-xs ml-1.5">({user.email})</span>
+              </p>
+            </div>
+          </div>
+          <p className="text-xs text-brand-700 font-medium sm:text-right">
+            Auto-linked to your guardian dashboard
+          </p>
+        </div>
+      )}
 
       {/* Form Header */}
       <div className="border-b border-slate-100 pb-6">

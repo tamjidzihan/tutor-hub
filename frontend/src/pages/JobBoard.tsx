@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { jobsApi } from '../api/jobs';
 import type { JobFilterParams } from '../api/jobs';
 import type { TuitionJob } from '../types';
@@ -10,8 +10,13 @@ import { Pagination } from '../components/common/Pagination';
 import { EmptyState, LoadingSkeleton } from '../components/common/FeedbackStates';
 import { Briefcase, SlidersHorizontal, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 
 export const JobBoard: React.FC = () => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+  const { showToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [jobs, setJobs] = useState<TuitionJob[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -167,7 +172,14 @@ export const JobBoard: React.FC = () => {
                   <JobCard
                     key={job.id}
                     job={job}
-                    onApply={(j) => setSelectedJobToApply(j)}
+                    onApply={(j) => {
+                      if (!isAuthenticated) {
+                        showToast('Please sign in to apply for this tuition job.', 'info');
+                        navigate('/login', { state: { from: `/job-board/${j.job_id}` } });
+                        return;
+                      }
+                      setSelectedJobToApply(j);
+                    }}
                   />
                 ))}
               </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
@@ -6,6 +7,7 @@ import type { TuitionJob } from '../../types';
 import { applicationsApi } from '../../api/applications';
 import { getApiErrorMessage } from '../../api/client';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 import { CheckCircle2, Send, DollarSign, AlertCircle, ShieldCheck } from 'lucide-react';
 
 interface ApplyJobModalProps {
@@ -21,6 +23,8 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
   onClose,
   onSuccess
 }) => {
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const { showToast } = useToast();
   const [coverMessage, setCoverMessage] = useState(
     'I am an experienced tutor from BUET/DU and I am confident in helping the student achieve top grades in the selected subjects. Available for a free trial class.'
@@ -34,6 +38,12 @@ export const ApplyJobModal: React.FC<ApplyJobModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      onClose();
+      showToast('Please sign in to apply for this tuition job.', 'info');
+      navigate('/login', { state: { from: `/job-board/${job.job_id}` } });
+      return;
+    }
     setIsSubmitting(true);
     setError('');
 
