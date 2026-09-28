@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { DashboardLayout } from '../components/dashboard/DashboardLayout';
+import { AdminProfile } from '../components/dashboard/AdminProfile';
+import { LearnerProfile } from '../components/dashboard/LearnerProfile';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/common/Button';
 import { Input } from '../components/common/Input';
@@ -54,6 +56,22 @@ const DHAKA_AREAS = [
 export const DashboardProfilePage: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
   const { showToast } = useToast();
+
+  if (user?.role === 'ADMIN') {
+    return (
+      <DashboardLayout>
+        <AdminProfile />
+      </DashboardLayout>
+    );
+  }
+
+  if (user?.role === 'PARENT' || user?.role === 'STUDENT') {
+    return (
+      <DashboardLayout>
+        <LearnerProfile />
+      </DashboardLayout>
+    );
+  }
   
   const [cities, setCities] = useState<LocationCity[]>([]);
   const [saved, setSaved] = useState(false);

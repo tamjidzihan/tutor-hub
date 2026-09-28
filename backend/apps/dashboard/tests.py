@@ -76,3 +76,33 @@ class DashboardOverviewTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         job.refresh_from_db()
         self.assertEqual(job.status, TuitionJob.Status.CANCELLED)
+
+    def test_admin_cannot_edit_user_data(self):
+        admin = self.create_user('admin-policy@example.com', User.Role.ADMIN)
+        target_user = self.create_user('target@example.com', User.Role.PARENT)
+        self.client.force_authenticate(admin)
+
+        response = self.client.patch(
+            f'/api/v1/dashboard/admin/users/{target_user.id}/',
+            {'action': 'set_role', 'value': User.Role.STUDENT},
+            format='json',
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertIn('cannot modify user account data directly', response.data['detail'])
+
+    def test_admin_can_delete_user(self):
+        admin = self.create_user('admin-delete@example.com', User.Role.ADMIN)
+        target_user = self.create_user('to-delete@example.com', User.Role.STUDENT)
+        self.client.force_authenticate(admin)
+
+        response = self.client.delete(f'/api/v1/dashboard/admin/users/{target_user.id}/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(User.objects.filter(id=target_user.id).exists())
+
+    def test_admin_cannot_delete_self(self):
+        admin = self.create_user('admin-self@example.com', User.Role.ADMIN)
+        self.client.force_authenticate(admin)
+
+        response = self.client.delete(f'/api/v1/dashboard/admin/users/{admin.id}/')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertTrue(User.objects.filter(id=admin.id).exists())

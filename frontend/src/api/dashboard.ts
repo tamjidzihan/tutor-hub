@@ -5,6 +5,20 @@ export interface DashboardStats {
     [key: string]: number | string | null;
 }
 
+export interface DistributionItem {
+    name?: string;
+    status?: string;
+    count: number;
+    color?: string;
+}
+
+export interface AdminActivityItem {
+    id: string;
+    created_at?: string;
+    date_joined?: string;
+    [key: string]: unknown;
+}
+
 export interface DashboardOverview {
     role: string;
     stats: DashboardStats;
@@ -19,7 +33,25 @@ export interface DashboardOverview {
         verification_status: string;
         created_at: string;
     }>;
-    analytics?: Record<string, Array<{ date: string; count: number }>>;
+    distributions?: {
+        roles: DistributionItem[];
+        jobs: DistributionItem[];
+        requirements: DistributionItem[];
+        tutors: DistributionItem[];
+    };
+    recent_activity?: {
+        users: AdminActivityItem[];
+        jobs: AdminActivityItem[];
+        requirements: AdminActivityItem[];
+        applications: AdminActivityItem[];
+    };
+    analytics?: {
+        users?: Array<{ date: string; count: number }>;
+        jobs?: Array<{ date: string; count: number }>;
+        requirements?: Array<{ date: string; count: number }>;
+        applications?: Array<{ date: string; count: number }>;
+        [key: string]: Array<{ date: string; count: number }> | undefined;
+    };
 }
 
 export type AdminResource = 'users' | 'tutors' | 'jobs' | 'requirements' | 'applications';
@@ -42,8 +74,16 @@ export const dashboardApi = {
         const response = await apiClient.get('/dashboard/admin/', { params: { ...params, resource } });
         return response.data;
     },
+    getAdminResourceItem: async (resource: AdminResource, identifier: string): Promise<AdminRecord> => {
+        const response = await apiClient.get(`/dashboard/admin/${resource}/${identifier}/`);
+        return response.data;
+    },
     updateAdminResource: async (resource: AdminResource, identifier: string, action: string, value?: string | boolean) => {
         const response = await apiClient.patch(`/dashboard/admin/${resource}/${identifier}/`, { action, value });
+        return response.data;
+    },
+    deleteAdminResource: async (resource: AdminResource, identifier: string) => {
+        const response = await apiClient.delete(`/dashboard/admin/${resource}/${identifier}/`);
         return response.data;
     },
 };

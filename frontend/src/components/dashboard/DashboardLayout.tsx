@@ -30,11 +30,14 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
   const navItems = [
     { name: 'Dashboard Overview', path: '/dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
-    ...(user?.role === 'TUTOR' ? [
+    ...(user?.role === 'ADMIN' ? [
+      { name: 'Admin Profile', path: '/dashboard/profile', icon: <User className="w-4 h-4" /> },
+    ] : user?.role === 'TUTOR' ? [
       { name: 'My Tutor Profile', path: '/dashboard/profile', icon: <User className="w-4 h-4" /> },
       { name: 'My Applications', path: '/dashboard/applications', icon: <Briefcase className="w-4 h-4" /> },
       { name: 'Find Tuition Jobs', path: '/dashboard/jobs', icon: <GraduationCap className="w-4 h-4" /> },
     ] : [
+      { name: 'My Profile', path: '/dashboard/profile', icon: <User className="w-4 h-4" /> },
       { name: 'My Requirements', path: '/dashboard/requirements', icon: <ClipboardList className="w-4 h-4" /> },
       { name: 'Post New Tuition', path: '/appoint-a-tutor', icon: <Sparkles className="w-4 h-4" /> },
       { name: 'Browse Tutors', path: '/find-tutor', icon: <User className="w-4 h-4" /> },
@@ -44,12 +47,16 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Helper to determine page title
   const getPageTitle = () => {
-    if (location.pathname === '/dashboard/profile') return 'Tutor Profile';
+    if (location.pathname === '/dashboard/profile') {
+      if (user?.role === 'ADMIN') return 'Admin Profile & Security';
+      if (user?.role === 'TUTOR') return 'Tutor Profile';
+      return 'Account Profile';
+    }
     if (location.pathname === '/dashboard/applications') return 'Applications';
     if (location.pathname === '/dashboard/jobs') return 'Find Tuition Jobs';
     if (location.pathname === '/dashboard/requirements') return 'My Requirements';
     if (location.pathname === '/dashboard/notifications') return 'Notifications';
-    return 'Dashboard Overview';
+    return user?.role === 'ADMIN' ? 'Platform Governance & Operations' : 'Dashboard Overview';
   };
 
   return (
