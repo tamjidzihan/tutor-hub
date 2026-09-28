@@ -10,6 +10,9 @@ interface AuthContextType {
   register: (data: { email: string; password: string; first_name: string; last_name: string; phone: string; role: UserRole }) => Promise<void>;
   logout: () => void;
   switchRole: (role: UserRole) => Promise<void>;
+  updateUser: (updatedUser: User) => void;
+  uploadAvatar: (file: File) => Promise<User>;
+  removeAvatar: () => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -89,6 +92,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+    localStorage.setItem('tutorhub_user', JSON.stringify(updatedUser));
+  };
+
+  const uploadAvatar = async (file: File): Promise<User> => {
+    const updated = await authApi.uploadAvatar(file);
+    setUser(updated);
+    localStorage.setItem('tutorhub_user', JSON.stringify(updated));
+    return updated;
+  };
+
+  const removeAvatar = async (): Promise<User> => {
+    const updated = await authApi.removeAvatar();
+    setUser(updated);
+    localStorage.setItem('tutorhub_user', JSON.stringify(updated));
+    return updated;
+  };
+
   const switchRole = async (role: UserRole) => {
     if (!user) return;
     try {
@@ -109,7 +131,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         login,
         register,
         logout,
-        switchRole
+        switchRole,
+        updateUser,
+        uploadAvatar,
+        removeAvatar,
       }}
     >
       {children}

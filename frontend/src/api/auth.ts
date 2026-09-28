@@ -61,6 +61,26 @@ export const authApi = {
     return response.data;
   },
 
+  uploadAvatar: async (file: File): Promise<User> => {
+    const formData = new FormData();
+    formData.append('profile_image', file);
+    const response = await apiClient.post('/auth/avatar/', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    const updatedUser = response.data.user;
+    localStorage.setItem('tutorhub_user', JSON.stringify(updatedUser));
+    return updatedUser;
+  },
+
+  removeAvatar: async (): Promise<User> => {
+    const response = await apiClient.delete('/auth/avatar/');
+    const updatedUser = response.data.user;
+    localStorage.setItem('tutorhub_user', JSON.stringify(updatedUser));
+    return updatedUser;
+  },
+
   switchRole: async (newRole: UserRole): Promise<User> => {
     const response = await apiClient.post('/auth/switch-role/', { role: newRole });
     const updatedUser = response.data.user;

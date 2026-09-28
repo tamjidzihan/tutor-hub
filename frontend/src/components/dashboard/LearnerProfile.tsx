@@ -13,6 +13,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { ProfileImageUpload } from '../common/ProfileImageUpload';
 
 export const LearnerProfile: React.FC = () => {
   const { user } = useAuth();
@@ -61,8 +62,12 @@ export const LearnerProfile: React.FC = () => {
       {/* Header Banner */}
       <div className="rounded-3xl bg-linear-to-r from-navy-950 via-slate-900 to-navy-900 p-6 sm:p-8 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-brand-500 text-white flex items-center justify-center font-black text-2xl shadow-lg ring-4 ring-brand-400/20 shrink-0">
-            {user?.first_name?.[0] || 'U'}
+          <div className="w-16 h-16 rounded-2xl bg-brand-500 text-white flex items-center justify-center font-black text-2xl shadow-lg ring-4 ring-brand-400/20 shrink-0 overflow-hidden">
+            {user?.profile_image ? (
+              <img src={user.profile_image} alt={user.first_name} className="h-full w-full object-cover" />
+            ) : (
+              <span>{user?.first_name?.[0] || 'U'}</span>
+            )}
           </div>
           <div>
             <span className="px-2.5 py-0.5 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30 text-xs font-bold uppercase tracking-wider">
@@ -88,12 +93,25 @@ export const LearnerProfile: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-        {/* Identity Overview */}
-        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 space-y-4">
-          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-            <UserCheck className="w-4 h-4 text-brand-600" />
-            Account Information
-          </h3>
+        {/* Identity & Photo Upload Overview */}
+        <div className="space-y-6">
+
+          {/* Photo Uploader Card */}
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 space-y-4">
+            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <UserCheck className="w-4 h-4 text-brand-600" />
+              Profile Photo
+            </h3>
+            <div className="pt-2 flex justify-center sm:justify-start">
+              <ProfileImageUpload user={user} size="md" />
+            </div>
+          </div>
+
+          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 space-y-4">
+            <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <UserCheck className="w-4 h-4 text-brand-600" />
+              Account Information
+            </h3>
 
           <div className="space-y-3 text-xs">
             <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/80">
@@ -114,6 +132,7 @@ export const LearnerProfile: React.FC = () => {
               </span>
             </div>
           </div>
+        </div>
         </div>
 
         {/* Edit Form */}

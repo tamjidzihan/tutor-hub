@@ -12,10 +12,10 @@ import { tutorsApi } from '../api/tutors';
 import { authApi } from '../api/auth';
 import { getApiErrorMessage } from '../api/client';
 import { useToast } from '../context/ToastContext';
+import { ProfileImageUpload } from '../components/common/ProfileImageUpload';
 import {
   CheckCircle2,
   Save,
-  ShieldCheck,
   GraduationCap,
   Sparkles,
   MapPin,
@@ -329,29 +329,15 @@ export const DashboardProfilePage: React.FC = () => {
         {/* Main Form */}
         <form onSubmit={handleSave} className="space-y-6">
 
-          {/* Section 1: Profile Header & Availability */}
+          {/* Section 1: Profile Header & Avatar Upload */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-card space-y-6">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 pb-6 border-b border-slate-100">
-              <div className="flex items-center gap-4">
-                <img
-                  src={formData.profile_photo_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'}
-                  alt={formData.first_name}
-                  className="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl object-cover ring-2 ring-brand-500 shadow-sm"
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                <ProfileImageUpload
+                  label="Tutor Profile Picture"
+                  helperText="Upload a clear square photo. Max 10MB (JPG, PNG, WEBP). Automatically cropped & optimized for ultra-fast loading."
+                  onImageUploaded={(url: string) => setFormData((prev) => ({ ...prev, profile_photo_url: url }))}
                 />
-                <div className="space-y-1">
-                  <h4 className="text-base font-bold text-slate-900">
-                    {formData.first_name} {formData.last_name}
-                  </h4>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-brand-700 bg-brand-50 px-2.5 py-0.5 rounded-full border border-brand-200">
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      {formData.is_verified ? 'Verified Teacher' : 'Pending Verification'}
-                    </span>
-                    <span className="text-xs text-slate-400 font-medium">
-                      {formData.city}
-                    </span>
-                  </div>
-                </div>
               </div>
 
               {/* Availability Toggle */}
@@ -374,17 +360,6 @@ export const DashboardProfilePage: React.FC = () => {
                   />
                 </button>
               </div>
-            </div>
-
-            {/* Profile Photo URL Input */}
-            <div>
-              <Input
-                label="Profile Photo URL"
-                value={formData.profile_photo_url}
-                onChange={(e) => setFormData({ ...formData, profile_photo_url: e.target.value })}
-                placeholder="https://example.com/photo.jpg"
-                helperText="Enter a direct image URL for your profile avatar."
-              />
             </div>
 
             {/* Headline */}

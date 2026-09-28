@@ -22,7 +22,7 @@ build/
 develop-eggs/
 dist/
 downloads/
-media/
+# media/
 eggs/
 .eggs/
 lib64/

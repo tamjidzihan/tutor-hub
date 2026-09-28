@@ -12,6 +12,7 @@ import {
   Sparkles,
   AlertCircle
 } from 'lucide-react';
+import { ProfileImageUpload } from '../common/ProfileImageUpload';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { Select } from '../common/Select';
@@ -63,7 +64,7 @@ export const MultiStepTutorRegistration: React.FC = () => {
     expected_salary: 8000,
     bio: '',
     // Photos & ID
-    profile_photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    profile_photo: '',
     nid_number: ''
   });
 
@@ -705,17 +706,12 @@ export const MultiStepTutorRegistration: React.FC = () => {
               </p>
             </div>
 
-            <div className="flex items-center gap-5 p-4 bg-slate-50 rounded-2xl border border-slate-200">
-              <img
-                src={formData.profile_photo || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80'}
-                alt="Profile Preview"
-                className="w-20 h-20 rounded-2xl object-cover ring-2 ring-brand-500 shadow-xs"
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+              <ProfileImageUpload
+                label="Your Profile Photo"
+                helperText="Upload a professional, centered headshot. Images are automatically cropped and optimized."
+                onImageUploaded={(url: string) => updateField('profile_photo', url)}
               />
-              <div className="space-y-1">
-                <h4 className="text-sm font-bold text-slate-900">Profile Photo Ready</h4>
-                <p className="text-xs text-slate-500">Professional portrait photo for verified badge display.</p>
-                <div className="text-[11px] text-brand-600 font-bold">Standard tutor avatar selected</div>
-              </div>
             </div>
 
             <Input

@@ -63,12 +63,76 @@ class LoginView(APIView):
             'message': 'Login successful'
         })
 
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from apps.common.image_utils import optimize_profile_image
+
 class MeView(generics.RetrieveUpdateAPIView):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_object(self):
         return self.request.user
+
+class AvatarUploadView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        file = (
+            request.FILES.get('profile_image')
+            or request.FILES.get('file')
+            or request.FILES.get('image')
+            or request.FILES.get('avatar')
+        )
+        if not file:
+            return Response({'error': 'No image file provided in request.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        optimized = optimize_profile_image(file)
+        user = request.user
+
+        if user.profile_image:
+            try:
+                user.profile_image.delete(save=False)
+            except Exception:
+                pass
+
+        user.profile_image = optimized
+        user.save(update_fields=['profile_image'])
+
+        if user.role == User.Role.TUTOR:
+            from apps.tutors.models import TutorProfile
+            tutor_profile = TutorProfile.objects.filter(user=user).first()
+            if tutor_profile:
+                tutor_profile.profile_photo_url = user.profile_image.url if user.profile_image else ''
+                tutor_profile.save(update_fields=['profile_photo_url'])
+
+        return Response({
+            'message': 'Profile photo uploaded and optimized successfully.',
+            'user': UserSerializer(user, context={'request': request}).data,
+        }, status=status.HTTP_200_OK)
+
+    def delete(self, request):
+        user = request.user
+        if user.profile_image:
+            try:
+                user.profile_image.delete(save=False)
+            except Exception:
+                pass
+            user.profile_image = None
+            user.save(update_fields=['profile_image'])
+
+        if user.role == User.Role.TUTOR:
+            from apps.tutors.models import TutorProfile
+            tutor_profile = TutorProfile.objects.filter(user=user).first()
+            if tutor_profile:
+                tutor_profile.profile_photo_url = ''
+                tutor_profile.save(update_fields=['profile_photo_url'])
+
+        return Response({
+            'message': 'Profile photo removed.',
+            'user': UserSerializer(user, context={'request': request}).data,
+        }, status=status.HTTP_200_OK)
 
 class SwitchRoleView(APIView):
     permission_classes = [permissions.IsAuthenticated]

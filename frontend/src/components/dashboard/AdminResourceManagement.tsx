@@ -302,12 +302,22 @@ export const AdminResourceManagement: React.FC<AdminResourceManagementProps> = (
                                             {/* Column 1: Record Title / Identifiers */}
                                             <td className="px-5 py-4">
                                                 <div className="flex items-start gap-3">
-                                                    <div className="mt-0.5 rounded-lg bg-slate-100 p-2 text-slate-600">
-                                                        {resource === 'users' && <Users className="h-4 w-4" />}
-                                                        {resource === 'tutors' && <UserCheck className="h-4 w-4" />}
-                                                        {resource === 'jobs' && <Briefcase className="h-4 w-4" />}
-                                                        {resource === 'requirements' && <ClipboardList className="h-4 w-4" />}
-                                                        {resource === 'applications' && <CheckCircle2 className="h-4 w-4" />}
+                                                    <div className="mt-0.5 h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-slate-200 bg-slate-100 flex items-center justify-center">
+                                                        {(resource === 'users' && record.profile_image) ? (
+                                                            <img src={String(record.profile_image)} alt="" className="h-full w-full object-cover" />
+                                                        ) : (resource === 'tutors' && (record.profile_photo || record.profile_image)) ? (
+                                                            <img src={String(record.profile_photo || record.profile_image)} alt="" className="h-full w-full object-cover" />
+                                                        ) : resource === 'users' ? (
+                                                            <div className="font-bold text-xs text-brand-700">{String(record.name || record.email || '?')[0].toUpperCase()}</div>
+                                                        ) : resource === 'tutors' ? (
+                                                            <div className="font-bold text-xs text-brand-700">{String(record.name || '?')[0].toUpperCase()}</div>
+                                                        ) : resource === 'jobs' ? (
+                                                            <Briefcase className="h-4 w-4 text-slate-600" />
+                                                        ) : resource === 'requirements' ? (
+                                                            <ClipboardList className="h-4 w-4 text-slate-600" />
+                                                        ) : (
+                                                            <CheckCircle2 className="h-4 w-4 text-slate-600" />
+                                                        )}
                                                     </div>
                                                     <div>
                                                         <p className="font-bold text-slate-900">
@@ -714,6 +724,28 @@ const UserDetailsView: React.FC<{ record: AdminRecord }> = ({ record }) => {
                 </div>
             </div>
 
+            {/* User Profile Header Card */}
+            <div className="flex items-center gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                {record.profile_image ? (
+                    <img
+                        src={String(record.profile_image)}
+                        alt={String(record.name || 'User')}
+                        className="h-16 w-16 rounded-2xl object-cover ring-2 ring-brand-500/30 shadow-xs"
+                    />
+                ) : (
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-100 font-bold text-brand-700 text-xl ring-2 ring-brand-500/20 shadow-xs">
+                        {String(record.name || record.email || '?')[0].toUpperCase()}
+                    </div>
+                )}
+                <div className="space-y-0.5">
+                    <h3 className="font-bold text-slate-900 text-base">{String(record.name || 'Not provided')}</h3>
+                    <p className="text-xs text-slate-500 font-mono">{String(record.email)}</p>
+                    <span className="inline-block rounded bg-brand-50 px-2 py-0.5 text-[11px] font-bold text-brand-700 border border-brand-200">
+                        {String(record.role)}
+                    </span>
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
                     <span className="text-[10px] font-bold uppercase text-slate-400">Full Name</span>
@@ -812,6 +844,28 @@ const TutorDetailsView: React.FC<{
                     >
                         {record.is_available ? 'Pause Profile' : 'Set Available'}
                     </button>
+                </div>
+            </div>
+
+            {/* Tutor Profile Header with Photo */}
+            <div className="flex items-center gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                {record.profile_photo || record.profile_image ? (
+                    <img
+                        src={String(record.profile_photo || record.profile_image)}
+                        alt={String(record.name || 'Tutor')}
+                        className="h-16 w-16 rounded-2xl object-cover ring-2 ring-brand-500/30 shadow-xs"
+                    />
+                ) : (
+                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-100 font-bold text-brand-700 text-xl ring-2 ring-brand-500/20 shadow-xs">
+                        {String(record.name || record.email || '?')[0].toUpperCase()}
+                    </div>
+                )}
+                <div>
+                    <h3 className="font-bold text-slate-900 text-base">{String(record.name || 'Tutor Profile')}</h3>
+                    <p className="text-xs text-slate-500 font-mono">{String(record.email || '')}</p>
+                    {Boolean(record.headline) && (
+                        <p className="text-xs text-slate-600 mt-0.5">{String(record.headline)}</p>
+                    )}
                 </div>
             </div>
 

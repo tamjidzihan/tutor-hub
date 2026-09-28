@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from apps.common.image_utils import optimize_profile_image
+
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,6 +14,24 @@ class UserSerializer(serializers.ModelSerializer):
             'role', 'profile_image', 'is_verified', 'is_active', 'date_joined'
         ]
         read_only_fields = ['id', 'is_verified', 'date_joined']
+
+    def validate_profile_image(self, value):
+        if value:
+            return optimize_profile_image(value)
+        return value
+
+    def update(self, instance, validated_data):
+        user = super().update(instance, validated_data)
+        if 'profile_image' in validated_data and user.role == User.Role.TUTOR:
+            from apps.tutors.models import TutorProfile
+            tutor_profile = TutorProfile.objects.filter(user=user).first()
+            if tutor_profile:
+                if user.profile_image:
+                    tutor_profile.profile_photo_url = user.profile_image.url
+                else:
+                    tutor_profile.profile_photo_url = ''
+                tutor_profile.save(update_fields=['profile_photo_url'])
+        return user
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=8)
