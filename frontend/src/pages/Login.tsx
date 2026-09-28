@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import type { UserRole } from '../types';
 import { Button } from '../components/common/Button';
 import { Input } from '../components/common/Input';
-import { Lock, Mail, GraduationCap, ArrowRight, AlertCircle, Eye, EyeOff, Info } from 'lucide-react';
+import { Lock, Mail, GraduationCap, ArrowRight, AlertCircle, Eye, EyeOff, Info, X } from 'lucide-react';
 import { getApiErrorMessage } from '../api/client';
 import { useToast } from '../context/ToastContext';
 
@@ -13,14 +13,23 @@ export const Login: React.FC = () => {
   const { showToast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-  const from = (location.state as { from?: string })?.from;
+  const locationState = location.state as { from?: string; message?: string } | null;
+  const from = locationState?.from;
 
+  const [noticeMessage, setNoticeMessage] = useState<string | null>(() => locationState?.message || null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<UserRole>('TUTOR');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Clear message from history state on mount so it does not persist on subsequent reloads/visits
+  useEffect(() => {
+    if (locationState?.message) {
+      window.history.replaceState({ ...location.state, message: undefined }, '');
+    }
+  }, []);
 
   const handleRoleQuickSelect = (role: UserRole) => {
     setSelectedRole(role);
@@ -46,10 +55,21 @@ export const Login: React.FC = () => {
     <div className="bg-slate-50 py-12 flex items-center justify-center px-4">
       <div className="bg-white rounded-3xl border border-slate-200 shadow-xl p-8 sm:p-10 max-w-lg w-full space-y-6">
 
-        {from && (
-          <div className="p-3.5 bg-brand-50 text-brand-800 text-xs font-semibold rounded-2xl border border-brand-200 flex items-center gap-2.5">
-            <Info className="w-4 h-4 shrink-0 text-brand-600" />
-            <span>Please sign in to your TutorHub account to continue.</span>
+        {/* Dynamic Contextual Action Notice (Only shown when redirected by a protected action) */}
+        {noticeMessage && (
+          <div className="p-3.5 bg-brand-50 text-brand-900 text-xs font-semibold rounded-2xl border border-brand-200/90 flex items-center justify-between gap-2.5 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center gap-2 min-w-0">
+              <Info className="w-4 h-4 shrink-0 text-brand-600" />
+              <span className="truncate">{noticeMessage}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setNoticeMessage(null)}
+              className="p-1 text-brand-600 hover:text-brand-900 hover:bg-brand-100 rounded-md transition-colors"
+              aria-label="Dismiss notice"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
           </div>
         )}
 

@@ -5,7 +5,6 @@ import type { TuitionJob } from '../types';
 import { ApplyJobModal } from '../components/jobs/ApplyJobModal';
 import { EmptyState, LoadingSkeleton } from '../components/common/FeedbackStates';
 import { useAuth } from '../context/AuthContext';
-import { useToast } from '../context/ToastContext';
 import { 
   ShieldCheck, 
   ArrowLeft,
@@ -17,15 +16,18 @@ export const JobDetails: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isAuthenticated } = useAuth();
-  const { showToast } = useToast();
   const [job, setJob] = useState<TuitionJob | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
   const handleApplyClick = () => {
     if (!isAuthenticated) {
-      showToast('Please sign in to apply for this tuition job.', 'info');
-      navigate('/login', { state: { from: location.pathname } });
+      navigate('/login', {
+        state: {
+          from: location.pathname,
+          message: `Please sign in to apply for tuition job ${job?.job_id || ''}.`
+        }
+      });
       return;
     }
     setIsApplyModalOpen(true);

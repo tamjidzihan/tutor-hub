@@ -20,7 +20,25 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location.pathname + location.search }} replace />;
+    let authMessage = 'Please sign in to your account to continue.';
+    if (location.pathname.startsWith('/become-a-tutor')) {
+      authMessage = 'Please sign in to complete your tutor registration.';
+    } else if (location.pathname.startsWith('/appoint-a-tutor')) {
+      authMessage = 'Please sign in to post your tuition requirement.';
+    } else if (location.pathname.startsWith('/dashboard')) {
+      authMessage = 'Please sign in to access your dashboard.';
+    }
+
+    return (
+      <Navigate
+        to="/login"
+        state={{
+          from: location.pathname + location.search,
+          message: authMessage
+        }}
+        replace
+      />
+    );
   }
 
   return children ? <>{children}</> : <Outlet />;
