@@ -1,21 +1,48 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, Link, Navigate } from 'react-router-dom';
 import { DashboardLayout } from '../components/dashboard/DashboardLayout';
 import { useAuth } from '../context/AuthContext';
 import { applicationsApi } from '../api/applications';
 import { requirementsApi } from '../api/requirements';
 import type { JobApplication, TutorRequirement } from '../types';
 import { ArrowRight } from 'lucide-react';
-import { Link, Navigate } from 'react-router-dom';
 import { getApiErrorMessage } from '../api/client';
 import { useToast } from '../context/ToastContext';
+import { AdminResourceManagement } from '../components/dashboard/AdminResourceManagement';
 
 export const DashboardApplicationsPage: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
   const { showToast } = useToast();
   const [applications, setApplications] = useState<JobApplication[]>([]);
   const [requirements, setRequirements] = useState<TutorRequirement[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.role === 'ADMIN' || user.role === 'STAFF') {
+    const isRequirements = location.pathname.includes('/dashboard/requirements');
+    return (
+      <DashboardLayout>
+        {isRequirements ? (
+          <AdminResourceManagement
+            resource="requirements"
+            title="Tutor Requests & Inquiries"
+            subtitle="Inspect parent tuition requirements, student academic specs, budget, and matched tutors."
+          />
+        ) : (
+          <AdminResourceManagement
+            resource="applications"
+            title="Applications Governance"
+            subtitle="Audit all tutor applications, expected salaries, and proposal messages across all jobs."
+          />
+        )}
+      </DashboardLayout>
+    );
+  }
 
   useEffect(() => {
     const fetchData = async () => {

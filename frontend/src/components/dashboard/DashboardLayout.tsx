@@ -13,7 +13,11 @@ import {
   GraduationCap,
   Sparkles,
   ExternalLink,
-  ChevronRight
+  ChevronRight,
+  BarChart3,
+  Users,
+  UserCheck,
+  CheckCircle2
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -29,34 +33,44 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const navItems = [
-    { name: 'Dashboard Overview', path: '/dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
-    ...(user?.role === 'ADMIN' ? [
+    ...(user?.role === 'ADMIN' || user?.role === 'STAFF' ? [
+      { name: 'Analytics & Insights', path: '/dashboard', icon: <BarChart3 className="w-4 h-4" /> },
+      { name: 'User Directory', path: '/dashboard/users', icon: <Users className="w-4 h-4" /> },
+      { name: 'Tutor Verification', path: '/dashboard/tutors', icon: <UserCheck className="w-4 h-4" /> },
+      { name: 'Tuition Jobs', path: '/dashboard/jobs', icon: <Briefcase className="w-4 h-4" /> },
+      { name: 'Tutor Requests', path: '/dashboard/requirements', icon: <ClipboardList className="w-4 h-4" /> },
+      { name: 'Applications', path: '/dashboard/applications', icon: <CheckCircle2 className="w-4 h-4" /> },
       { name: 'Admin Profile', path: '/dashboard/profile', icon: <User className="w-4 h-4" /> },
-    ] : user?.role === 'TUTOR' ? [
-      { name: 'My Tutor Profile', path: '/dashboard/profile', icon: <User className="w-4 h-4" /> },
-      { name: 'My Applications', path: '/dashboard/applications', icon: <Briefcase className="w-4 h-4" /> },
-      { name: 'Find Tuition Jobs', path: '/dashboard/jobs', icon: <GraduationCap className="w-4 h-4" /> },
     ] : [
-      { name: 'My Profile', path: '/dashboard/profile', icon: <User className="w-4 h-4" /> },
-      { name: 'My Requirements', path: '/dashboard/requirements', icon: <ClipboardList className="w-4 h-4" /> },
-      { name: 'Post New Tuition', path: '/appoint-a-tutor', icon: <Sparkles className="w-4 h-4" /> },
-      { name: 'Browse Tutors', path: '/find-tutor', icon: <User className="w-4 h-4" /> },
+      { name: 'Dashboard Overview', path: '/dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
+      ...(user?.role === 'TUTOR' ? [
+        { name: 'My Tutor Profile', path: '/dashboard/profile', icon: <User className="w-4 h-4" /> },
+        { name: 'My Applications', path: '/dashboard/applications', icon: <Briefcase className="w-4 h-4" /> },
+        { name: 'Find Tuition Jobs', path: '/dashboard/jobs', icon: <GraduationCap className="w-4 h-4" /> },
+      ] : [
+        { name: 'My Profile', path: '/dashboard/profile', icon: <User className="w-4 h-4" /> },
+        { name: 'My Requirements', path: '/dashboard/requirements', icon: <ClipboardList className="w-4 h-4" /> },
+        { name: 'Post New Tuition', path: '/appoint-a-tutor', icon: <Sparkles className="w-4 h-4" /> },
+        { name: 'Browse Tutors', path: '/find-tutor', icon: <User className="w-4 h-4" /> },
+      ])
     ]),
     { name: 'Notifications', path: '/dashboard/notifications', icon: <Bell className="w-4 h-4" /> },
   ];
 
   // Helper to determine page title
   const getPageTitle = () => {
+    if (location.pathname === '/dashboard/users') return 'User Directory & Moderation';
+    if (location.pathname === '/dashboard/tutors') return 'Tutor Profile Verification';
     if (location.pathname === '/dashboard/profile') {
-      if (user?.role === 'ADMIN') return 'Admin Profile & Security';
+      if (user?.role === 'ADMIN' || user?.role === 'STAFF') return 'Admin Profile & Security';
       if (user?.role === 'TUTOR') return 'Tutor Profile';
       return 'Account Profile';
     }
-    if (location.pathname === '/dashboard/applications') return 'Applications';
-    if (location.pathname === '/dashboard/jobs') return 'Find Tuition Jobs';
-    if (location.pathname === '/dashboard/requirements') return 'My Requirements';
+    if (location.pathname === '/dashboard/jobs') return (user?.role === 'ADMIN' || user?.role === 'STAFF') ? 'Tuition Jobs Moderation' : 'Find Tuition Jobs';
+    if (location.pathname === '/dashboard/requirements') return (user?.role === 'ADMIN' || user?.role === 'STAFF') ? 'Tutor Requests & Inquiries' : 'My Requirements';
+    if (location.pathname === '/dashboard/applications') return (user?.role === 'ADMIN' || user?.role === 'STAFF') ? 'Applications Governance' : 'My Applications';
     if (location.pathname === '/dashboard/notifications') return 'Notifications';
-    return user?.role === 'ADMIN' ? 'Platform Governance & Operations' : 'Dashboard Overview';
+    return (user?.role === 'ADMIN' || user?.role === 'STAFF') ? 'Analytics & Insights' : 'Dashboard Overview';
   };
 
   return (

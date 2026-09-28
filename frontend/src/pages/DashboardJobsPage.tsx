@@ -7,6 +7,7 @@ import { locationsApi, type LocationCity } from '../api/locations';
 import type { TuitionJob } from '../types';
 import { ApplyJobModal } from '../components/jobs/ApplyJobModal';
 import { Pagination } from '../components/common/Pagination';
+import { AdminResourceManagement } from '../components/dashboard/AdminResourceManagement';
 import {
   Search,
   MapPin,
@@ -18,6 +19,22 @@ import {
 
 export const DashboardJobsPage: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
+
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user.role === 'ADMIN' || user.role === 'STAFF') {
+    return (
+      <DashboardLayout>
+        <AdminResourceManagement
+          resource="jobs"
+          title="Tuition Jobs Moderation"
+          subtitle="Moderate parent-posted tuition jobs, review academic requirements, and inspect applicant submissions."
+        />
+      </DashboardLayout>
+    );
+  }
 
   const [jobs, setJobs] = useState<TuitionJob[]>([]);
   const [cities, setCities] = useState<LocationCity[]>([]);
