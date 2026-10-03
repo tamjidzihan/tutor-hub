@@ -31,9 +31,8 @@ export const Header: React.FC = () => {
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Find Tutor', path: '/find-tutor' },
-    { name: 'Job Board', path: '/job-board' },
-    { name: 'Become A Tutor', path: '/become-a-tutor' },
-    { name: 'Affiliate', path: '/affiliate-program' },
+    { name: 'Job', path: '/job-board' },
+    { name: 'Tutor', path: '/become-a-tutor' },
   ];
 
   return (
@@ -92,7 +91,7 @@ export const Header: React.FC = () => {
                 key={link.name}
                 to={link.path}
                 className={({ isActive }) =>
-                  `rounded-xl px-3.5 py-2 text-sm font-semibold transition-all duration-200 ${isActive
+                  `rounded-xl px-3.5 py-2 text-md font-semibold transition-all duration-200 ${isActive
                     ? 'bg-brand-50 text-brand-700 shadow-sm'
                     : 'text-slate-700 hover:bg-slate-100 hover:text-brand-600'} `
                 }

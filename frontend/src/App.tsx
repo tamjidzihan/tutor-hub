@@ -14,7 +14,6 @@ import { CategoryDetails } from './pages/CategoryDetails';
 import { TuitionCategories } from './pages/TuitionCategories';
 import { BecomeATutor } from './pages/BecomeATutor';
 import { AppointATutor } from './pages/AppointATutor';
-import { AffiliateProgram } from './pages/AffiliateProgram';
 import { OurTeam } from './pages/OurTeam';
 import { Careers } from './pages/Careers';
 import { Blog } from './pages/Blog';
@@ -105,7 +104,6 @@ export function App() {
             />
 
             {/* Informational & Auth Pages */}
-            <Route path="/affiliate-program" element={<AffiliateProgram />} />
             <Route path="/our-team" element={<OurTeam />} />
             <Route path="/careers" element={<Careers />} />
             <Route path="/blog" element={<Blog />} />
