@@ -22,6 +22,14 @@ export const messagingApi = {
     return res.data;
   },
 
+  deleteMessage: async (conversationId: string, messageId: string): Promise<void> => {
+    await apiClient.delete(`/conversations/${conversationId}/messages/${messageId}/`);
+  },
+
+  deleteConversation: async (conversationId: string): Promise<void> => {
+    await apiClient.delete(`/conversations/${conversationId}/`);
+  },
+
   markAsRead: async (conversationId: string): Promise<{ success: boolean; marked_read: number }> => {
     const res = await apiClient.post<{ success: boolean; marked_read: number }>(`/conversations/${conversationId}/read/`);
     return res.data;

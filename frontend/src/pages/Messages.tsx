@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { messagingApi } from '../api/messaging';
 import type { Conversation, Message } from '../types';
 import {
-  Send, MessageSquare, Search, Check, CheckCheck
+  Send, MessageSquare, Search, Check, CheckCheck, Trash2, ChevronDown
 } from 'lucide-react';
 
 export const Messages: React.FC = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
@@ -20,6 +21,7 @@ export const Messages: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoadingConvs, setIsLoadingConvs] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [openMessageMenuId, setOpenMessageMenuId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -116,14 +118,14 @@ export const Messages: React.FC = () => {
         prev.map((c) =>
           c.id === activeConversationId
             ? {
-                ...c,
-                last_message: {
-                  content,
-                  created_at: new Date().toISOString(),
-                  sender_id: user?.id || '',
-                  is_read: false,
-                },
-              }
+              ...c,
+              last_message: {
+                content,
+                created_at: new Date().toISOString(),
+                sender_id: user?.id || '',
+                is_read: false,
+              },
+            }
             : c
         )
       );
@@ -132,6 +134,35 @@ export const Messages: React.FC = () => {
       setNewMessageText(content);
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleDeleteMessage = async (message: Message) => {
+    if (!activeConversationId || !window.confirm('Delete this message permanently?')) return;
+
+    try {
+      await messagingApi.deleteMessage(activeConversationId, message.id);
+      setMessages((prev) => prev.filter((item) => item.id !== message.id));
+      setOpenMessageMenuId(null);
+      await fetchConversations();
+      showToast('Message deleted.', 'success');
+    } catch {
+      showToast('Message could not be deleted.', 'error');
+    }
+  };
+
+  const handleDeleteConversation = async () => {
+    if (!activeConversation || !window.confirm('Delete this conversation and all its messages permanently?')) return;
+
+    try {
+      await messagingApi.deleteConversation(activeConversation.id);
+      setConversations((prev) => prev.filter((item) => item.id !== activeConversation.id));
+      setActiveConversationId(null);
+      setMessages([]);
+      navigate(location.pathname, { replace: true });
+      showToast('Conversation deleted.', 'success');
+    } catch {
+      showToast('Conversation could not be deleted.', 'error');
     }
   };
 
@@ -191,9 +222,8 @@ export const Messages: React.FC = () => {
                     key={conv.id}
                     type="button"
                     onClick={() => setActiveConversationId(conv.id)}
-                    className={`w-full text-left p-4 flex items-start gap-3 transition-colors ${
-                      isActive ? 'bg-brand-50/60 border-l-4 border-brand-500' : 'hover:bg-slate-50'
-                    }`}
+                    className={`w-full text-left p-4 flex items-start gap-3 transition-colors ${isActive ? 'bg-brand-50/60 border-l-4 border-brand-500' : 'hover:bg-slate-50'
+                      }`}
                   >
                     <div className="relative w-10 h-10 rounded-full bg-brand-500 text-white font-bold flex items-center justify-center text-sm shrink-0 overflow-hidden shadow-xs">
                       {participant?.avatar ? (
@@ -217,13 +247,12 @@ export const Messages: React.FC = () => {
 
                       <div className="flex items-center gap-1 text-[11px] text-slate-400 mb-1">
                         <span
-                          className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${
-                            participant?.role === 'TUTOR'
-                              ? 'bg-sky-50 text-sky-700'
-                              : participant?.role === 'ADMIN'
+                          className={`px-1.5 py-0.2 rounded text-[10px] font-bold ${participant?.role === 'TUTOR'
+                            ? 'bg-sky-50 text-sky-700'
+                            : participant?.role === 'ADMIN'
                               ? 'bg-rose-50 text-rose-700'
                               : 'bg-emerald-50 text-emerald-700'
-                          }`}
+                            }`}
                         >
                           {participant?.role === 'TUTOR' ? 'Tutor' : participant?.role === 'ADMIN' ? 'Admin' : 'Student'}
                         </span>
@@ -258,13 +287,12 @@ export const Messages: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <h3 className="text-sm font-bold text-slate-900">{otherParty?.name}</h3>
                       <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                          otherParty?.role === 'TUTOR'
-                            ? 'bg-sky-50 text-sky-700 border border-sky-200/60'
-                            : otherParty?.role === 'ADMIN'
+                        className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${otherParty?.role === 'TUTOR'
+                          ? 'bg-sky-50 text-sky-700 border border-sky-200/60'
+                          : otherParty?.role === 'ADMIN'
                             ? 'bg-rose-50 text-rose-700 border border-rose-200/60'
                             : 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
-                        }`}
+                          }`}
                       >
                         {otherParty?.role === 'TUTOR' ? 'Verified Tutor' : otherParty?.role === 'ADMIN' ? 'Admin' : 'Student'}
                       </span>
@@ -272,6 +300,15 @@ export const Messages: React.FC = () => {
                     <p className="text-[11px] text-slate-400">{otherParty?.email}</p>
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={handleDeleteConversation}
+                  className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                  title="Delete conversation"
+                  aria-label="Delete conversation"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
 
               {/* Message Thread */}
@@ -292,14 +329,42 @@ export const Messages: React.FC = () => {
                         key={m.id}
                         className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
                       >
-                        <div
-                          className={`max-w-[75%] sm:max-w-md rounded-2xl px-4 py-2.5 text-xs shadow-xs leading-relaxed ${
-                            isMine
+                        <div className={`group/message relative max-w-[75%] sm:max-w-md ${isMine ? 'self-end' : 'self-start'}`}>
+                          <div
+                            className={`rounded-2xl px-6 py-2 text-xs shadow-xs leading-relaxed ${isMine
                               ? 'bg-brand-500 text-white rounded-br-xs'
                               : 'bg-white text-slate-800 border border-slate-200/80 rounded-bl-xs'
-                          }`}
-                        >
-                          <p className="whitespace-pre-line">{m.content}</p>
+                              }`}
+                          >
+                            <p className="whitespace-pre-line">{m.content}</p>
+                          </div>
+                          {isMine && (
+                            <div className="absolute right-1 bottom-0.5 z-10">
+                              <button
+                                type="button"
+                                onClick={() => setOpenMessageMenuId((current) => current === m.id ? null : m.id)}
+                                className={`rounded-lg bg-white/90 p-1 text-slate-500 shadow-sm transition-opacity hover:bg-white hover:text-slate-800 focus:opacity-100 ${openMessageMenuId === m.id ? 'opacity-100' : 'opacity-0 group-hover/message:opacity-100'
+                                  }`}
+                                title="Message options"
+                                aria-label="Message options"
+                                aria-expanded={openMessageMenuId === m.id}
+                              >
+                                <ChevronDown className="h-3.5 w-3.5" />
+                              </button>
+                              {openMessageMenuId === m.id && (
+                                <div className="absolute right-0 top-full mt-1 min-w-32 rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteMessage(m)}
+                                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-red-600 hover:bg-red-50"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                    Delete
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </div>
                         <div className="flex items-center gap-1 mt-1 text-[10px] text-slate-400 px-1">
                           <span>{m.formatted_time}</span>

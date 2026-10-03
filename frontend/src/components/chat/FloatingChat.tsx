@@ -10,7 +10,9 @@ import {
   Search,
   User as UserIcon,
   Sparkles,
-  Loader2
+  Loader2,
+  Trash2,
+  ChevronDown
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { messagingApi } from '../../api/messaging';
@@ -31,9 +33,11 @@ export const FloatingChat: React.FC = () => {
   const [isLoadingMsgs, setIsLoadingMsgs] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [openMessageMenuId, setOpenMessageMenuId] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const messageMenuRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom of messages
   const scrollToBottom = () => {
@@ -88,7 +92,7 @@ export const FloatingChat: React.FC = () => {
         setConversations((prev) =>
           prev.map((c) => (c.id === activeConversation.id ? { ...c, unread_count: 0 } : c))
         );
-      }).catch(() => {});
+      }).catch(() => { });
     }
 
     // Real-time polling for messages inside the active conversation
@@ -105,6 +109,19 @@ export const FloatingChat: React.FC = () => {
       setTimeout(() => inputRef.current?.focus(), 150);
     }
   }, [activeConversation, isOpen]);
+
+  useEffect(() => {
+    if (!openMessageMenuId) return;
+
+    const handleOutsideClick = (event: PointerEvent) => {
+      if (event.target instanceof Node && !messageMenuRef.current?.contains(event.target)) {
+        setOpenMessageMenuId(null);
+      }
+    };
+
+    document.addEventListener('pointerdown', handleOutsideClick);
+    return () => document.removeEventListener('pointerdown', handleOutsideClick);
+  }, [openMessageMenuId]);
 
   // Send message
   const handleSend = async (e?: React.FormEvent) => {
@@ -126,15 +143,15 @@ export const FloatingChat: React.FC = () => {
         prev.map((c) =>
           c.id === activeConversation.id
             ? {
-                ...c,
-                last_message: {
-                  content: newMsg.content,
-                  created_at: newMsg.created_at,
-                  sender_id: newMsg.sender,
-                  is_read: true,
-                },
-                updated_at: newMsg.created_at,
-              }
+              ...c,
+              last_message: {
+                content: newMsg.content,
+                created_at: newMsg.created_at,
+                sender_id: newMsg.sender,
+                is_read: true,
+              },
+              updated_at: newMsg.created_at,
+            }
             : c
         )
       );
@@ -143,6 +160,34 @@ export const FloatingChat: React.FC = () => {
       setInputText(content); // Restore draft
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleDeleteMessage = async (message: Message) => {
+    if (!activeConversation || !window.confirm('Delete this message permanently?')) return;
+
+    try {
+      await messagingApi.deleteMessage(activeConversation.id, message.id);
+      setMessages((prev) => prev.filter((item) => item.id !== message.id));
+      setOpenMessageMenuId(null);
+      await fetchConversations(true);
+      setSendError(null);
+    } catch {
+      setSendError('Failed to delete message. Please retry.');
+    }
+  };
+
+  const handleDeleteConversation = async () => {
+    if (!activeConversation || !window.confirm('Delete this conversation and all its messages permanently?')) return;
+
+    try {
+      await messagingApi.deleteConversation(activeConversation.id);
+      setConversations((prev) => prev.filter((item) => item.id !== activeConversation.id));
+      setActiveConversation(null);
+      setMessages([]);
+      setSendError(null);
+    } catch {
+      setSendError('Failed to delete conversation. Please retry.');
     }
   };
 
@@ -181,11 +226,10 @@ export const FloatingChat: React.FC = () => {
       {/* FLOATING CHAT POPUP WINDOW */}
       {/* ======================================================== */}
       <div
-        className={`fixed bottom-22 right-4 sm:bottom-24 sm:right-6 z-50 flex flex-col w-[calc(100vw-2rem)] max-w-[360px] sm:max-w-[400px] h-[520px] max-h-[calc(100vh-110px)] bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transition-all duration-300 ease-out origin-bottom-right ${
-          isOpen
-            ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
-            : 'opacity-0 scale-95 translate-y-4 pointer-events-none'
-        }`}
+        className={`fixed bottom-22 right-4 sm:bottom-24 sm:right-6 z-50 flex flex-col w-[calc(100vw-2rem)] max-w-[360px] sm:max-w-[400px] h-[520px] max-h-[calc(100vh-110px)] bg-white rounded-3xl shadow-2xl border border-slate-200/90 overflow-hidden transition-all duration-300 ease-out origin-bottom-right ${isOpen
+          ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
+          : 'opacity-0 scale-95 translate-y-4 pointer-events-none'
+          }`}
       >
         {/* Header */}
         <div className="bg-gradient-to-r from-navy-950 via-slate-900 to-navy-900 text-white p-4 shrink-0 flex items-center justify-between border-b border-slate-800">
@@ -240,6 +284,17 @@ export const FloatingChat: React.FC = () => {
 
           {/* Action buttons */}
           <div className="flex items-center gap-1 shrink-0">
+            {activeConversation && (
+              <button
+                type="button"
+                onClick={handleDeleteConversation}
+                className="p-1.5 rounded-xl hover:bg-white/10 text-slate-400 hover:text-red-300 transition-colors"
+                title="Delete conversation"
+                aria-label="Delete conversation"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            )}
             <button
               type="button"
               onClick={() => {
@@ -298,18 +353,49 @@ export const FloatingChat: React.FC = () => {
                       key={msg.id}
                       className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
                     >
-                      <div
-                        className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-xs shadow-xs leading-relaxed whitespace-pre-wrap ${
-                          isMine
+                      <div className={`group/message relative max-w-[80%] ${isMine ? 'self-end' : 'self-start'}`}>
+                        <div
+                          className={`rounded-2xl px-6 py-1.5 text-xs shadow-xs leading-relaxed whitespace-pre-wrap ${isMine
                             ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-br-xs'
                             : 'bg-white text-slate-800 border border-slate-200/80 rounded-bl-xs'
-                        }`}
-                      >
-                        {msg.content}
+                            }`}
+                        >
+                          {msg.content}
+                        </div>
+                        {isMine && (
+                          <div
+                            ref={openMessageMenuId === msg.id ? messageMenuRef : null}
+                            className="absolute right-1 bottom-0.5 z-10"
+                          >
+                            <button
+                              type="button"
+                              onClick={() => setOpenMessageMenuId((current) => current === msg.id ? null : msg.id)}
+                              className={`rounded-lg bg-white/90 p-1 text-slate-500 shadow-sm transition-opacity hover:bg-brand-500 hover:text-white focus:opacity-100 ${openMessageMenuId === msg.id ? 'opacity-100' : 'opacity-0 group-hover/message:opacity-100'
+                                }`}
+                              title="Message options"
+                              aria-label="Message options"
+                              aria-expanded={openMessageMenuId === msg.id}
+                            >
+                              <ChevronDown className="h-3.5 w-3.5" />
+                            </button>
+                            {openMessageMenuId === msg.id && (
+                              <div className="absolute right-0 top-full mt-1 min-w-32 rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteMessage(msg)}
+                                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-red-600 hover:bg-red-50"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                  Delete
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
-                      <span className="text-[9px] text-slate-400 mt-0.5 px-1 font-medium">
-                        {msg.formatted_time || formatTime(msg.created_at)}
-                      </span>
+                      <div className="flex items-center gap-1 text-[9px] text-slate-400 mt-0.5 px-1 font-medium">
+                        <span>{msg.formatted_time || formatTime(msg.created_at)}</span>
+                      </div>
                     </div>
                   );
                 })
@@ -435,9 +521,8 @@ export const FloatingChat: React.FC = () => {
                     <div
                       key={conv.id}
                       onClick={() => setActiveConversation(conv)}
-                      className={`flex items-center gap-3 p-3.5 hover:bg-slate-50 cursor-pointer transition-colors ${
-                        hasUnread ? 'bg-brand-50/40' : ''
-                      }`}
+                      className={`flex items-center gap-3 p-3.5 hover:bg-slate-50 cursor-pointer transition-colors ${hasUnread ? 'bg-brand-50/40' : ''
+                        }`}
                     >
                       {/* Avatar */}
                       <div className="relative shrink-0">
@@ -512,11 +597,10 @@ export const FloatingChat: React.FC = () => {
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? 'Close chat' : 'Open messages'}
-        className={`fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full text-white shadow-xl transition-all duration-300 transform active:scale-90 hover:scale-105 ${
-          isOpen
-            ? 'bg-slate-800 hover:bg-slate-900 rotate-90 shadow-slate-900/30'
-            : 'bg-gradient-to-tr from-brand-600 via-brand-500 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 shadow-brand-500/35 hover:shadow-brand-500/50'
-        }`}
+        className={`fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full text-white shadow-xl transition-all duration-300 transform active:scale-90 hover:scale-105 ${isOpen
+          ? 'bg-slate-800 hover:bg-slate-900 rotate-90 shadow-slate-900/30'
+          : 'bg-gradient-to-tr from-brand-600 via-brand-500 to-emerald-500 hover:from-brand-500 hover:to-emerald-400 shadow-brand-500/35 hover:shadow-brand-500/50'
+          }`}
       >
         {isOpen ? (
           <X className="h-6 w-6 transition-transform duration-200" />

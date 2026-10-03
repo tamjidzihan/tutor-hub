@@ -18,7 +18,9 @@ import {
   Plus,
   X,
   GraduationCap,
-  Briefcase
+  Briefcase,
+  Trash2,
+  ChevronDown
 } from 'lucide-react';
 
 export const DashboardMessagesPage: React.FC = () => {
@@ -34,6 +36,7 @@ export const DashboardMessagesPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoadingConvs, setIsLoadingConvs] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [openMessageMenuId, setOpenMessageMenuId] = useState<string | null>(null);
 
   // New Chat Modal State
   const [isNewChatOpen, setIsNewChatOpen] = useState(false);
@@ -190,7 +193,7 @@ export const DashboardMessagesPage: React.FC = () => {
     loadMessages();
 
     // Mark as read in backend
-    messagingApi.markAsRead(activeConversationId).catch(() => {});
+    messagingApi.markAsRead(activeConversationId).catch(() => { });
 
     // Polling every 3.5s for real-time messaging updates
     const interval = setInterval(loadMessages, 3500);
@@ -222,14 +225,14 @@ export const DashboardMessagesPage: React.FC = () => {
         prev.map((c) =>
           c.id === activeConversationId
             ? {
-                ...c,
-                last_message: {
-                  content,
-                  created_at: new Date().toISOString(),
-                  sender_id: user?.id || '',
-                  is_read: false,
-                },
-              }
+              ...c,
+              last_message: {
+                content,
+                created_at: new Date().toISOString(),
+                sender_id: user?.id || '',
+                is_read: false,
+              },
+            }
             : c
         )
       );
@@ -238,6 +241,35 @@ export const DashboardMessagesPage: React.FC = () => {
       setNewMessageText(content);
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleDeleteMessage = async (message: Message) => {
+    if (!activeConversationId || !window.confirm('Delete this message permanently?')) return;
+
+    try {
+      await messagingApi.deleteMessage(activeConversationId, message.id);
+      setMessages((prev) => prev.filter((item) => item.id !== message.id));
+      setOpenMessageMenuId(null);
+      await fetchConversations();
+      showToast('Message deleted.', 'success');
+    } catch {
+      showToast('Message could not be deleted.', 'error');
+    }
+  };
+
+  const handleDeleteConversation = async () => {
+    if (!activeConversation || !window.confirm('Delete this conversation and all its messages permanently?')) return;
+
+    try {
+      await messagingApi.deleteConversation(activeConversation.id);
+      setConversations((prev) => prev.filter((item) => item.id !== activeConversation.id));
+      setActiveConversationId(null);
+      setMessages([]);
+      navigate('/dashboard/messages', { replace: true });
+      showToast('Conversation deleted.', 'success');
+    } catch {
+      showToast('Conversation could not be deleted.', 'error');
     }
   };
 
@@ -276,7 +308,7 @@ export const DashboardMessagesPage: React.FC = () => {
 
         {/* Split Screen Messaging Window */}
         <div className="bg-white rounded-3xl border border-slate-200/90 shadow-card overflow-hidden h-[calc(100vh-230px)] min-h-[580px] flex flex-col md:flex-row">
-          
+
           {/* Left Column: Conversation List */}
           <div className="w-full md:w-80 lg:w-96 border-r border-slate-200 flex flex-col h-full bg-white shrink-0">
             <div className="p-4 border-b border-slate-100 space-y-3">
@@ -350,11 +382,10 @@ export const DashboardMessagesPage: React.FC = () => {
                         setActiveConversationId(c.id);
                         navigate(`/dashboard/messages?conversation=${c.id}`, { replace: true });
                       }}
-                      className={`flex items-center gap-3.5 p-4 cursor-pointer transition-all duration-150 ${
-                        isActive
-                          ? 'bg-brand-50/80 border-l-4 border-brand-500'
-                          : 'hover:bg-slate-50'
-                      }`}
+                      className={`flex items-center gap-3.5 p-4 cursor-pointer transition-all duration-150 ${isActive
+                        ? 'bg-brand-50/80 border-l-4 border-brand-500'
+                        : 'hover:bg-slate-50'
+                        }`}
                     >
                       {/* Avatar */}
                       <div className="relative shrink-0">
@@ -439,6 +470,15 @@ export const DashboardMessagesPage: React.FC = () => {
                       </p>
                     </div>
                   </div>
+                  <button
+                    type="button"
+                    onClick={handleDeleteConversation}
+                    className="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                    title="Delete conversation"
+                    aria-label="Delete conversation"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
 
                 {/* Message Bubbles Container */}
@@ -461,14 +501,42 @@ export const DashboardMessagesPage: React.FC = () => {
                           key={m.id}
                           className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
                         >
-                          <div
-                            className={`max-w-[75%] rounded-2xl p-3.5 text-xs shadow-xs leading-relaxed whitespace-pre-wrap ${
-                              isMe
+                          <div className={`group/message relative max-w-[75%] ${isMe ? 'self-end' : 'self-start'}`}>
+                            <div
+                              className={`rounded-2xl px-6 py-1.5 text-xs shadow-xs leading-relaxed whitespace-pre-wrap ${isMe
                                 ? 'bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-br-xs'
                                 : 'bg-white text-slate-800 border border-slate-200/80 rounded-bl-xs'
-                            }`}
-                          >
-                            {m.content}
+                                }`}
+                            >
+                              {m.content}
+                            </div>
+                            {isMe && (
+                              <div className="absolute right-1 bottom-0.5 z-10">
+                                <button
+                                  type="button"
+                                  onClick={() => setOpenMessageMenuId((current) => current === m.id ? null : m.id)}
+                                  className={`rounded-lg bg-white/90 p-1 text-slate-500 shadow-sm transition-opacity hover:bg-white hover:text-slate-800 focus:opacity-100 ${openMessageMenuId === m.id ? 'opacity-100' : 'opacity-0 group-hover/message:opacity-100'
+                                    }`}
+                                  title="Message options"
+                                  aria-label="Message options"
+                                  aria-expanded={openMessageMenuId === m.id}
+                                >
+                                  <ChevronDown className="h-3.5 w-3.5" />
+                                </button>
+                                {openMessageMenuId === m.id && (
+                                  <div className="absolute right-0 top-full mt-1 min-w-32 rounded-xl border border-slate-200 bg-white p-1 shadow-lg">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteMessage(m)}
+                                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-xs font-semibold text-red-600 hover:bg-red-50"
+                                    >
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                      Delete
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
 
                           <div className="flex items-center gap-1 mt-1 px-1">

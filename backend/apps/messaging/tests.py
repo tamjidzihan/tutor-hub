@@ -74,3 +74,44 @@ class MessagingAPITests(APITestCase):
         # Must reuse the same conversation, not create duplicates
         self.assertEqual(conv_id1, conv_id2)
         self.assertEqual(Conversation.objects.count(), 1)
+
+    def test_sender_can_delete_own_message(self):
+        conversation = Conversation.objects.create(student=self.student, tutor=self.tutor)
+        message = Message.objects.create(
+            conversation=conversation,
+            sender=self.student,
+            content='Please remove this message.',
+        )
+        self.client.force_authenticate(self.student)
+
+        response = self.client.delete(
+            f'/api/v1/conversations/{conversation.id}/messages/{message.id}/'
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Message.objects.filter(id=message.id).exists())
+
+    def test_cannot_delete_another_senders_message(self):
+        conversation = Conversation.objects.create(student=self.student, tutor=self.tutor)
+        message = Message.objects.create(
+            conversation=conversation,
+            sender=self.tutor,
+            content='A message from the tutor.',
+        )
+        self.client.force_authenticate(self.student)
+
+        response = self.client.delete(
+            f'/api/v1/conversations/{conversation.id}/messages/{message.id}/'
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertTrue(Message.objects.filter(id=message.id).exists())
+
+    def test_participant_can_delete_conversation(self):
+        conversation = Conversation.objects.create(student=self.student, tutor=self.tutor)
+        self.client.force_authenticate(self.student)
+
+        response = self.client.delete(f'/api/v1/conversations/{conversation.id}/')
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Conversation.objects.filter(id=conversation.id).exists())

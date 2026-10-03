@@ -159,6 +159,23 @@ class MessageListCreateView(APIView):
         serializer = MessageSerializer(message, context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+class MessageDetailView(generics.DestroyAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'id'
+
+    def get_queryset(self):
+        queryset = Message.objects.filter(
+            conversation_id=self.kwargs['conversation_id']
+        )
+        if self.request.user.is_staff:
+            return queryset
+        return queryset.filter(
+            sender=self.request.user
+        ).filter(
+            Q(conversation__student=self.request.user) |
+            Q(conversation__tutor=self.request.user)
+        )
+
 class MarkConversationReadView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
