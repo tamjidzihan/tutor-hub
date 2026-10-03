@@ -28,6 +28,9 @@ class TutorProfileListSerializer(serializers.ModelSerializer):
 
     def get_profile_photo(self, obj):
         if obj.profile_photo_url:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.profile_photo_url)
             return obj.profile_photo_url
         if obj.user.profile_image:
             return obj.user.profile_image.url
@@ -45,8 +48,13 @@ class TutorProfileDetailSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_profile_photo(self, obj):
+        request = self.context.get('request')
         if obj.profile_photo_url:
+            if request:
+                return request.build_absolute_uri(obj.profile_photo_url)
             return obj.profile_photo_url
         if obj.user.profile_image:
+            if request:
+                return request.build_absolute_uri(obj.user.profile_image.url)
             return obj.user.profile_image.url
         return None

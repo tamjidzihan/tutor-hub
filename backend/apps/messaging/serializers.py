@@ -25,6 +25,9 @@ class MessageSerializer(serializers.ModelSerializer):
 
     def get_sender_avatar(self, obj):
         if obj.sender.profile_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.sender.profile_image.url)
             return obj.sender.profile_image.url
         return None
 
@@ -56,12 +59,17 @@ class ConversationSerializer(serializers.ModelSerializer):
             return None
         current_user = request.user
         other = obj.tutor if current_user == obj.student else obj.student
+        
+        avatar_url = None
+        if other.profile_image:
+            avatar_url = request.build_absolute_uri(other.profile_image.url)
+        
         return {
             'id': str(other.id),
             'name': other.full_name or other.email,
             'email': other.email,
             'role': other.role,
-            'avatar': other.profile_image.url if other.profile_image else None
+            'avatar': avatar_url
         }
 
     def get_last_message(self, obj):

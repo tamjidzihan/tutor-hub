@@ -21,6 +21,9 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def get_author_avatar(self, obj):
         if obj.author.profile_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.author.profile_image.url)
             return obj.author.profile_image.url
         return None
 
@@ -66,6 +69,9 @@ class PostSerializer(serializers.ModelSerializer):
 
     def get_author_avatar(self, obj):
         if obj.author.profile_image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.author.profile_image.url)
             return obj.author.profile_image.url
         return None
 
