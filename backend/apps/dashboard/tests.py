@@ -27,17 +27,17 @@ class DashboardOverviewTests(APITestCase):
         self.assertIn('profile_completion', response.data['stats'])
         self.assertIn('recent_applications', response.data)
 
-    def test_parent_receives_only_parent_requirements(self):
-        parent = self.create_user('parent@example.com', User.Role.PARENT)
-        other_parent = self.create_user('other@example.com', User.Role.PARENT)
-        self.client.force_authenticate(parent)
+    def test_student_receives_only_student_requirements(self):
+        student = self.create_user('student@example.com', User.Role.STUDENT)
+        other_student = self.create_user('other@example.com', User.Role.STUDENT)
+        self.client.force_authenticate(student)
 
         response = self.client.get('/api/v1/dashboard/')
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['role'], User.Role.PARENT)
+        self.assertEqual(response.data['role'], User.Role.STUDENT)
         self.assertEqual(response.data['requirements'], [])
-        self.assertNotEqual(parent.pk, other_parent.pk)
+        self.assertNotEqual(student.pk, other_student.pk)
 
     def test_public_stats_are_database_derived(self):
         response = self.client.get('/api/v1/dashboard/stats/')
@@ -62,9 +62,9 @@ class DashboardOverviewTests(APITestCase):
         self.assertGreaterEqual(response.data['count'], 2)
 
     def test_admin_can_change_job_status(self):
-        parent = self.create_user('job-parent@example.com', User.Role.PARENT)
+        student = self.create_user('job-student@example.com', User.Role.STUDENT)
         admin = self.create_user('job-admin@example.com', User.Role.ADMIN)
-        job = TuitionJob.objects.create(parent=parent, title='Admin review job')
+        job = TuitionJob.objects.create(student=student, title='Admin review job')
         self.client.force_authenticate(admin)
 
         response = self.client.patch(
@@ -79,7 +79,7 @@ class DashboardOverviewTests(APITestCase):
 
     def test_admin_cannot_edit_user_data(self):
         admin = self.create_user('admin-policy@example.com', User.Role.ADMIN)
-        target_user = self.create_user('target@example.com', User.Role.PARENT)
+        target_user = self.create_user('target@example.com', User.Role.STUDENT)
         self.client.force_authenticate(admin)
 
         response = self.client.patch(

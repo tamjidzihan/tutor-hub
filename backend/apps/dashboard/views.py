@@ -75,7 +75,6 @@ class DashboardOverviewView(APIView):
             'stats': {
                 'total_users': users.count(),
                 'total_tutors': users.filter(role=User.Role.TUTOR).count(),
-                'total_parents': users.filter(role=User.Role.PARENT).count(),
                 'total_students': users.filter(role=User.Role.STUDENT).count(),
                 'total_admins': users.filter(role=User.Role.ADMIN).count(),
                 
@@ -105,8 +104,7 @@ class DashboardOverviewView(APIView):
             'distributions': {
                 'roles': [
                     {'name': 'Tutors', 'count': users.filter(role=User.Role.TUTOR).count(), 'color': '#0284c7'},
-                    {'name': 'Parents', 'count': users.filter(role=User.Role.PARENT).count(), 'color': '#10b981'},
-                    {'name': 'Students', 'count': users.filter(role=User.Role.STUDENT).count(), 'color': '#f59e0b'},
+                    {'name': 'Students', 'count': users.filter(role=User.Role.STUDENT).count(), 'color': '#10b981'},
                     {'name': 'Admins', 'count': users.filter(role=User.Role.ADMIN).count(), 'color': '#ef4444'},
                 ],
                 'jobs': [
@@ -198,7 +196,7 @@ class DashboardOverviewView(APIView):
 
     def _learner_overview(self, user):
         requirements = TutorRequirement.objects.filter(user=user)
-        job_applications = JobApplication.objects.filter(job__parent=user)
+        job_applications = JobApplication.objects.filter(job__student=user)
         return {
             'role': user.role,
             'stats': {
@@ -338,7 +336,7 @@ class AdminManagementView(APIView):
         return {
             'users': User.objects.all().order_by('-date_joined'),
             'tutors': TutorProfile.objects.select_related('user').order_by('-created_at'),
-            'jobs': TuitionJob.objects.select_related('parent').prefetch_related('applications__tutor_user').order_by('-created_at'),
+            'jobs': TuitionJob.objects.select_related('student').prefetch_related('applications__tutor_user').order_by('-created_at'),
             'requirements': TutorRequirement.objects.select_related('user').order_by('-created_at'),
             'applications': JobApplication.objects.select_related('job', 'tutor_user', 'tutor_user__tutor_profile').order_by('-created_at'),
         }[resource]
@@ -426,9 +424,10 @@ class AdminManagementView(APIView):
                 'id': str(item.id),
                 'job_id': item.job_id,
                 'title': item.title,
-                'parent_name': item.parent.full_name if item.parent else 'Direct / Guest Poster',
-                'parent_email': item.parent.email if item.parent else '',
-                'parent_phone': item.parent.phone if item.parent else '',
+                'student_name': item.student.full_name if item.student else 'Direct / Student Poster',
+                'student_email': item.student.email if item.student else '',
+                'student_phone': item.student.phone if item.student else '',
+                'parent_name': item.student.full_name if item.student else 'Direct / Student Poster',
                 'city': item.city,
                 'area': item.area,
                 'student_gender': item.student_gender,

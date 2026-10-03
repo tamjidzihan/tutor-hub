@@ -65,7 +65,7 @@ export const DashboardProfilePage: React.FC = () => {
     );
   }
 
-  if (user?.role === 'PARENT' || user?.role === 'STUDENT') {
+  if (user?.role === 'STUDENT') {
     return (
       <DashboardLayout>
         <LearnerProfile />

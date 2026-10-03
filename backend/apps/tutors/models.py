@@ -63,7 +63,8 @@ class TutorProfile(TimeStampedModel, UUIDModel):
         ordering = ['-rating', '-is_verified', '-created_at']
 
     def __str__(self):
-        return f"{self.tutor_id} - {self.user.get_full_name() or self.user.email} ({self.university})"
+        user_name = self.user.get_full_name() if self.user else "Unknown"
+        return f"{self.tutor_id} - {user_name} ({self.university})"
 
     def calculate_completion(self):
         score = 20 # base registered

@@ -29,6 +29,10 @@ urlpatterns = [
     path('api/v1/affiliates/', include('apps.affiliates.urls')),
     path('api/v1/content/', include('apps.content.urls')),
     path('api/v1/dashboard/', include('apps.dashboard.urls')),
+    path('api/v1/ai/', include('apps.ai.urls')),
+    path('api/v1/notifications/', include('apps.notifications.urls')),
+    path('api/v1/', include('apps.messaging.urls')),
+    path('api/v1/posts/', include('apps.posts.urls')),
 ]
 
 if settings.DEBUG:

@@ -1,4 +1,4 @@
-export type UserRole = 'ADMIN' | 'TUTOR' | 'STUDENT' | 'PARENT' | 'STAFF';
+export type UserRole = 'ADMIN' | 'TUTOR' | 'STUDENT';
 
 export interface User {
   id: string;
@@ -102,6 +102,8 @@ export interface TuitionJob {
   deadline?: string;
   applicants_count: number;
   posted_by_name?: string;
+  student?: string;
+  student_name?: string;
 }
 
 export type ApplicationStatus = 'PENDING' | 'SHORTLISTED' | 'SELECTED' | 'REJECTED' | 'WITHDRAWN';
@@ -301,3 +303,153 @@ export interface AffiliatePartner {
   total_earnings: number;
   created_at: string;
 }
+
+// Direct Messaging Types
+export interface ChatParticipant {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  avatar?: string | null;
+}
+
+export interface Conversation {
+  id: string;
+  student: string;
+  tutor: string;
+  other_participant?: ChatParticipant;
+  last_message?: {
+    content: string;
+    created_at: string;
+    sender_id: string;
+    is_read: boolean;
+  } | null;
+  unread_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Message {
+  id: string;
+  conversation: string;
+  sender: string;
+  sender_name: string;
+  sender_role: UserRole;
+  sender_avatar?: string | null;
+  content: string;
+  is_read: boolean;
+  created_at: string;
+  formatted_time: string;
+  is_mine: boolean;
+}
+
+// Community Feed Types
+export type PostCategory = 'ACADEMIC' | 'TIPS' | 'QUESTION' | 'RESOURCE' | 'EXPERIENCE' | 'ANNOUNCEMENT';
+
+export interface PostComment {
+  id: string;
+  post: string;
+  author: string;
+  author_name: string;
+  author_avatar?: string | null;
+  author_role: UserRole;
+  content: string;
+  created_at: string;
+  formatted_time: string;
+  is_mine: boolean;
+}
+
+export interface Post {
+  id: string;
+  author: string;
+  author_name: string;
+  author_avatar?: string | null;
+  author_role: UserRole;
+  author_tutor_id?: string | null;
+  content: string;
+  category: PostCategory;
+  category_label: string;
+  tags: string[];
+  image?: string | null;
+  likes_count: number;
+  comments_count: number;
+  is_pinned: boolean;
+  ai_summary?: string;
+  is_liked: boolean;
+  is_mine: boolean;
+  created_at: string;
+  formatted_time: string;
+  comments?: PostComment[];
+  relevance_score?: number;
+  is_recommended?: boolean;
+}
+
+// Reviews & AI Insights Types
+export interface ReviewItem {
+  id: string;
+  tutor: string;
+  student?: string;
+  student_name: string;
+  student_class: string;
+  rating: number;
+  comment: string;
+  is_verified_student: boolean;
+  ai_sentiment?: string;
+  ai_summary?: string;
+  ai_strengths?: string[];
+  date: string;
+}
+
+export interface ReviewAIInsights {
+  overall_summary: string;
+  highlight_points: string[];
+  sentiment_breakdown: string;
+  ai_powered: boolean;
+}
+
+export interface TutorReviewsOverview {
+  tutor_id: string;
+  overall_rating: number;
+  total_reviews: number;
+  rating_distribution: Record<number, number>;
+  rating_distribution_percentages: Record<number, number>;
+  ai_insights: ReviewAIInsights;
+  reviews: ReviewItem[];
+}
+
+// Notifications Types
+export type NotificationType = 'MESSAGE' | 'APPLICATION' | 'REVIEW' | 'JOB' | 'POST' | 'SYSTEM';
+
+export interface AppNotification {
+  id: string;
+  notification_type: NotificationType;
+  title: string;
+  message: string;
+  link?: string;
+  is_read: boolean;
+  created_at: string;
+  time_ago: string;
+  sender_name: string;
+}
+
+// AI Service Types
+export interface TutorRecommendation {
+  id: string;
+  tutor_id: string;
+  name: string;
+  profile_photo: string;
+  gender: string;
+  university: string;
+  department: string;
+  rating: number;
+  total_reviews: number;
+  expected_salary: number;
+  city: string;
+  area: string;
+  is_verified: boolean;
+  subjects: string[];
+  classes: string[];
+  ai_match_score: number;
+  ai_recommendation_reasons: string[];
+}
+

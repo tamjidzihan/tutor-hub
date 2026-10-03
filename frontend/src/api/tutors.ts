@@ -47,6 +47,8 @@ export interface TutorFilterParams {
   university?: string;
   experience_min?: number;
   salary_max?: number;
+  min_budget?: number;
+  max_budget?: number;
   tuition_type?: string;
   search?: string;
 }

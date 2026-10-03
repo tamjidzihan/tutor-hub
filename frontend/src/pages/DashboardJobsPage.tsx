@@ -24,7 +24,7 @@ export const DashboardJobsPage: React.FC = () => {
     return <Navigate to="/login" replace />;
   }
 
-  if (user.role === 'ADMIN' || user.role === 'STAFF') {
+  if (user.role === 'ADMIN') {
     return (
       <DashboardLayout>
         <AdminResourceManagement

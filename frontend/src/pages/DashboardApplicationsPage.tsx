@@ -23,7 +23,7 @@ export const DashboardApplicationsPage: React.FC = () => {
     return <Navigate to="/login" replace />;
   }
 
-  if (user.role === 'ADMIN' || user.role === 'STAFF') {
+  if (user.role === 'ADMIN') {
     const isRequirements = location.pathname.includes('/dashboard/requirements');
     return (
       <DashboardLayout>

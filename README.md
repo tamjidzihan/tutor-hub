@@ -1,241 +1,245 @@
-# TutorHub
+# TutorHub — AI-Powered Tuition Matching & Learning Platform
 
-TutorHub is a full-stack tuition marketplace inspired by Bangladesh's Tuition Terminal platform. It combines a React + TypeScript frontend with a Django REST API backend to support tutor discovery, tuition job listings, applications, requirements, dashboards, and role-based workflows.
+TutorHub is a full-stack, authenticated-first tuition matching, direct messaging, and peer learning platform. Built with React 19 + TypeScript on the frontend and Django 5 + Django REST Framework on the backend, it features Google Gemini AI integration, real-time student-tutor messaging, interactive community discussions, tutor reviews with AI insights, and role-scoped dashboards.
 
-## Overview
+---
 
-This repository contains two major parts:
+## 🚀 Key Product Features
 
-- Frontend: a Vite-based React application for the public website and authenticated user portals
-- Backend: a Django project with modular apps for accounts, tutors, tuition jobs, applications, requirements, content, and dashboard APIs
+### 1. Simplified 3-Role System
+The platform strictly supports three roles:
+- **`STUDENT`**: Browse verified tutors, post tuition jobs, message tutors directly, submit ratings & reviews, and engage in the community feed.
+- **`TUTOR`**: Build comprehensive tutor profiles, apply to tuition jobs, message interested students, track performance metrics, and share educational posts.
+- **`ADMIN`**: Platform-wide user management, tutor verification, job moderation, and analytics.
 
-The project is designed to mirror the public UX of a tuition matching platform while providing a working backend API foundation for real product flows.
+*(Note: The legacy `PARENT` role was completely sunset and migrated to `STUDENT` across the database and user interfaces).*
 
-## Tech stack
+### 2. Google Gemini AI Integration
+A pluggable AI service architecture powered by Google's Gemini API (`gemini-1.5-flash`):
+- **Tutor Review Summarization & Sentiment:** Analyzes student reviews to generate an executive AI summary, sentiment breakdown, and highlighted tutor strengths.
+- **AI Tutor Recommendations:** Recommends the best matching tutors based on a student's subjects, budget range, and learning requirements.
+- **Community Feed Personalization:** "AI For You" ranking that prioritizes academic and relevant posts for learners.
+- **Resilient Heuristics Fallback:** If `GEMINI_API_KEY` is not configured or network requests fail, the platform automatically falls back to deterministic rule-based algorithms with zero user interruption.
+
+### 3. Student ↔ Tutor Direct Messaging
+- **Real-Time Split Screen Chat:** Student and tutor can engage in 1-on-1 private conversations.
+- **Conversation Management:** Automatic participant binding, unread message badges, last message previews, and responsive mobile-ready sidebar.
+- **One-Click Contact:** "Message Tutor" direct CTA buttons on tutor profile pages.
+
+### 4. Community Feed & Social Discussions
+- **Peer & Educator Posts:** Share questions, study tips, tuition notices, and general discussions.
+- **Category Filtering:** Filter posts by `Academic`, `Tuition Advice`, `Exam Prep`, `Career`, etc.
+- **Engagement:** Like posts, comment in threads, and report inappropriate content.
+- **Toggleable AI Curation:** Switch between "Latest" and "AI Recommended" feeds.
+
+### 5. Tutor Reviews & Rating Distribution
+- **Verified Student Feedback:** 1 to 5-star ratings with detailed written feedback.
+- **Rating Distribution Breakdown:** Visual distribution bars (5★ through 1★) with total review counts and average rating calculation.
+- **AI Insights Card:** Highlights overall student sentiment and key teaching strengths.
+- **Anti-Self-Review:** Tutors cannot review themselves.
+
+### 6. In-App Notifications
+- **Header Notification Bell:** Live unread count badge in the navigation bar.
+- **Interactive Dropdown:** View recent messages, review notices, and application updates.
+- **Mark as Read:** One-click single item or "Mark all as read" API synchronization.
+
+### 7. Advanced Tutor Search with Budget Filters
+- Search by subject, university, city/district, location, tuition type (Online, Home, Group).
+- **Budget Range Filtering:** `min_budget` and `max_budget` parameters accurately filter tutors by their expected monthly salary (৳ BDT).
+- **AI Recommendation Sorting:** Toggle to order results using Gemini AI matching criteria.
+
+### 8. Authenticated-First Experience
+- Unauthenticated access is restricted to `/login`, `/register`, and `/forgot-password`.
+- Root path (`/`) dynamically redirects authenticated users to `/feed` and guests to `/login`.
+- Global JWT token interceptor automatically handles authorization headers and session expiration.
+
+---
+
+## 🛠️ Tech Stack
 
 ### Frontend
-- React 19
-- TypeScript
-- Vite
-- Tailwind CSS
-- React Router
-- Axios
-- React Hook Form + Zod
-- TanStack Query
-- Lucide React icons
+- **Framework:** React 19 + TypeScript + Vite
+- **Styling:** Tailwind CSS + Vanilla CSS Design System
+- **Routing:** React Router v7
+- **State & Data Fetching:** TanStack React Query v5 + Axios
+- **Forms & Validation:** React Hook Form + Zod
+- **Icons:** Lucide React
 
 ### Backend
-- Python 3.12+
-- Django 5.x
-- Django REST Framework
-- PostgreSQL support via Docker / SQLite for local quick start
-- Simple JWT
-- django-filter
-- drf-spectacular
-- Celery + Redis
-- CORS support and environment-based config
+- **Framework:** Django 5.x + Django REST Framework (DRF)
+- **Language:** Python 3.12+
+- **AI Provider:** Google Gemini API (`gemini-1.5-flash`) via `backend/apps/ai/`
+- **Authentication:** SimpleJWT (JSON Web Tokens)
+- **Database:** SQLite (development) / PostgreSQL (production)
+- **Task Queue:** Celery + Redis
+- **Documentation:** OpenAPI 3 schema via `drf-spectacular`
 
-## Project structure
+---
+
+## 📁 Repository Structure
 
 ```text
-TutorHub/
+tutor_hub/
 ├── backend/
 │   ├── apps/
-│   │   ├── accounts/
-│   │   ├── affiliates/
-│   │   ├── applications/
-│   │   ├── categories/
-│   │   ├── content/
-│   │   ├── dashboard/
-│   │   ├── locations/
-│   │   ├── requirements/
-│   │   ├── reviews/
-│   │   ├── testimonials/
-│   │   ├── tuition_jobs/
-│   │   └── tutors/
+│   │   ├── accounts/          # User model (STUDENT, TUTOR, ADMIN), JWT auth
+│   │   ├── ai/                # BaseAIService & GeminiAIService integration
+│   │   ├── applications/      # Tutor applications for tuition jobs
+│   │   ├── categories/        # Tuition subjects and grade categories
+│   │   ├── content/           # FAQs, policies, site content
+│   │   ├── dashboard/         # Role-tailored dashboard analytics
+│   │   ├── locations/         # Bangladesh divisions, districts, areas
+│   │   ├── messaging/         # Conversation and Message models & APIs
+│   │   ├── notifications/     # In-app notification delivery and read status
+│   │   ├── posts/             # Community social feed, likes, comments, reports
+│   │   ├── requirements/      # Student tuition requirement postings
+│   │   ├── reviews/           # Tutor reviews, rating distribution & AI insights
+│   │   ├── tuition_jobs/      # Tuition job board listings
+│   │   └── tutors/            # Tutor profiles, qualifications & budget filters
 │   ├── config/
+│   │   ├── settings/          # base.py, development.py, production.py
+│   │   ├── urls.py            # API v1 routes mount
+│   │   └── wsgi.py
 │   ├── manage.py
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── db.sqlite3
+│   └── requirements.txt
 ├── frontend/
 │   ├── src/
-│   ├── public/
+│   │   ├── api/               # Axios API clients (ai, messaging, posts, reviews, tutors...)
+│   │   ├── components/        # Layout, Dashboard, Tutor, Common UI components
+│   │   ├── context/           # AuthContext (JWT session state)
+│   │   ├── pages/             # Feed, Messages, FindTutor, TutorDetails, JobBoard, Dashboards...
+│   │   ├── types/             # TypeScript interfaces and enum types
+│   │   ├── App.tsx            # Protected routing and layout hierarchy
+│   │   └── main.tsx
 │   ├── package.json
-│   ├── vite.config.ts
-│   └── tailwind.config.js
+│   ├── tailwind.config.js
+│   └── vite.config.ts
 ├── docker-compose.yml
-├── README.md
-├── Tuition Terminal — Django REST Backend Master Prompt.md
-├── Tuition Terminal — Full Website Clone Master Prompt.md
-└── ...
+└── README.md
 ```
 
-## Key features
+---
 
-- Public tuition marketplace pages: home, job board, tutor search, category pages, blog, FAQ, gallery, and policy pages
-- Tutor and guardian-facing workflows for applying to jobs and posting requirements
-- Role-aware dashboard screens for tutors, students/parents, and admins
-- API-first backend architecture for listing, filtering, and retrieving tutor and tuition-job data
-- JWT-based authentication and permission handling
-- OpenAPI schema and interactive Swagger docs
-- Docker-based local setup for the full stack
-
-## Backend architecture
-
-The backend is organized into modular Django apps under `backend/apps`. Some of the main API areas include:
-
-- `accounts` — users, authentication, and profile support
-- `tutors` — tutor profiles and educational data
-- `tuition_jobs` — tuition opportunities and job listings
-- `applications` — tutor job applications
-- `requirements` — parent/student tuition requirement submissions
-- `categories` — subjects and service categories
-- `locations` — city and area data
-- `content` — FAQs, blog posts, and other informational content
-- `dashboard` — summary and analytics data endpoints
-
-The project root URL configuration mounts these APIs under `/api/v1/`.
-
-## Frontend routes
-
-The frontend app includes public pages and dashboard views such as:
-
-- `/`
-- `/job-board`
-- `/job-board/:jobId`
-- `/find-tutor`
-- `/hub/tutor-details/:tutorId`
-- `/become-a-tutor`
-- `/appoint-a-tutor`
-- `/blog`
-- `/faq`
-- `/dashboard`
-- `/dashboard/profile`
-- `/dashboard/applications`
-
-## Quick start
+## ⚡ Quick Start
 
 ### Prerequisites
+- **Node.js:** 20+
+- **Python:** 3.12+
+- **Git**
 
-- Node.js 20+
-- Python 3.12+
-- Docker Desktop or Docker Engine (optional but recommended)
+---
 
-### Option 1: Run with Docker Compose
+### Backend Setup
 
-From the project root:
+1. **Navigate to the backend directory and activate virtual environment:**
+   ```bash
+   cd backend
 
-```bash
-docker compose up --build
-```
+   # On Windows (PowerShell):
+   .\env\Scripts\activate
+   # On macOS/Linux:
+   source env/bin/activate
+   ```
 
-This will start:
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:8000
-- API docs: http://localhost:8000/api/docs/
-- Admin: http://localhost:8000/admin/
+3. **Configure Environment Variables:**
+   Create a `.env` file in `backend/` or export the variables:
+   ```env
+   SECRET_KEY=your-django-secret-key
+   DEBUG=True
+   ALLOWED_HOSTS=*
+   CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 
-> The Docker setup uses PostgreSQL and Redis services defined in `docker-compose.yml`.
+   # Google Gemini AI Configuration
+   GEMINI_API_KEY=your_gemini_api_key_here
+   AI_MODEL=gemini-1.5-flash
+   AI_PROVIDER=gemini
+   ```
+   > **Note:** If `GEMINI_API_KEY` is omitted, all AI endpoints automatically use heuristic fallback algorithms so development never breaks.
 
-### Option 2: Run locally without Docker
+4. **Run migrations and start backend server:**
+   ```bash
+   python manage.py migrate
+   python manage.py runserver 0.0.0.0:8000
+   ```
+   The backend API will be live at `http://127.0.0.1:8000/`.
 
-#### Backend
+---
 
+### Frontend Setup
+
+1. **Navigate to the frontend directory:**
+   ```bash
+   cd frontend
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
+   The application will be available at `http://localhost:5173/`.
+
+4. **Build for production:**
+   ```bash
+   npm run build
+   ```
+
+---
+
+## 🧪 Testing
+
+### Backend Test Suite
+Run the full automated test suite covering messaging, posts, reviews, tutors, and dashboard analytics:
 ```bash
 cd backend
-python -m venv .venv
-
-# Windows
-.\.venv\Scripts\activate
-# macOS / Linux
-source .venv/bin/activate
-
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
+python manage.py test
 ```
+All tests verify role permissions, AI fallback behavior, and database integrity.
 
-By default, the app uses SQLite for local development. The API will run at:
-
-- http://localhost:8000
-- http://localhost:8000/api/docs/
-
-#### Frontend
-
+### Frontend Typecheck & Build
 ```bash
 cd frontend
-npm install
-npm run dev
+npm run build
 ```
 
-The frontend will run at:
+---
 
-- http://localhost:5173
+## 📡 Key API Endpoints (`/api/v1/`)
 
-## Environment and configuration
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/v1/auth/login/` | Obtain JWT access and refresh tokens |
+| `POST` | `/api/v1/auth/register/` | Register as `STUDENT` or `TUTOR` |
+| `GET` | `/api/v1/auth/me/` | Current user profile and role details |
+| `GET` | `/api/v1/ai/status/` | Inspect AI engine status and active provider |
+| `POST` | `/api/v1/ai/recommend-tutors/` | Gemini-powered tutor matching |
+| `POST` | `/api/v1/ai/summarize-tutor-reviews/` | Gemini-powered review summary & sentiment analysis |
+| `GET` | `/api/v1/conversations/` | List current user's messaging conversations |
+| `POST` | `/api/v1/conversations/` | Start a new conversation with a tutor/student |
+| `GET` | `/api/v1/conversations/<id>/messages/` | Get messages in a conversation |
+| `POST` | `/api/v1/conversations/<id>/messages/` | Send a message |
+| `GET` | `/api/v1/posts/` | Community feed posts (supports `?category=` and `?for_you=true`) |
+| `POST` | `/api/v1/posts/` | Create a new community post |
+| `POST` | `/api/v1/posts/<id>/like/` | Like or unlike a post |
+| `POST` | `/api/v1/posts/<id>/comment/` | Comment on a post |
+| `GET` | `/api/v1/reviews/tutor/<id>/` | Tutor reviews with AI insights and rating distribution |
+| `POST` | `/api/v1/reviews/` | Submit a new tutor review (students only) |
+| `GET` | `/api/v1/notifications/` | Get user notifications with unread count |
+| `POST` | `/api/v1/notifications/read-all/` | Mark all notifications as read |
+| `GET` | `/api/v1/tutors/` | Search tutors with `min_budget`, `max_budget`, subjects, etc. |
+| `GET` | `/api/v1/dashboard/` | Role-tailored dashboard metrics |
 
-The backend is configured to read environment values such as:
+---
 
-- `SECRET_KEY`
-- `DEBUG`
-- `ALLOWED_HOSTS`
-- `CORS_ALLOWED_ORIGINS`
-
-The project includes environment-aware settings in:
-
-- `backend/config/settings/base.py`
-- `backend/config/settings/development.py`
-- `backend/config/settings/production.py`
-
-## API highlights
-
-Key API routes mounted from the Django project include:
-
-- `/api/v1/auth/`
-- `/api/v1/tutors/`
-- `/api/v1/jobs/`
-- `/api/v1/applications/`
-- `/api/v1/requirements/`
-- `/api/v1/categories/`
-- `/api/v1/locations/`
-- `/api/v1/content/`
-- `/api/v1/dashboard/`
-
-### Dashboard architecture
-
-`GET /api/v1/dashboard/` is an authenticated, role-scoped overview endpoint. It derives its response from `request.user` and returns different aggregate data for administrators, tutors, parents, and students. Dashboard pages must use these database-backed values and show loading, error, or empty states when records are unavailable.
-
-- Admins receive user, tutor, job, application, and requirement aggregates plus recent tutor profiles.
-- Tutors receive their own application counts, profile completion, rating data, and recent applications.
-- Parents and students receive only their own requirements and related application counts.
-- Requirements and job applications are ownership-scoped on the backend; client-supplied user IDs are not trusted.
-
-Dashboard authentication uses the existing JWT flow at `/api/v1/auth/login/`, `/api/v1/auth/register/`, and `/api/v1/auth/me/`. Public registration cannot create administrator accounts, and users cannot change their role through client-controlled login or role-switch requests.
-
-To exercise the dashboard locally, create users with roles `TUTOR`, `PARENT`, or `STUDENT`, create tutor profiles or requirements through the application/API, and create an administrator with Django's `createsuperuser` command. Then run `python manage.py check`, `python manage.py test`, and `npm run build` from their respective project directories.
-
-Swagger/OpenAPI docs are enabled through `drf-spectacular`:
-
-- `/api/schema/`
-- `/api/docs/`
-- `/api/redoc/`
-
-## Notes
-
-- This project is a full-stack tuition marketplace clone and learning project, not a production deployment template out of the box.
-- Local development starts with SQLite by default; Docker uses PostgreSQL and Redis for a closer production-like environment.
-- The frontend and backend are separated cleanly, making it easy to evolve each side independently.
-
-## Suggested next steps
-
-- Add proper seeded demo data for tutors, jobs, and requirements
-- Configure production environment variables and deployment settings
-- Add real user registration and upload flows
-- Expand dashboard analytics and moderation features
-- Add tests across API endpoints and frontend flows
-
-## License
-
-A repository license file was not found in the project root at the time of writing, so this README does not claim a specific license. If you plan to publish or distribute the code, add an explicit license file before release.
+## 🔒 Security & Roles
+- **Role Isolation:** API endpoints enforce permissions using role checks. Students cannot post tutor reviews on their own profiles, tutors cannot review themselves, and users can only view their own conversations and notifications.
+- **Authenticated-First Security:** Default permission class is `IsAuthenticated`. Anonymous requests are rejected across all private resources.

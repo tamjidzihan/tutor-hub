@@ -8,14 +8,15 @@ import { useAuth } from '../context/AuthContext';
 import { 
   ShieldCheck, 
   ArrowLeft,
-  Send
+  Send,
+  MessageSquare
 } from 'lucide-react';
 
 export const JobDetails: React.FC = () => {
   const { jobId } = useParams<{ jobId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [job, setJob] = useState<TuitionJob | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
@@ -31,6 +32,23 @@ export const JobDetails: React.FC = () => {
       return;
     }
     setIsApplyModalOpen(true);
+  };
+
+  const handleMessagePoster = () => {
+    if (!isAuthenticated) {
+      navigate('/login', {
+        state: {
+          from: location.pathname,
+          message: `Please sign in to message the student/poster of job ${job?.job_id || ''}.`
+        }
+      });
+      return;
+    }
+    if (job?.student) {
+      navigate(`/dashboard/messages?user=${job.student}`);
+    } else {
+      navigate('/dashboard/messages');
+    }
   };
 
   useEffect(() => {
@@ -195,13 +213,26 @@ export const JobDetails: React.FC = () => {
               <span>Safety Guaranteed. Verified tutor matching process.</span>
             </div>
 
-            <button
-              onClick={handleApplyClick}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all active:scale-95"
-            >
-              <Send className="w-4 h-4" />
-              Apply for this Tuition
-            </button>
+            <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+              {job.student && job.student !== user?.id && (
+                <button
+                  type="button"
+                  onClick={handleMessagePoster}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border-2 border-brand-500 text-brand-700 bg-brand-50/70 hover:bg-brand-100 font-bold text-sm shadow-xs transition-all active:scale-95"
+                >
+                  <MessageSquare className="w-4 h-4 text-brand-600" />
+                  Message Poster
+                </button>
+              )}
+
+              <button
+                onClick={handleApplyClick}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all active:scale-95"
+              >
+                <Send className="w-4 h-4" />
+                Apply for this Tuition
+              </button>
+            </div>
           </div>
 
         </div>

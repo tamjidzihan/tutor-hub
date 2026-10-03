@@ -4,9 +4,12 @@ class IsTutor(permissions.BasePermission):
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated and (request.user.role == 'TUTOR' or request.user.is_staff))
 
-class IsParent(permissions.BasePermission):
+class IsStudent(permissions.BasePermission):
     def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and (request.user.role in ['PARENT', 'STUDENT'] or request.user.is_staff))
+        return bool(request.user and request.user.is_authenticated and (request.user.role == 'STUDENT' or request.user.is_staff))
+
+# Backwards compatibility alias
+IsParent = IsStudent
 
 class IsAdminUserRole(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -16,5 +19,12 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
-        owner = getattr(obj, 'user', None) or getattr(obj, 'author', None) or getattr(obj, 'parent', None)
+        owner = (
+            getattr(obj, 'user', None)
+            or getattr(obj, 'author', None)
+            or getattr(obj, 'student', None)
+            or getattr(obj, 'parent', None)
+            or getattr(obj, 'tutor_user', None)
+        )
         return owner == request.user or request.user.is_staff
+

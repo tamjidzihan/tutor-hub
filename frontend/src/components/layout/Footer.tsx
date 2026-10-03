@@ -36,7 +36,7 @@ export const Footer: React.FC = () => {
             </Link>
 
             <p className="text-slate-400 text-sm leading-relaxed pr-6">
-              TutorHub (Tuition Terminal) is Bangladesh's premier full-stack tutor matching and learning platform. Connecting parents, students, and institutions with verified, qualified tutors from BUET, Medical Colleges, DU, IBA, and leading universities.
+              TutorHub is Bangladesh's premier AI-powered tutor matching, direct messaging, and peer learning community. Connecting students with verified, qualified tutors from BUET, Medical Colleges, DU, IBA, and top institutions.
             </p>
 
             <div className="pt-2">
@@ -47,50 +47,44 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Column 2: Quick Links */}
+          {/* Column 2: Platform Links */}
           <div>
             <h4 className="text-white text-sm font-bold uppercase tracking-wider mb-4 border-l-2 border-brand-500 pl-2">
-              Explore
+              Platform
             </h4>
             <ul className="space-y-2.5 text-sm">
+              <li>
+                <Link to="/feed" className="hover:text-brand-400 transition-colors">Community Feed</Link>
+              </li>
               <li>
                 <Link to="/find-tutor" className="hover:text-brand-400 transition-colors">Find a Tutor</Link>
               </li>
               <li>
-                <Link to="/job-board" className="hover:text-brand-400 transition-colors">Tuition Job Board</Link>
+                <Link to="/job-board" className="hover:text-brand-400 transition-colors">Tuition Jobs</Link>
               </li>
               <li>
-                <Link to="/appoint-a-tutor" className="hover:text-brand-400 transition-colors">Appoint A Tutor</Link>
+                <Link to="/dashboard/messages" className="hover:text-brand-400 transition-colors">Direct Messages</Link>
               </li>
               <li>
-                <Link to="/become-a-tutor" className="hover:text-brand-400 transition-colors">Become A Tutor</Link>
-              </li>
-              <li>
-                <Link to="/affiliate-program" className="hover:text-brand-400 transition-colors">Affiliate Partner</Link>
+                <Link to="/tuition-categories" className="hover:text-brand-400 transition-colors">Tuition Categories</Link>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: Company */}
+          {/* Column 3: Resources & Support */}
           <div>
             <h4 className="text-white text-sm font-bold uppercase tracking-wider mb-4 border-l-2 border-brand-500 pl-2">
-              Company
+              Account & Help
             </h4>
             <ul className="space-y-2.5 text-sm">
               <li>
-                <Link to="/our-team" className="hover:text-brand-400 transition-colors">Our Team</Link>
+                <Link to="/dashboard" className="hover:text-brand-400 transition-colors">Dashboard</Link>
               </li>
               <li>
-                <Link to="/careers" className="hover:text-brand-400 transition-colors">Careers / Jobs</Link>
+                <Link to="/dashboard/profile" className="hover:text-brand-400 transition-colors">Profile & Settings</Link>
               </li>
               <li>
-                <Link to="/blog" className="hover:text-brand-400 transition-colors">Educational Blog</Link>
-              </li>
-              <li>
-                <Link to="/gallery" className="hover:text-brand-400 transition-colors">Event Gallery</Link>
-              </li>
-              <li>
-                <Link to="/faq" className="hover:text-brand-400 transition-colors">FAQs & Help</Link>
+                <Link to="/faq" className="hover:text-brand-400 transition-colors">FAQs & Support</Link>
               </li>
               <li>
                 <Link to="/privacy-policy" className="hover:text-brand-400 transition-colors">Privacy Policy</Link>

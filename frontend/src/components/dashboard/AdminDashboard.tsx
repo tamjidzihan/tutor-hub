@@ -23,6 +23,7 @@ import {
 } from '../../api/dashboard';
 import { useToast } from '../../context/ToastContext';
 import { getApiErrorMessage } from '../../api/client';
+import { DashboardMessagesCard } from './DashboardMessagesCard';
 
 export const AdminDashboard: React.FC = () => {
     const { showToast } = useToast();
@@ -426,6 +427,9 @@ export const AdminDashboard: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Messages & Conversations Card */}
+            <DashboardMessagesCard />
 
             {/* Live Activity Streams */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

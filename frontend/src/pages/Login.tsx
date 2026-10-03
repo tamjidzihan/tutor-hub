@@ -43,7 +43,7 @@ export const Login: React.FC = () => {
     try {
       await login(email, password, selectedRole);
       showToast('Signed in successfully.', 'success');
-      navigate(from || '/dashboard', { replace: true });
+      navigate(from || '/', { replace: true });
     } catch (err) {
       setError(getApiErrorMessage(err, 'Invalid credentials. Check your email and password.'));
     } finally {
@@ -91,8 +91,8 @@ export const Login: React.FC = () => {
           <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 text-center">
             Sign In As
           </label>
-          <div className="grid grid-cols-4 gap-1 p-1 bg-slate-100 rounded-xl">
-            {(['TUTOR', 'PARENT', 'STUDENT', 'ADMIN'] as UserRole[]).map((r) => (
+          <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl">
+            {(['TUTOR', 'STUDENT', 'ADMIN'] as UserRole[]).map((r) => (
               <button
                 key={r}
                 type="button"
@@ -102,7 +102,7 @@ export const Login: React.FC = () => {
                   : 'text-slate-600 hover:text-slate-900'
                   }`}
               >
-                {r === 'PARENT' ? 'Parent' : r === 'TUTOR' ? 'Tutor' : r === 'STUDENT' ? 'Student' : 'Admin'}
+                {r === 'TUTOR' ? 'Tutor' : r === 'STUDENT' ? 'Student' : 'Admin'}
               </button>
             ))}
           </div>

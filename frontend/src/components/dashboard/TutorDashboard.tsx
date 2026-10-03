@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { dashboardApi, type DashboardOverview } from '../../api/dashboard';
+import { DashboardMessagesCard } from './DashboardMessagesCard';
 
 export const TutorDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -190,6 +191,9 @@ export const TutorDashboard: React.FC = () => {
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
+
+      {/* Messages & Conversations Card */}
+      <DashboardMessagesCard />
 
       {/* Recent Applications from Database */}
       <section className="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-card">

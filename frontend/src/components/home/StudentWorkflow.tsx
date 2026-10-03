@@ -37,13 +37,13 @@ export const StudentWorkflow: React.FC = () => {
         {/* Title */}
         <div className="text-center max-w-3xl mx-auto mb-14">
           <span className="inline-block text-xs font-bold text-brand-600 uppercase tracking-wider bg-brand-50 px-3 py-1 rounded-full mb-2">
-            For Parents & Students
+            For Students & Learners
           </span>
           <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight font-heading">
-            How Parents & Students Connect With Us
+            How Students Connect With Tutors
           </h2>
           <p className="text-slate-600 text-sm sm:text-base mt-2">
-            A hassle-free 4-step process designed to match your child with Bangladesh's most qualified instructors.
+            A hassle-free 4-step process designed to match you with Bangladesh's most qualified instructors.
           </p>
         </div>
 

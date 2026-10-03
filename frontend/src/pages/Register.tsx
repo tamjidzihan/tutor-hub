@@ -63,13 +63,7 @@ export const Register: React.FC = () => {
     try {
       await register(formData);
       showToast('Your TutorHub account was created successfully.', 'success');
-      if (from) {
-        navigate(from, { replace: true });
-      } else if (formData.role === 'TUTOR') {
-        navigate('/become-a-tutor', { replace: true });
-      } else {
-        navigate('/dashboard', { replace: true });
-      }
+      navigate(from || '/', { replace: true });
     } catch (err) {
       setError(getApiErrorMessage(err, 'Registration failed. Please check your details and try again.'));
     } finally {
@@ -99,8 +93,8 @@ export const Register: React.FC = () => {
           <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 text-center">
             I want to register as
           </label>
-          <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl">
-            {(['TUTOR', 'PARENT', 'STUDENT'] as UserRole[]).map((r) => (
+          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 rounded-xl">
+            {(['TUTOR', 'STUDENT'] as UserRole[]).map((r) => (
               <button
                 key={r}
                 type="button"
@@ -110,7 +104,7 @@ export const Register: React.FC = () => {
                   : 'text-slate-600 hover:text-slate-900'
                   }`}
               >
-                {r === 'PARENT' ? 'Parent' : r === 'TUTOR' ? 'Tutor' : 'Student'}
+                {r === 'TUTOR' ? 'Tutor' : 'Student'}
               </button>
             ))}
           </div>

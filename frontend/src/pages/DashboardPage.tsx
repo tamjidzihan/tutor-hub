@@ -16,8 +16,8 @@ export const DashboardPage: React.FC = () => {
   return (
     <DashboardLayout>
       {user.role === 'TUTOR' && <TutorDashboard />}
-      {(user.role === 'PARENT' || user.role === 'STUDENT') && <StudentParentDashboard />}
-      {(user.role === 'ADMIN' || user.role === 'STAFF') && <AdminDashboard />}
+      {user.role === 'STUDENT' && <StudentParentDashboard />}
+      {user.role === 'ADMIN' && <AdminDashboard />}
     </DashboardLayout>
   );
 };

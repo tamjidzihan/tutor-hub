@@ -11,7 +11,7 @@ from apps.common.permissions import IsTutor
 class TutorListView(generics.ListAPIView):
     queryset = TutorProfile.objects.filter(is_available=True).select_related('user')
     serializer_class = TutorProfileListSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = TutorFilter
     ordering_fields = ['rating', 'experience_years', 'expected_salary', 'created_at']
@@ -20,7 +20,7 @@ class TutorListView(generics.ListAPIView):
 class TutorDetailView(generics.RetrieveAPIView):
     queryset = TutorProfile.objects.all().select_related('user').prefetch_related('education_records', 'experience_records')
     serializer_class = TutorProfileDetailSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'tutor_id'
 
 class MyTutorProfileView(generics.RetrieveUpdateAPIView):

@@ -126,13 +126,41 @@ export const FindTutor: React.FC = () => {
           <div className="lg:col-span-8 space-y-6">
 
             {/* Top Results Bar */}
-            <div className="bg-white p-4 rounded-2xl border border-slate-200 flex items-center justify-between shadow-subtle">
+            <div className="bg-white p-4 rounded-2xl border border-slate-200 flex flex-wrap items-center justify-between gap-3 shadow-subtle">
               <span className="text-xs font-bold text-slate-600">
                 Showing <strong className="text-slate-900">{paginatedTutors.length}</strong> of <strong className="text-slate-900">{totalCount}</strong> verified tutors
               </span>
-              <div className="flex items-center gap-1 text-xs text-brand-700 font-semibold">
-                <ShieldCheck className="w-3.5 h-3.5 text-brand-600" />
-                <span>Verified profiles</span>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setIsLoading(true);
+                    try {
+                      const res = await (await import('../api/ai')).aiApi.recommendTutors({
+                        subject: filters.subject,
+                        max_budget: filters.max_budget,
+                        location: filters.area || filters.city,
+                        class_level: filters.class_level,
+                      });
+                      if (res.results && res.results.length > 0) {
+                        setTutors(res.results as any);
+                        setTotalCount(res.total_matches);
+                      }
+                    } catch {
+                      // ignore
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-50 border border-brand-200 text-brand-700 text-xs font-bold hover:bg-brand-100 transition-colors"
+                >
+                  <span className="w-2 h-2 rounded-full bg-brand-500 animate-pulse" />
+                  AI Recommendation Sort
+                </button>
+                <div className="flex items-center gap-1 text-xs text-brand-700 font-semibold">
+                  <ShieldCheck className="w-3.5 h-3.5 text-brand-600" />
+                  <span>Verified profiles</span>
+                </div>
               </div>
             </div>
 

@@ -1,0 +1,191 @@
+================================================================================
+TUTORHUB — COMPLETE USER WORKFLOW GUIDE & PLATFORM SPECIFICATION
+================================================================================
+
+1. PLATFORM OVERVIEW & ROLE ARCHITECTURE
+--------------------------------------------------------------------------------
+TutorHub is an authenticated-first tuition matching, direct messaging, and peer
+learning community platform in Bangladesh.
+
+The platform supports three distinct roles:
+1. STUDENT: Posts tuition requirements, searches tutors, sends direct messages,
+   reviews tutors with star ratings, and tracks matches on the dashboard.
+2. TUTOR: Builds a verified profile, browses and applies to tuition jobs,
+   messages student job posters, tracks proposals, and engages in discussions.
+3. ADMIN: Moderates tuition jobs, verifies tutor profiles, audits users, and
+   monitors platform analytics.
+
+* Note: The legacy PARENT role has been retired and migrated to STUDENT.
+
+
+================================================================================
+2. STUDENT WORKFLOWS
+================================================================================
+
+A. HOW A STUDENT POSTS A TUITION JOB / REQUIREMENT
+--------------------------------------------------
+1. Navigation:
+   - On the Tuition Job Board (/job-board) or Home (/), click "Post a Job (Free)".
+   - Or navigate directly to: /appoint-a-tutor (or /post-job).
+
+2. Filling Requirement Details:
+   - Student info: Student Name, Class Level (e.g. Class 9), Curriculum (Bangla
+     Medium, English Version, English Medium, Edexcel, Cambridge, etc.), and
+     Subjects to learn (e.g. Higher Math, Physics).
+   - Location: Division/City (e.g. Dhaka, Chittagong) and Area (e.g. Mirpur,
+     Dhanmondi, Uttara).
+   - Logistics & Budget: Number of days per week, preferred tutoring time,
+     monthly budget / honorarium in BDT (৳), and preferred tutor gender (Male,
+     Female, or Any).
+
+3. Instant Processing:
+   - When submitted, the backend saves the requirement to the database.
+   - An intelligent matching engine calculates compatibility scores against
+     verified tutor profiles in real-time.
+   - The job is published to the public Tuition Job Board (/job-board) so
+     verified tutors can discover and apply.
+   - The student is redirected to their Student Dashboard (/dashboard) where
+     they can monitor matched tutors and incoming applications.
+
+
+B. HOW A STUDENT HIRES A TUTOR
+------------------------------
+Students have three options to hire a tutor:
+
+Option 1: From Automated AI Matches (Fastest)
+1. Open the Student Dashboard (/dashboard).
+2. Look at "Your Tuition Requirements" -> "Tutor Matches".
+3. Review each matched tutor's match score (e.g., 95% Match), university
+   (e.g., BUET, DU, DMC), department, and specific matching reasons.
+4. Click "Select Tutor" to confirm the appointment, or click "View Profile"
+   to inspect full qualifications first.
+
+Option 2: From Received Job Applications
+1. Tutors browsing the Job Board submit proposals with their expected monthly
+   salary and a cover message.
+2. The student views applications on their dashboard or job details page.
+3. The student can click "Message" to negotiate terms with the applicant, then
+   click "Select Tutor" to approve.
+
+Option 3: Direct Search & Discovery
+1. Visit "Find Tutors" (/find-tutor).
+2. Filter tutors by subjects, university, district, tuition type (Home, Online,
+   Group), and Min / Max Monthly Budget (৳).
+3. Click a tutor's card to view their profile (/hub/tutor-details/:tutorId).
+4. Review their educational background, ratings, and Gemini AI review summaries.
+5. Click the prominent "Message Tutor" button to discuss schedules and finalize
+   the hiring agreement.
+
+
+C. HOW A STUDENT TEXTS A TUTOR
+------------------------------
+Method 1 — From Tutor Profile:
+1. On any tutor's profile (/hub/tutor-details/:tutorId), click "Message Tutor".
+2. The system automatically creates or opens the direct conversation inside the
+   dashboard messages center (/dashboard/messages?tutor=TT-T-XXXXXX).
+3. The student can type their message and press Enter or click Send.
+
+Method 2 — From the Floating Chat Widget:
+1. On any page, click the floating 💬 chat bubble fixed at the bottom-right corner.
+2. Select an existing conversation or search for a tutor by name.
+3. Chat in real-time without leaving the current page.
+
+Method 3 — From the Dashboard Messages Center:
+1. Navigate to /dashboard/messages from the dashboard sidebar.
+2. Select any active conversation from the left sidebar list.
+3. View message history and send new messages with real-time live updates.
+
+
+================================================================================
+3. TUTOR WORKFLOWS
+================================================================================
+
+A. HOW A TUTOR DISCOVERS AND APPLIES TO TUITION JOBS
+----------------------------------------------------
+1. Go to "Tuition Jobs" (/job-board).
+2. Filter listings by:
+   - City & Area
+   - Class Level
+   - Subject
+   - Tuition Type (Home Tutoring, Online, Group)
+   - Preferred Tutor Gender
+3. Click on a job card to open the complete specification (/job-board/:jobId).
+4. Review weekly schedule, subjects, curriculum, and offered honorarium (৳).
+5. Click "Apply for this Tuition", enter expected salary (৳) and a personalized
+   cover message, then click "Submit Proposal".
+6. Track application status (Pending -> Shortlisted -> Selected) on the Tutor
+   Dashboard (/dashboard).
+
+
+B. HOW A TUTOR TEXTS A STUDENT OR JOB POSTER
+--------------------------------------------
+Method 1 — Direct from Job Details:
+1. When viewing any tuition job on /job-board/:jobId, the tutor sees the job
+   details and poster information.
+2. In the bottom action bar, next to "Apply", click the "Message Poster" button.
+3. This opens a direct conversation with the student who posted that job at
+   /dashboard/messages?user={student_user_id}.
+4. Discuss tutoring format, timing, curriculum requirements, or honorarium.
+
+Method 2 — From Applications or Student Replies:
+1. When a student replies to an application or sends an inquiry, the tutor receives
+   an in-app notification and an unread badge on their bottom-right floating chat.
+2. Clicking the floating chat popup or opening /dashboard/messages lets the tutor
+   reply immediately.
+
+
+================================================================================
+4. REAL-TIME DIRECT MESSAGING & FLOATING CHAT SYSTEM
+================================================================================
+
+1. Floating Chat Bubble (Always Accessible):
+   - Fixed to the bottom-right viewport (bottom: 24px, right: 24px) on all pages.
+   - Shows live unread count badge (e.g. 💬 3).
+   - Smooth slide-up + scale animation when opened directly above the button.
+   - Allows switching between Conversation List and Active Chat.
+   - Supports instant search, typing, Enter-to-send, and 3.5s real-time message polling.
+   - Automatically hides on /dashboard/messages to avoid duplicate UI.
+
+2. Full Dashboard Messages Center (/dashboard/messages):
+   - Integrated into the authenticated user dashboard sidebar.
+   - Left Panel: Searchable conversation list, participant avatars, names,
+     role badges (STUDENT / TUTOR), last message snippet, timestamps, unread pills.
+   - Right Panel: Full-height chat stream, outgoing vs incoming message bubbles,
+     timestamps, read receipts (Check / CheckCheck), and auto-scroll.
+   - Automatically marks conversations as read upon opening.
+
+
+================================================================================
+5. COMPLETE URL ROUTE REFERENCE
+================================================================================
+
+PUBLIC / AUTHENTICATION:
+- /login                   User sign-in (Tutor, Student, Admin)
+- /register                New account registration (Student or Tutor)
+- /forgot-password         Password recovery
+
+AUTHENTICATED PLATFORM PAGES:
+- /                        Home Page (Hero, quick search, featured categories)
+- /feed                    Community Discussion Feed (Academic, Exam Prep, Tips)
+- /find-tutor              Tutor Directory with Budget Filters & AI sorting
+- /hub/tutor-details/:id   Tutor Profile with Gemini AI Review Insights & Hire/Message CTA
+- /job-board               Tuition Job Board with location & subject filters
+- /job-board/:jobId        Job Details with "Apply" and "Message Poster" actions
+- /appoint-a-tutor         Post a Tuition Job / Requirement Form (Free)
+- /tuition-categories      Tuition Subjects & Grade Categories
+- /faq                     Frequently Asked Questions
+- /privacy-policy          Privacy Policy
+- /terms                   Terms of Service
+
+AUTHENTICATED DASHBOARD (/dashboard/*):
+- /dashboard               Role-tailored Dashboard (Overview, stats, recent items)
+- /dashboard/messages      Integrated Direct Messaging Center
+- /dashboard/profile       User Profile, Qualifications, & Contact Settings
+- /dashboard/jobs          Tuition Jobs Directory (Tutor search / Admin moderation)
+- /dashboard/applications  Tutor Job Applications & Proposals
+- /dashboard/requirements  Student Tuition Requirements & Matched Tutors
+- /dashboard/users         Admin User Directory & Governance
+- /dashboard/tutors        Admin Tutor Profile Verification
+
+================================================================================
+EOF

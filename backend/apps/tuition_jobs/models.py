@@ -18,14 +18,23 @@ class TuitionJob(TimeStampedModel, UUIDModel):
         MALE = 'Male', 'Male Tutor Only'
         FEMALE = 'Female', 'Female Tutor Only'
 
-    parent = models.ForeignKey(
+    student = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE, 
         related_name='posted_jobs',
         null=True,
-        blank=True
+        blank=True,
+        db_column='parent_id'
     )
     job_id = models.CharField(max_length=20, unique=True, default=generate_job_id, db_index=True)
+
+    @property
+    def parent(self):
+        return self.student
+
+    @parent.setter
+    def parent(self, value):
+        self.student = value
     title = models.CharField(max_length=255)
     
     city = models.CharField(max_length=100, default='Dhaka')

@@ -32,7 +32,6 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
     class Role(models.TextChoices):
         TUTOR = 'TUTOR', _('Tutor')
-        PARENT = 'PARENT', _('Parent')
         STUDENT = 'STUDENT', _('Student')
         ADMIN = 'ADMIN', _('Admin')
 
@@ -62,6 +61,15 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return f"{self.email} ({self.role})"
 
+    def get_full_name(self):
+        """Return the first_name plus the last_name, with a space in between."""
+        full = f"{self.first_name} {self.last_name}".strip()
+        return full or self.email
+
+    def get_short_name(self):
+        """Return the short name for the user."""
+        return self.first_name or self.email
+
     @property
     def full_name(self):
-        return f"{self.first_name} {self.last_name}".strip() or self.email
+        return self.get_full_name()

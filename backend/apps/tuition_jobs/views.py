@@ -8,7 +8,7 @@ from .filters import TuitionJobFilter
 
 class TuitionJobListView(generics.ListCreateAPIView):
     queryset = TuitionJob.objects.all()
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_class = TuitionJobFilter
     ordering_fields = ['salary', 'created_at', 'views_count']
@@ -20,13 +20,13 @@ class TuitionJobListView(generics.ListCreateAPIView):
         return TuitionJobListSerializer
 
     def perform_create(self, serializer):
-        parent = self.request.user if self.request.user.is_authenticated else None
-        serializer.save(parent=parent)
+        student = self.request.user if self.request.user.is_authenticated else None
+        serializer.save(student=student)
 
 class TuitionJobDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = TuitionJob.objects.all()
     serializer_class = TuitionJobDetailSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'job_id'
 
     def retrieve(self, request, *args, **kwargs):

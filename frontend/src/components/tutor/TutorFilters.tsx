@@ -182,6 +182,35 @@ export const TutorFilters: React.FC<TutorFiltersProps> = ({
         </select>
       </div>
 
+      {/* Budget Filter */}
+      <div>
+        <label className="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-1.5">
+          Expected Salary / Budget (৳)
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="block text-[10px] font-semibold text-slate-400 mb-1">Min (৳)</label>
+            <input
+              type="number"
+              placeholder="e.g. 5000"
+              value={filters.min_budget || ''}
+              onChange={(e) => handleFieldChange('min_budget', e.target.value ? Number(e.target.value) : undefined)}
+              className="w-full text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+            />
+          </div>
+          <div>
+            <label className="block text-[10px] font-semibold text-slate-400 mb-1">Max (৳)</label>
+            <input
+              type="number"
+              placeholder="e.g. 15000"
+              value={filters.max_budget || ''}
+              onChange={(e) => handleFieldChange('max_budget', e.target.value ? Number(e.target.value) : undefined)}
+              className="w-full text-xs font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Results Count */}
       <div className="p-3 bg-brand-50 rounded-xl border border-brand-200/80 text-center">
         <p className="text-xs font-bold text-brand-900">

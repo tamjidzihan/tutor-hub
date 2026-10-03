@@ -1,9 +1,14 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Load environment variables from .env file
+load_dotenv(BASE_DIR / '.env')
+load_dotenv(BASE_DIR.parent / '.env')
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-tutorhub-production-key-change-in-prod-xyz123')
 
@@ -44,6 +49,10 @@ LOCAL_APPS = [
     'apps.affiliates',
     'apps.content',
     'apps.dashboard',
+    'apps.ai',
+    'apps.notifications',
+    'apps.messaging',
+    'apps.posts',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -121,7 +130,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_PAGINATION_CLASS': 'apps.common.pagination.StandardResultsSetPagination',
     'PAGE_SIZE': 12,
@@ -132,6 +141,11 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
+
+# AI Configuration (Gemini API)
+AI_PROVIDER = os.environ.get('AI_PROVIDER', 'gemini')
+AI_MODEL = os.environ.get('AI_MODEL', 'gemini-1.5-flash')
+AI_API_KEY = os.environ.get('AI_API_KEY', os.environ.get('GEMINI_API_KEY', ''))
 
 # Simple JWT Settings
 SIMPLE_JWT = {

@@ -11,7 +11,7 @@ export const DashboardUsersPage: React.FC = () => {
         return <Navigate to="/login" replace />;
     }
 
-    if (user.role !== 'ADMIN' && user.role !== 'STAFF') {
+    if (user.role !== 'ADMIN') {
         return <Navigate to="/dashboard" replace />;
     }
 

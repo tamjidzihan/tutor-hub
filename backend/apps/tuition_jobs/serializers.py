@@ -19,6 +19,7 @@ class TuitionJobListSerializer(serializers.ModelSerializer):
 
 class TuitionJobDetailSerializer(serializers.ModelSerializer):
     posted_at = serializers.SerializerMethodField()
+    student_name = serializers.SerializerMethodField()
 
     class Meta:
         model = TuitionJob
@@ -26,3 +27,6 @@ class TuitionJobDetailSerializer(serializers.ModelSerializer):
 
     def get_posted_at(self, obj):
         return obj.created_at.strftime("%b %d, %Y")
+
+    def get_student_name(self, obj):
+        return obj.student.full_name if obj.student else "Student / Guardian"
