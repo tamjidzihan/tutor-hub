@@ -36,7 +36,7 @@ export const DashboardJobsPage: React.FC = () => {
     );
   }
 
-  const [jobs, setJobs] = useState<TuitionJob[]>([]);
+  const [filteredJobs, setFilteredJobs] = useState<TuitionJob[]>([]);
   const [cities, setCities] = useState<LocationCity[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -76,9 +76,11 @@ export const DashboardJobsPage: React.FC = () => {
         tuition_type: selectedType || undefined,
       };
       const response = await jobsApi.getJobs(filters, currentPage, 6);
-      setJobs(response.results);
-      setTotalCount(response.count);
-      setTotalPages(response.total_pages);
+      // Filter for student/admin: only show their own posted jobs
+      const myJobs = user?.role !== 'TUTOR' ? response.results.filter((j: any) => j.student === user?.id) : response.results;
+      setFilteredJobs(myJobs);
+      setTotalCount(user?.role !== 'TUTOR' ? myJobs.length : response.count);
+      setTotalPages(user?.role !== 'TUTOR' ? 1 : response.total_pages);
     } catch (err) {
       console.error('Failed to load jobs:', err);
     } finally {
@@ -120,16 +122,18 @@ export const DashboardJobsPage: React.FC = () => {
               Live Tuition Marketplace
             </div>
             <h2 className="text-2xl sm:text-3xl font-black font-heading tracking-tight text-white">
-              Find Tuition Jobs
+              {user?.role === 'TUTOR' ? 'Find Tuition Jobs' : 'My Posted Jobs'}
             </h2>
             <p className="text-xs sm:text-sm text-slate-300">
-              Explore live tutoring opportunities posted directly by guardians and students across Bangladesh.
+              {user?.role === 'TUTOR'
+                ? 'Explore live tutoring opportunities posted directly by guardians and students across Bangladesh.'
+                : 'Manage tuition jobs you have posted and review tutor applications.'}
             </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-slate-800/80 border border-slate-700/80 text-right self-start md:self-auto shrink-0">
             <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Live Jobs</span>
-            <span className="font-heading text-2xl font-black text-brand-400">{totalCount} Available</span>
+            <span className="font-heading text-2xl font-black text-brand-400">{user?.role === 'TUTOR' ? totalCount + ' Available' : totalCount + ' Posted'}</span>
           </div>
         </div>
 
@@ -232,7 +236,7 @@ export const DashboardJobsPage: React.FC = () => {
             <div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
             Loading live tuition opportunities...
           </div>
-        ) : jobs.length === 0 ? (
+        ) : filteredJobs.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-12 text-center space-y-3">
             <Filter className="w-10 h-10 text-slate-300 mx-auto" />
             <h3 className="text-base font-bold text-slate-800">No tuition jobs match your criteria</h3>
@@ -250,7 +254,7 @@ export const DashboardJobsPage: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {jobs.map((job) => (
+            {filteredJobs.map((job) => (
               <div
                 key={job.id}
                 className="bg-white rounded-3xl border border-slate-200 shadow-card p-6 flex flex-col justify-between hover:border-brand-400 hover:shadow-lg transition-all"
@@ -313,13 +317,15 @@ export const DashboardJobsPage: React.FC = () => {
                     >
                       Details
                     </Link>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedJobToApply(job)}
-                      className="px-3.5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold transition-all shadow-xs"
-                    >
-                      Apply Now
-                    </button>
+                    {user?.role === 'TUTOR' && (
+                      <button
+                        type="button"
+                        onClick={() => setSelectedJobToApply(job)}
+                        className="px-3.5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold transition-all shadow-xs"
+                      >
+                        Apply Now
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>

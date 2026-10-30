@@ -1,3 +1,4 @@
+import type { TuitionJob } from '../../types';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -13,7 +14,7 @@ import { Input } from '../common/Input';
 import { Select } from '../common/Select';
 import { locationsApi } from '../../api/locations';
 import type { LocationCity } from '../../api/locations';
-import { requirementsApi } from '../../api/requirements';
+import { jobsApi } from '../../api/jobs';
 import { getApiErrorMessage } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 
@@ -44,6 +45,7 @@ export const SubmitRequirementForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [generatedReqId, setGeneratedReqId] = useState('');
+  const [result, setResult] = useState<any>(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -103,27 +105,27 @@ export const SubmitRequirementForm: React.FC = () => {
     setError('');
     try {
       const payload = {
-        ...formData,
+        title: `Tutor needed for ${formData.student_name || formData.class_level || 'student'}`,
         student_gender: formData.student_gender || undefined,
         preferred_tutor_gender: formData.preferred_tutor_gender || undefined,
         class_level: formData.class_level || undefined,
-        curriculum: formData.curriculum || undefined,
+        curriculum: (formData.curriculum || undefined) as TuitionJob["curriculum"],
         city: formData.city || undefined,
         area: formData.area || undefined,
-        address: formData.address || undefined,
-        tuition_type: formData.tuition_type || undefined,
-        preferred_time: formData.preferred_time || undefined,
-        additional_requirements: formData.additional_requirements || undefined,
+        subjects: formData.subjects || [],
         days_per_week: formData.days_per_week === '' ? undefined : Number(formData.days_per_week),
-        budget: formData.budget === '' ? undefined : Number(formData.budget),
-        subjects: formData.subjects || []
+        tutoring_time: formData.preferred_time || undefined,
+        salary: formData.budget === '' ? undefined : Number(formData.budget),
+        tuition_type: (formData.tuition_type || undefined) as TuitionJob["tuition_type"],
+        requirements_text: formData.additional_requirements || undefined,
       };
 
-      const result = await requirementsApi.submitRequirement(payload);
-      setGeneratedReqId(result.requirement_id);
+      const result = await jobsApi.createJob(payload);
+      setResult(result);
+      setGeneratedReqId(result.job_id);
       setIsSubmitted(true);
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Unable to submit this requirement. Please review the form and try again.'));
+      setError(getApiErrorMessage(err, 'Unable to post tuition job. Please review the form and try again.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -139,17 +141,17 @@ export const SubmitRequirementForm: React.FC = () => {
           ID: {generatedReqId}
         </span>
         <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-heading mt-3">
-          Tutor Requirement Submitted!
+          Tuition Job Posted!
         </h2>
         <p className="text-slate-600 text-sm mt-3 leading-relaxed">
-          Our automated tutor matching algorithm has identified top rated tutors for <strong>{formData.subjects.join(', ')}</strong> in {formData.area}, {formData.city}. You will receive short-listed CVs shortly.
+          Your tuition job <strong>{result?.title || ''}</strong> is now live on the Job Board for tutors to apply.
         </p>
         <div className="pt-8 flex flex-col sm:flex-row gap-3 justify-center">
           <Button
             variant="primary"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/dashboard/jobs')}
           >
-            Track Requirement in Dashboard
+            View Job Board
           </Button>
           <Button
             variant="outline"
@@ -198,13 +200,13 @@ export const SubmitRequirementForm: React.FC = () => {
       <div className="border-b border-slate-100 pb-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-100 text-brand-800 text-xs font-bold mb-2">
           <ClipboardList className="w-3.5 h-3.5" />
-          Free Requirement Submission
+          Post Tuition Job
         </div>
         <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-heading">
-          Post Your Tutor Requirement
+          Post a Tuition Job
         </h2>
         <p className="text-xs sm:text-sm text-slate-600 mt-1">
-          Provide your child's requirements and receive verified mentor CVs tailored specifically to your needs.
+          List your tuition posting publicly and receive applications from verified tutors.
         </p>
       </div>
 
@@ -455,7 +457,7 @@ export const SubmitRequirementForm: React.FC = () => {
           leftIcon={<Send className="w-4 h-4" />}
           className="w-full sm:w-auto"
         >
-          Submit Requirement
+          Post Tuition Job
         </Button>
       </div>
 

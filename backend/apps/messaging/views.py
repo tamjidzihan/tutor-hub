@@ -14,12 +14,9 @@ class ConversationListCreateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):
-        if request.user.is_staff:
-            conversations = Conversation.objects.all().order_by('-updated_at')
-        else:
-            conversations = Conversation.objects.filter(
-                Q(student=request.user) | Q(tutor=request.user)
-            ).order_by('-updated_at')
+        conversations = Conversation.objects.filter(
+            Q(student=request.user) | Q(tutor=request.user)
+        ).order_by('-updated_at')
         serializer = ConversationSerializer(conversations, many=True, context={'request': request})
         return Response(serializer.data)
 
@@ -70,6 +67,12 @@ class ConversationListCreateView(APIView):
         if target_user == request.user:
             return Response({'error': 'Cannot start a conversation with yourself.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Only allow student <=> tutor messaging
+        roles = {request.user.role, target_user.role}
+        if not ((request.user.role == User.Role.STUDENT and target_user.role == User.Role.TUTOR) or
+                (request.user.role == User.Role.TUTOR and target_user.role == User.Role.STUDENT)):
+            return Response({'error': 'Messaging is only allowed between students and tutors.'}, status=status.HTTP_403_FORBIDDEN)
+
         # Check if a conversation between these two users already exists in either direction
         conversation = Conversation.objects.filter(
             (Q(student=request.user) & Q(tutor=target_user)) |
@@ -83,10 +86,8 @@ class ConversationListCreateView(APIView):
                 student, tutor = request.user, target_user
             elif request.user.role == User.Role.TUTOR and target_user.role == User.Role.STUDENT:
                 student, tutor = target_user, request.user
-            elif request.user.role == User.Role.ADMIN or target_user.role == User.Role.ADMIN:
-                student, tutor = (request.user, target_user) if request.user.role != User.Role.TUTOR else (target_user, request.user)
             else:
-                student, tutor = request.user, target_user
+                return Response({'error': 'Messaging is only allowed between students and tutors.'}, status=status.HTTP_403_FORBIDDEN)
 
             conversation = Conversation.objects.create(student=student, tutor=tutor)
             created = True
@@ -99,8 +100,6 @@ class ConversationDetailView(generics.RetrieveDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        if self.request.user.is_staff:
-            return Conversation.objects.all()
         return Conversation.objects.filter(
             Q(student=self.request.user) | Q(tutor=self.request.user)
         )
@@ -112,7 +111,7 @@ class MessageListCreateView(APIView):
         conv = Conversation.objects.filter(id=conversation_id).first()
         if not conv:
             return None
-        if conv.student != user and conv.tutor != user and not user.is_staff:
+        if conv.student != user and conv.tutor != user:
             return None
         return conv
 
@@ -168,7 +167,10 @@ class MessageDetailView(generics.DestroyAPIView):
             conversation_id=self.kwargs['conversation_id']
         )
         if self.request.user.is_staff:
-            return queryset
+            return queryset.filter(
+                Q(conversation__student=self.request.user) |
+                Q(conversation__tutor=self.request.user)
+            )
         return queryset.filter(
             sender=self.request.user
         ).filter(
@@ -181,7 +183,7 @@ class MarkConversationReadView(APIView):
 
     def post(self, request, conversation_id):
         conv = Conversation.objects.filter(id=conversation_id).first()
-        if not conv or (conv.student != request.user and conv.tutor != request.user and not request.user.is_staff):
+        if not conv or (conv.student != request.user and conv.tutor != request.user):
             return Response({'error': 'Not found'}, status=status.HTTP_404_NOT_FOUND)
 
         updated = conv.messages.filter(is_read=False).exclude(sender=request.user).update(is_read=True)

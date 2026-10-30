@@ -23,6 +23,7 @@ import { ForgotPassword } from './pages/ForgotPassword';
 import { DashboardPage } from './pages/DashboardPage';
 import { DashboardProfilePage } from './pages/DashboardProfilePage';
 import { DashboardApplicationsPage } from './pages/DashboardApplicationsPage';
+import { DashboardNotificationsPage } from './pages/DashboardNotificationsPage';
 import { DashboardJobsPage } from './pages/DashboardJobsPage';
 import { DashboardUsersPage } from './pages/DashboardUsersPage';
 import { DashboardTutorsPage } from './pages/DashboardTutorsPage';
@@ -79,8 +80,7 @@ export function App() {
             <Route path="/dashboard/profile" element={<DashboardProfilePage />} />
             <Route path="/dashboard/jobs" element={<DashboardJobsPage />} />
             <Route path="/dashboard/applications" element={<DashboardApplicationsPage />} />
-            <Route path="/dashboard/requirements" element={<DashboardApplicationsPage />} />
-            <Route path="/dashboard/notifications" element={<DashboardApplicationsPage />} />
+            <Route path="/dashboard/notifications" element={<DashboardNotificationsPage />} />
           </Route>
 
           {/* Authenticated Platform App Routes with Header & Footer */}

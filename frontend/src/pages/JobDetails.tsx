@@ -22,6 +22,7 @@ export const JobDetails: React.FC = () => {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
 
   const handleApplyClick = () => {
+    if (job?.has_applied) return;
     if (!isAuthenticated) {
       navigate('/login', {
         state: {
@@ -227,10 +228,16 @@ export const JobDetails: React.FC = () => {
 
               <button
                 onClick={handleApplyClick}
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm shadow-md hover:shadow-lg transition-all active:scale-95"
+                disabled={job.has_applied}
+                title={job.has_applied ? "You have already applied for this job" : "Apply for this tuition"}
+                className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-bold text-sm shadow-md transition-all active:scale-95 ${
+                  job.has_applied
+                    ? "bg-slate-300 text-slate-500 cursor-not-allowed shadow-none"
+                    : "bg-brand-500 hover:bg-brand-600 text-white hover:shadow-lg"
+                }`}
               >
                 <Send className="w-4 h-4" />
-                Apply for this Tuition
+                {job.has_applied ? "Already Applied" : "Apply for this Tuition"}
               </button>
             </div>
           </div>

@@ -84,12 +84,12 @@ export const DashboardApplicationsPage: React.FC = () => {
 
         <div>
           <h2 className="text-2xl font-black text-slate-900 font-heading">
-            {user?.role === 'TUTOR' ? 'My Job Applications' : 'My Posted Requirements'}
+            {user?.role === 'TUTOR' ? 'My Job Applications' : 'Applications'}
           </h2>
           <p className="text-xs text-slate-500 mt-1">
             {user?.role === 'TUTOR'
               ? 'Track the approval and shortlist status of your applied tuition jobs.'
-              : 'Manage submitted tuition requirements and review recommended tutor CVs.'}
+              : 'View application updates and tutor matches.'}
           </p>
         </div>
 

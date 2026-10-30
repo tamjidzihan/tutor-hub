@@ -100,10 +100,16 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onApply }) => {
             </Link>
             <button
               onClick={() => onApply?.(job)}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-brand-500 hover:bg-brand-600 text-white text-[11px] font-bold shadow-sm shadow-brand-500/20 hover:shadow-brand-500/30 transition-all active:scale-95"
+              disabled={job.has_applied}
+              title={job.has_applied ? "You have already applied for this job" : "Apply for this job"}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[11px] font-bold shadow-sm transition-all active:scale-95 ${
+                job.has_applied
+                  ? "bg-slate-300 text-slate-500 cursor-not-allowed shadow-none"
+                  : "bg-brand-500 hover:bg-brand-600 text-white shadow-brand-500/20 hover:shadow-brand-500/30"
+              }`}
             >
               <Send className="w-3.5 h-3.5" />
-              Apply
+              {job.has_applied ? "Applied" : "Apply"}
             </button>
           </div>
         </div>

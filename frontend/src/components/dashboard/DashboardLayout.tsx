@@ -51,7 +51,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
         { name: 'Direct Messages', path: '/dashboard/messages', icon: <MessageSquare className="w-4 h-4" /> },
       ] : [
         { name: 'My Profile', path: '/dashboard/profile', icon: <User className="w-4 h-4" /> },
-        { name: 'My Requirements', path: '/dashboard/requirements', icon: <ClipboardList className="w-4 h-4" /> },
+        { name: 'My Posted Jobs', path: '/dashboard/jobs', icon: <Briefcase className="w-4 h-4" /> },
         { name: 'Browse Tutors', path: '/find-tutor', icon: <User className="w-4 h-4" /> },
         { name: 'Direct Messages', path: '/dashboard/messages', icon: <MessageSquare className="w-4 h-4" /> },
       ])
@@ -69,7 +69,6 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
       return 'Account Profile';
     }
     if (location.pathname === '/dashboard/jobs') return user?.role === 'ADMIN' ? 'Tuition Jobs Moderation' : 'Find Tuition Jobs';
-    if (location.pathname === '/dashboard/requirements') return user?.role === 'ADMIN' ? 'Tutor Requests & Inquiries' : 'My Requirements';
     if (location.pathname === '/dashboard/applications') return user?.role === 'ADMIN' ? 'Applications Governance' : 'My Applications';
     if (location.pathname === '/dashboard/messages') return 'Direct Messages & Inquiries';
     if (location.pathname === '/dashboard/notifications') return 'Notifications';
@@ -240,16 +239,6 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
             >
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-500 ring-2 ring-white" />
-            </Link>
-
-            {/* Back to Public Site Link */}
-            <Link
-              to="/"
-              className="hidden lg:inline-flex items-center gap-1 text-xs font-bold text-slate-500 hover:text-slate-800 px-2 py-1 rounded-lg hover:bg-slate-100 transition-colors"
-              title="Go to Home"
-            >
-              <span>Main Site</span>
-              <ExternalLink className="w-3 h-3" />
             </Link>
 
             <div className="h-4 w-px bg-slate-200 hidden sm:block" />

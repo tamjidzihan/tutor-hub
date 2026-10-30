@@ -2,6 +2,11 @@ from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from .models import JobApplication
 from .serializers import JobApplicationSerializer, JobApplicationCreateSerializer
+from apps.common.permissions import IsTutor
+from apps.notifications.services import create_notification
+
+class OnlyTutorCanApply(IsTutor):
+    message = "Only tutor can apply for a job."
 
 class MyApplicationsListView(generics.ListAPIView):
     serializer_class = JobApplicationSerializer
@@ -12,10 +17,21 @@ class MyApplicationsListView(generics.ListAPIView):
 
 class ApplyForJobView(generics.CreateAPIView):
     serializer_class = JobApplicationCreateSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, OnlyTutorCanApply]
 
     def perform_create(self, serializer):
-        serializer.save(tutor_user=self.request.user)
+        application = serializer.save(tutor_user=self.request.user)
+        # Notify job poster (student/admin) when a tutor applies
+        job = application.job
+        if job.student:
+            create_notification(
+                recipient=job.student,
+                sender=self.request.user,
+                notification_type='APPLICATION',
+                title=f"New application for {job.title}",
+                message=f"{self.request.user.full_name or self.request.user.email} applied to your tuition job.",
+                link=f"/dashboard/applications"
+            )
 
 class JobApplicationsForJobView(generics.ListAPIView):
     serializer_class = JobApplicationSerializer

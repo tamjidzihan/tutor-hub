@@ -101,9 +101,10 @@ export interface TuitionJob {
   posted_at: string;
   deadline?: string;
   applicants_count: number;
-  posted_by_name?: string;
+  has_applied?: boolean;
   student?: string;
   student_name?: string;
+  posted_by_name?: string;
 }
 
 export type ApplicationStatus = 'PENDING' | 'SHORTLISTED' | 'SELECTED' | 'REJECTED' | 'WITHDRAWN';

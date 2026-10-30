@@ -26,3 +26,11 @@ class JobApplicationCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobApplication
         fields = ['job', 'cover_message', 'expected_salary']
+
+    def validate(self, attrs):
+        request = self.context.get('request')
+        job = attrs.get('job')
+        if request and job:
+            if JobApplication.objects.filter(job=job, tutor_user=request.user).exists():
+                raise serializers.ValidationError("You have already applied for this job.")
+        return attrs
