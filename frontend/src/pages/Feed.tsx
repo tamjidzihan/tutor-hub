@@ -186,22 +186,20 @@ export const Feed: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsForYou(false)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                !isForYou
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${!isForYou
+                ? 'bg-white text-slate-900 shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
             >
               Latest Posts
             </button>
             <button
               type="button"
               onClick={() => setIsForYou(true)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${
-                isForYou
-                  ? 'bg-brand-500 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all ${isForYou
+                ? 'bg-brand-500 text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-900'
+                }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
               AI For You
@@ -266,10 +264,10 @@ export const Feed: React.FC = () => {
               <Button
                 type="submit"
                 isLoading={isSubmitting}
-                className="rounded-xl px-5 py-2 text-xs font-bold flex items-center gap-1.5"
+                leftIcon={<Send className="h-3.5 w-3.5" />}
+                className="rounded-xl px-5 py-2 text-xs font-bold "
               >
-                <Send className="w-3.5 h-3.5" />
-                Post Update
+                Post
               </Button>
             </div>
           </form>
@@ -300,11 +298,10 @@ export const Feed: React.FC = () => {
                 key={cat.id}
                 type="button"
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  selectedCategory === cat.id
-                    ? 'bg-slate-900 text-white shadow-xs'
-                    : 'bg-white border border-slate-200/80 text-slate-600 hover:border-slate-300 hover:text-slate-900'
-                }`}
+                className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold transition-all ${selectedCategory === cat.id
+                  ? 'bg-slate-900 text-white shadow-xs'
+                  : 'bg-white border border-slate-200/80 text-slate-600 hover:border-slate-300 hover:text-slate-900'
+                  }`}
               >
                 {cat.label}
               </button>
@@ -361,13 +358,12 @@ export const Feed: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <h4 className="text-sm font-bold text-slate-900">{post.author_name}</h4>
                           <span
-                            className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
-                              post.author_role === 'TUTOR'
-                                ? 'bg-sky-50 text-sky-700 border border-sky-200/60'
-                                : post.author_role === 'ADMIN'
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${post.author_role === 'TUTOR'
+                              ? 'bg-sky-50 text-sky-700 border border-sky-200/60'
+                              : post.author_role === 'ADMIN'
                                 ? 'bg-rose-50 text-rose-700 border border-rose-200/60'
                                 : 'bg-emerald-50 text-emerald-700 border border-emerald-200/60'
-                            }`}
+                              }`}
                           >
                             {post.author_role === 'TUTOR' ? 'Tutor' : post.author_role === 'ADMIN' ? 'Admin' : 'Student'}
                           </span>
@@ -434,9 +430,8 @@ export const Feed: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => handleToggleLike(post.id)}
-                        className={`flex items-center gap-1.5 font-bold transition-colors ${
-                          post.is_liked ? 'text-rose-600' : 'text-slate-500 hover:text-slate-900'
-                        }`}
+                        className={`flex items-center gap-1.5 font-bold transition-colors ${post.is_liked ? 'text-rose-600' : 'text-slate-500 hover:text-slate-900'
+                          }`}
                       >
                         <Heart className={`w-4 h-4 ${post.is_liked ? 'fill-current' : ''}`} />
                         <span>{post.likes_count}</span>
