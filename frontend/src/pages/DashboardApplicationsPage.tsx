@@ -19,6 +19,27 @@ export const DashboardApplicationsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user || user.role === 'ADMIN') return;
+      if (user?.role === 'TUTOR') {
+        try {
+          setApplications(await applicationsApi.getMyApplications());
+        } catch {
+          setError('Unable to load your applications. Please try again.');
+        }
+      } else {
+        try {
+          setRequirements(await requirementsApi.getMyRequirements());
+        } catch {
+          setError('Unable to load your requirements. Please try again.');
+        }
+      }
+      setLoading(false);
+    };
+    fetchData();
+  }, [user]);
+
   if (!isAuthenticated || !user) {
     return <Navigate to="/login" replace />;
   }
@@ -42,30 +63,6 @@ export const DashboardApplicationsPage: React.FC = () => {
         )}
       </DashboardLayout>
     );
-  }
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (user?.role === 'TUTOR') {
-        try {
-          setApplications(await applicationsApi.getMyApplications());
-        } catch {
-          setError('Unable to load your applications. Please try again.');
-        }
-      } else {
-        try {
-          setRequirements(await requirementsApi.getMyRequirements());
-        } catch {
-          setError('Unable to load your requirements. Please try again.');
-        }
-      }
-      setLoading(false);
-    };
-    fetchData();
-  }, [user]);
-
-  if (!isAuthenticated || !user) {
-    return <Navigate to="/login" replace />;
   }
 
   const handleWithdraw = async (appId: string) => {
@@ -166,10 +163,10 @@ export const DashboardApplicationsPage: React.FC = () => {
                   </div>
 
                   <Link
-                    to="/dashboard"
+                    to="/dashboard/jobs"
                     className="inline-flex items-center gap-1 px-4 py-2 rounded-xl bg-brand-500 text-white text-xs font-bold hover:bg-brand-600 shadow-xs"
                   >
-                    View Matched Tutors
+                    View Posted Jobs
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>

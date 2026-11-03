@@ -75,7 +75,7 @@ export interface Tutor {
   member_since: string;
 }
 
-export type JobStatus = 'PUBLISHED' | 'DRAFT' | 'CLOSED' | 'CANCELLED';
+export type JobStatus = 'PUBLISHED' | 'DRAFT' | 'AVAILABLE' | 'SHORTLISTED' | 'APPOINTED' | 'CLOSED' | 'CANCELLED';
 
 export interface TuitionJob {
   id: string;
@@ -107,22 +107,33 @@ export interface TuitionJob {
   posted_by_name?: string;
 }
 
-export type ApplicationStatus = 'PENDING' | 'SHORTLISTED' | 'SELECTED' | 'REJECTED' | 'WITHDRAWN';
+export type ApplicationStatus = 'APPLIED' | 'PENDING' | 'SHORTLISTED' | 'SELECTED' | 'REJECTED' | 'WITHDRAWN';
 
 export interface JobApplication {
   id: string;
-  application_id: string; // e.g. "APP-8291"
+  application_id?: string; // e.g. "APP-8291"
   job_id: string;
   job_title: string;
-  job_reference: string;
-  tutor_id: string;
-  tutor_name: string;
-  tutor_university: string;
-  tutor_department: string;
+  job_reference?: string;
+  tutor_id?: string;
+  tutor_name?: string;
+  tutor_tutor_id?: string;
+  tutor_university?: string;
+  tutor_department?: string;
   tutor_photo?: string;
+  tutor_profile_photo?: string;
+  tutor_details?: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    profile_image?: string;
+    role?: string;
+  };
   cover_message: string;
   expected_salary: number;
   status: ApplicationStatus;
+  seen_by_student: boolean;
   applied_at: string;
   admin_note?: string;
 }
@@ -453,4 +464,3 @@ export interface TutorRecommendation {
   ai_match_score: number;
   ai_recommendation_reasons: string[];
 }
-

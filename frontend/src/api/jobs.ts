@@ -53,6 +53,15 @@ export const jobsApi = {
     return response.data;
   },
 
+  updateJob: async (jobId: string, jobData: Partial<TuitionJob>): Promise<TuitionJob> => {
+    const response = await apiClient.patch(`/jobs/${jobId}/`, jobData);
+    return response.data;
+  },
+
+  deleteJob: async (jobId: string): Promise<void> => {
+    await apiClient.delete(`/jobs/${jobId}/`);
+  },
+
   applyForJob: async (jobId: string, coverMessage: string, expectedSalary: number) => {
     const response = await apiClient.post('/applications/apply/', {
       job: jobId,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -20,12 +20,41 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { notificationsApi } from '../../api/notifications';
 
 export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState({ userId: '', count: 0 });
   const navigate = useNavigate();
   const location = useLocation();
+  const userId = user?.id;
+  const unreadNotificationCount = notificationCount.userId === userId ? notificationCount.count : 0;
+
+  useEffect(() => {
+    let active = true;
+    const fetchUnreadCount = async () => {
+      try {
+        const { unread_count } = await notificationsApi.getNotifications();
+        if (active && userId) setNotificationCount({ userId, count: unread_count });
+      } catch {
+        if (active && userId) setNotificationCount({ userId, count: 0 });
+      }
+    };
+
+    if (userId) {
+      void fetchUnreadCount();
+      const interval = window.setInterval(fetchUnreadCount, 10000);
+      return () => {
+        active = false;
+        window.clearInterval(interval);
+      };
+    }
+
+    return () => {
+      active = false;
+    };
+  }, [userId]);
 
   const handleLogout = () => {
     logout();
@@ -68,7 +97,8 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
       if (user?.role === 'TUTOR') return 'Tutor Profile';
       return 'Account Profile';
     }
-    if (location.pathname === '/dashboard/jobs') return user?.role === 'ADMIN' ? 'Tuition Jobs Moderation' : 'Find Tuition Jobs';
+    if (location.pathname.startsWith('/dashboard/jobs/')) return 'Job Applications';
+    if (location.pathname === '/dashboard/jobs') return user?.role === 'ADMIN' ? 'Tuition Jobs Moderation' : user?.role === 'TUTOR' ? 'Find Tuition Jobs' : 'My Posted Jobs';
     if (location.pathname === '/dashboard/applications') return user?.role === 'ADMIN' ? 'Applications Governance' : 'My Applications';
     if (location.pathname === '/dashboard/messages') return 'Direct Messages & Inquiries';
     if (location.pathname === '/dashboard/notifications') return 'Notifications';
@@ -235,10 +265,15 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
             <Link
               to="/dashboard/notifications"
               className="relative p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-              title="Notifications"
+              title={unreadNotificationCount > 0 ? `${unreadNotificationCount} unread notifications` : 'Notifications'}
+              aria-label={unreadNotificationCount > 0 ? `${unreadNotificationCount} unread notifications` : 'Notifications'}
             >
               <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-500 ring-2 ring-white" />
+              {unreadNotificationCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-black leading-none text-white ring-2 ring-white">
+                  {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
+                </span>
+              )}
             </Link>
 
             <div className="h-4 w-px bg-slate-200 hidden sm:block" />

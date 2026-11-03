@@ -16,6 +16,7 @@ class JobApplication(TimeStampedModel, UUIDModel):
     cover_message = models.TextField()
     expected_salary = models.PositiveIntegerField(default=8000)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.APPLIED)
+    seen_by_student = models.BooleanField(default=False)
     
     admin_notes = models.TextField(blank=True)
     guardian_feedback = models.TextField(blank=True)

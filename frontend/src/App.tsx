@@ -25,6 +25,7 @@ import { DashboardProfilePage } from './pages/DashboardProfilePage';
 import { DashboardApplicationsPage } from './pages/DashboardApplicationsPage';
 import { DashboardNotificationsPage } from './pages/DashboardNotificationsPage';
 import { DashboardJobsPage } from './pages/DashboardJobsPage';
+import { DashboardJobApplicationsPage } from './pages/DashboardJobApplicationsPage';
 import { DashboardUsersPage } from './pages/DashboardUsersPage';
 import { DashboardTutorsPage } from './pages/DashboardTutorsPage';
 import { DashboardMessagesPage } from './pages/DashboardMessagesPage';
@@ -79,6 +80,7 @@ export function App() {
             <Route path="/dashboard/tutors" element={<DashboardTutorsPage />} />
             <Route path="/dashboard/profile" element={<DashboardProfilePage />} />
             <Route path="/dashboard/jobs" element={<DashboardJobsPage />} />
+            <Route path="/dashboard/jobs/:jobId/applications" element={<DashboardJobApplicationsPage />} />
             <Route path="/dashboard/applications" element={<DashboardApplicationsPage />} />
             <Route path="/dashboard/notifications" element={<DashboardNotificationsPage />} />
           </Route>

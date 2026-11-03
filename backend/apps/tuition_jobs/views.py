@@ -29,6 +29,13 @@ class TuitionJobDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'job_id'
 
+    def get_queryset(self):
+        if self.request.user.is_staff or self.request.user.role == 'ADMIN':
+            return TuitionJob.objects.all()
+        if self.request.method in permissions.SAFE_METHODS:
+            return TuitionJob.objects.all()
+        return TuitionJob.objects.filter(student=self.request.user)
+
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         instance.views_count += 1
