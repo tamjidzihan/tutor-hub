@@ -67,9 +67,8 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
       { name: 'User Directory', path: '/dashboard/users', icon: <Users className="w-4 h-4" /> },
       { name: 'Tutor Verification', path: '/dashboard/tutors', icon: <UserCheck className="w-4 h-4" /> },
       { name: 'Tuition Jobs', path: '/dashboard/jobs', icon: <Briefcase className="w-4 h-4" /> },
-      { name: 'Tutor Requests', path: '/dashboard/requirements', icon: <ClipboardList className="w-4 h-4" /> },
       { name: 'Applications', path: '/dashboard/applications', icon: <CheckCircle2 className="w-4 h-4" /> },
-      { name: 'Direct Messages', path: '/dashboard/messages', icon: <MessageSquare className="w-4 h-4" /> },
+      { name: 'Inbox', path: '/dashboard/messages', icon: <MessageSquare className="w-4 h-4" /> },
       { name: 'Admin Profile', path: '/dashboard/profile', icon: <User className="w-4 h-4" /> },
     ] : [
       { name: 'Dashboard Overview', path: '/dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
@@ -77,12 +76,12 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
         { name: 'My Tutor Profile', path: '/dashboard/profile', icon: <User className="w-4 h-4" /> },
         { name: 'My Applications', path: '/dashboard/applications', icon: <Briefcase className="w-4 h-4" /> },
         { name: 'Find Tuition Jobs', path: '/job-board', icon: <GraduationCap className="w-4 h-4" /> },
-        { name: 'Direct Messages', path: '/dashboard/messages', icon: <MessageSquare className="w-4 h-4" /> },
+        { name: 'Inbox', path: '/dashboard/messages', icon: <MessageSquare className="w-4 h-4" /> },
       ] : [
         { name: 'My Profile', path: '/dashboard/profile', icon: <User className="w-4 h-4" /> },
         { name: 'My Posted Jobs', path: '/dashboard/jobs', icon: <Briefcase className="w-4 h-4" /> },
         { name: 'Browse Tutors', path: '/find-tutor', icon: <User className="w-4 h-4" /> },
-        { name: 'Direct Messages', path: '/dashboard/messages', icon: <MessageSquare className="w-4 h-4" /> },
+        { name: 'Inbox', path: '/dashboard/messages', icon: <MessageSquare className="w-4 h-4" /> },
       ])
     ]),
     { name: 'Notifications', path: '/dashboard/notifications', icon: <Bell className="w-4 h-4" /> },
@@ -100,7 +99,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
     if (location.pathname.startsWith('/dashboard/jobs/')) return 'Job Applications';
     if (location.pathname === '/dashboard/jobs') return user?.role === 'ADMIN' ? 'Tuition Jobs Moderation' : user?.role === 'TUTOR' ? 'Find Tuition Jobs' : 'My Posted Jobs';
     if (location.pathname === '/dashboard/applications') return user?.role === 'ADMIN' ? 'Applications Governance' : 'My Applications';
-    if (location.pathname === '/dashboard/messages') return 'Direct Messages & Inquiries';
+    if (location.pathname === '/dashboard/messages') return 'Inbox & Inquiries';
     if (location.pathname === '/dashboard/notifications') return 'Notifications';
     return user?.role === 'ADMIN' ? 'Analytics & Insights' : 'Dashboard Overview';
   };
@@ -118,9 +117,8 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
       {/* Sidebar Navigation */}
       <aside
-        className={`fixed md:sticky top-0 z-50 h-screen w-64 bg-navy-950 text-slate-300 flex flex-col justify-between transition-all duration-200 shrink-0 ${
-          sidebarOpen ? 'left-0 shadow-2xl' : '-left-64 md:left-0'
-        }`}
+        className={`fixed md:sticky top-0 z-50 h-screen w-64 bg-navy-950 text-slate-300 flex flex-col justify-between transition-all duration-200 shrink-0 ${sidebarOpen ? 'left-0 shadow-2xl' : '-left-64 md:left-0'
+          }`}
       >
         <div>
           {/* Logo & Close Button for Mobile */}
@@ -181,10 +179,9 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
                 end={item.path === '/dashboard'}
                 onClick={() => setSidebarOpen(false)}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                    isActive
-                      ? 'bg-brand-500 text-white shadow-sm'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                  `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${isActive
+                    ? 'bg-brand-500 text-white shadow-sm'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-900'
                   }`
                 }
               >
@@ -223,7 +220,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
         {/* Global Dashboard Top Navigation Bar */}
         <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/90 px-4 sm:px-6 py-3.5 shadow-xs flex items-center justify-between gap-4">
-          
+
           {/* Left: Mobile Toggle & Breadcrumbs */}
           <div className="flex items-center gap-3">
             <button
@@ -249,7 +246,7 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
 
           {/* Right: Quick Action Shortcuts & User Profile Header */}
           <div className="flex items-center gap-2 sm:gap-3">
-            
+
             {/* Context-Specific Quick Action Shortcuts */}
             {user?.role === 'TUTOR' && (
               <Link

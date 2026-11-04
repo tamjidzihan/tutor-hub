@@ -126,22 +126,22 @@ export const AdminResourceManagement: React.FC<AdminResourceManagementProps> = (
     const defaultTitle = resource === 'users'
         ? 'User Directory'
         : resource === 'tutors'
-        ? 'Tutor Verification Queue'
-        : resource === 'jobs'
-        ? 'Tuition Jobs Moderation'
-        : resource === 'requirements'
-        ? 'Tutor Requests & Inquiries'
-        : 'Applications Governance';
+            ? 'Tutor Verification Queue'
+            : resource === 'jobs'
+                ? 'Tuition Jobs Moderation'
+                : resource === 'requirements'
+                    ? 'Tutor Requests & Inquiries'
+                    : 'Applications Governance';
 
     const defaultSubtitle = resource === 'users'
         ? 'Review registered accounts. Note: Admin can delete accounts, but cannot modify private user credentials.'
         : resource === 'tutors'
-        ? 'Review educational credentials, verify teacher identities, and toggle availability.'
-        : resource === 'jobs'
-        ? 'Moderate live tuition jobs, inspect parent requirements, and audit applicant submissions.'
-        : resource === 'requirements'
-        ? 'Inspect student requirements, review matching tutors, and fulfill learning requests.'
-        : 'Audit tutor applications, expected salaries, and proposal messages across all tuition posts.';
+            ? 'Review educational credentials, verify teacher identities, and toggle availability.'
+            : resource === 'jobs'
+                ? 'Moderate live tuition jobs, inspect parent requirements, and audit applicant submissions.'
+                : resource === 'requirements'
+                    ? 'Inspect student requirements, review matching tutors, and fulfill learning requests.'
+                    : 'Audit tutor applications, expected salaries, and proposal messages across all tuition posts.';
 
     return (
         <div className="space-y-6 pb-12">
@@ -323,19 +323,19 @@ export const AdminResourceManagement: React.FC<AdminResourceManagementProps> = (
                                                         <p className="font-bold text-slate-900">
                                                             {String(
                                                                 record.name ||
-                                                                    record.title ||
-                                                                    record.student_name ||
-                                                                    record.job_title ||
-                                                                    'Record'
+                                                                record.title ||
+                                                                record.student_name ||
+                                                                record.job_title ||
+                                                                'Record'
                                                             )}
                                                         </p>
                                                         <p className="mt-0.5 font-mono text-[11px] text-slate-500">
                                                             {String(
                                                                 record.tutor_id ||
-                                                                    record.job_id ||
-                                                                    record.requirement_id ||
-                                                                    record.email ||
-                                                                    recordId
+                                                                record.job_id ||
+                                                                record.requirement_id ||
+                                                                record.email ||
+                                                                recordId
                                                             )}
                                                         </p>
                                                     </div>
@@ -523,9 +523,8 @@ const StatusBadge: React.FC<{ resource: AdminResource; record: AdminRecord }> = 
         return (
             <div className="flex flex-wrap gap-1">
                 <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold ${
-                        isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'
-                    }`}
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold ${isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'
+                        }`}
                 >
                     {isActive ? 'ACTIVE' : 'DEACTIVATED'}
                 </span>
@@ -544,20 +543,18 @@ const StatusBadge: React.FC<{ resource: AdminResource; record: AdminRecord }> = 
         return (
             <div className="flex flex-wrap gap-1">
                 <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold ${
-                        vStatus === 'VERIFIED'
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : vStatus === 'REJECTED'
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-extrabold ${vStatus === 'VERIFIED'
+                        ? 'bg-emerald-50 text-emerald-700'
+                        : vStatus === 'REJECTED'
                             ? 'bg-rose-50 text-rose-700'
                             : 'bg-amber-50 text-amber-700'
-                    }`}
+                        }`}
                 >
                     {vStatus}
                 </span>
                 <span
-                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                        isAvailable ? 'bg-slate-100 text-slate-700' : 'bg-slate-200 text-slate-500'
-                    }`}
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${isAvailable ? 'bg-slate-100 text-slate-700' : 'bg-slate-200 text-slate-500'
+                        }`}
                 >
                     {isAvailable ? 'Available' : 'Paused'}
                 </span>
@@ -570,10 +567,10 @@ const StatusBadge: React.FC<{ resource: AdminResource; record: AdminRecord }> = 
         st === 'AVAILABLE' || st === 'APPOINTED' || st === 'COMPLETED' || st === 'SELECTED'
             ? 'bg-emerald-50 text-emerald-700'
             : st === 'PENDING' || st === 'APPLIED' || st === 'MATCHED'
-            ? 'bg-amber-50 text-amber-700'
-            : st === 'SHORTLISTED' || st === 'TUTOR_SELECTED'
-            ? 'bg-blue-50 text-blue-700'
-            : 'bg-rose-50 text-rose-700';
+                ? 'bg-amber-50 text-amber-700'
+                : st === 'SHORTLISTED' || st === 'TUTOR_SELECTED'
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'bg-rose-50 text-rose-700';
 
     return <span className={`rounded-full px-2.5 py-0.5 text-[10px] font-extrabold ${colorClasses}`}>{st}</span>;
 };
@@ -627,12 +624,12 @@ const RecordDetailModal: React.FC<RecordDetailModalProps> = ({
                             <h2 className="font-heading text-lg font-black text-slate-900">
                                 {String(
                                     record.title ||
-                                        record.name ||
-                                        record.student_name ||
-                                        record.job_title ||
-                                        record.job_id ||
-                                        record.tutor_id ||
-                                        'Record Details'
+                                    record.name ||
+                                    record.student_name ||
+                                    record.job_title ||
+                                    record.job_id ||
+                                    record.tutor_id ||
+                                    'Record Details'
                                 )}
                             </h2>
                         </div>
@@ -1160,12 +1157,12 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
 }) => {
     const recordLabel = String(
         record.email ||
-            record.title ||
-            record.name ||
-            record.job_id ||
-            record.tutor_id ||
-            record.requirement_id ||
-            record.id
+        record.title ||
+        record.name ||
+        record.job_id ||
+        record.tutor_id ||
+        record.requirement_id ||
+        record.id
     );
 
     return (
