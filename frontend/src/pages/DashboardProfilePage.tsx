@@ -367,6 +367,7 @@ export const DashboardProfilePage: React.FC = () => {
               <Input
                 label="Professional Headline"
                 value={formData.headline}
+                maxLength={255}
                 onChange={(e) => setFormData({ ...formData, headline: e.target.value })}
                 placeholder="e.g. BUET EEE | 4+ Years Experienced Physics & Higher Math Specialist"
                 helperText="A brief one-line statement highlighting your academic strengths."

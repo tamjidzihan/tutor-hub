@@ -47,6 +47,7 @@ export interface Tutor {
   tutor_id: string; // e.g. "TT-T-000842"
   user_id?: string;
   name: string;
+  headline?: string;
   profile_photo: string;
   gender: 'MALE' | 'FEMALE';
   bio: string;

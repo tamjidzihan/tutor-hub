@@ -188,6 +188,12 @@ export const TutorDetails: React.FC = () => {
                 {tutor.education_level || 'B.Sc Engineering'} in {tutor.department} — {tutor.university}
               </p>
 
+              {tutor.headline && (
+                <p className="text-sm font-medium text-slate-700">
+                  {tutor.headline}
+                </p>
+              )}
+
               <div className="flex flex-wrap gap-4 text-xs text-slate-500 pt-1">
                 <span className="inline-flex items-center gap-1">
                   <MapPin className="w-3.5 h-3.5 text-slate-400" />

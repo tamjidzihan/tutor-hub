@@ -6,6 +6,7 @@ const normalizeTutorDetail = (value: Record<string, unknown>): Tutor => ({
   id: String(value.id || ''),
   tutor_id: String(value.tutor_id || ''),
   name: String(value.name || ''),
+  headline: String(value.headline || ''),
   profile_photo: typeof value.profile_photo === 'string' ? value.profile_photo : '',
   gender: value.gender === 'FEMALE' ? 'FEMALE' : 'MALE',
   bio: String(value.bio || ''),
@@ -99,6 +100,7 @@ export const tutorsApi = {
   saveTutorOnboarding: async (data: any): Promise<Tutor> => {
     const payload = {
       gender: data.gender || 'MALE',
+      headline: data.headline || '',
       university: data.university || '',
       department: data.department || '',
       degree_title: data.degree || data.degree_title || 'B.Sc Engineering',
