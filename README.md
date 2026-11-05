@@ -122,6 +122,16 @@ tutor_hub/
 
 ## ⚡ Quick Start
 
+### Start Both Development Servers (Windows PowerShell)
+
+From the repository root, run:
+
+```powershell
+.\start-dev.ps1
+```
+
+The script checks the frontend dependencies and installs them with `npm install` if needed. It creates `backend\env` if missing, installs/synchronizes the Python dependencies from `backend\requirements.txt`, then opens the Vite and Django development servers in separate PowerShell windows.
+
 ### Prerequisites
 - **Node.js:** 20+
 - **Python:** 3.12+
