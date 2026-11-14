@@ -1,0 +1,16 @@
+Slide Outline
+1. Overview/Introduction
+2. Motivation/Objective
+3. Literature Review / Related Work
+4. Contribution
+5. Problem Definition
+6. Proposed Algorithm/System Model
+7. Experimental Results
+8. Conclusion & Future Scope
+
+
+Rules for All Slides
+1. Choose readable colors and fonts (i.e. Calibri (Body), size: 24).
+2. Present your key ideas in a short bullet format.
+3. Avoid paragraphs or long blocks of text.
+4. Use appropriate charts in the experimental section.
